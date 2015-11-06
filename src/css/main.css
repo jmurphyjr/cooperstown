@@ -1,0 +1,115 @@
+* {
+    padding:0;
+    margin:0;
+    font-family: "Roboto", sans-serif;
+}
+html {
+    height: 100%;
+    width: 100%;
+}
+body {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+.clear-fix {
+    overflow: auto;
+}
+
+h2 {
+    margin: auto;
+}
+
+ul {
+    /* list-style-type: none; */
+    width: 100%;
+}
+
+.searchBar_ul_li {
+    padding: 5px;
+    display: block;
+    width: 100%;
+    border: 1px outset #0000AA;
+}
+
+.selected {
+    color: #3c763d;
+}
+/* Reference: codepen.io/shahbokhari/pen/uDahz */
+#searchBar {
+    width: 200px;
+    height: 100%;
+    position: absolute;
+    left: 1px;
+    transition: all .3s ease-in-out;
+    -webkit-transition: all .3s ease-in-out;
+    -moz-transition: all .3s ease-in-out;
+    -ms-transition: all .3s ease-in-out;
+    -o-transition: all .3s ease-in-out;
+    z-index: 5;
+    background-color: grey;
+}
+
+#markers {
+    width: 100%;
+}
+#filter-markers {
+    width: 100%;
+}
+
+.search-icon {
+    padding: 10px 20px;
+    background: #e5dac0;
+    color: #987d3e;
+    cursor: pointer;
+    position: absolute;
+    left: 80%;
+    top: 0;
+    margin: 6px 6px 0 0;
+    border-right: 5px;
+    z-index: 1;
+}
+
+#searchToggle {
+    display: none;
+}
+#searchBar .toggled {
+    position: absolute;
+    left: 1px;
+}
+
+#searchToggle:checked ~ #searchBar {
+    position: absolute;
+    left: 1px;
+}
+
+p {
+    margin: auto;
+    padding-left: 5px;
+}
+
+header {
+    background-color: #286090;
+    color: white;
+    padding: 0;
+    padding-bottom: 4em;
+    border-bottom: 1px solid #000;
+    z-index: 1;
+    height: 50px;
+}
+
+main {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+#brand {
+    float: left;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}

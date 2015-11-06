@@ -1,0 +1,6 @@
+{
+  "globals": {
+    "google": false,
+    "document": false
+  }
+}

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Udacity Front-End Nanodegree • Project 5 Cooperstown</title>
+
+  <style>
+    * {
+      /* outline: 1px solid red !important; */
+    }
+
+    .container {
+      width: 100%;
+    }
+  </style>
+
+  <link rel="stylesheet" href="css/vendor/normalize.css">
+  <link rel="stylesheet" href="css/vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<!-- Search area to filter markers -->
+
+<header>
+  <!-- <img src="http://placehold.it/1038x75" class="img-responsive"> -->
+  <div id="brand">
+    <h2>Cooperstown, New York</h2>
+
+    <p>Dreamspark</p>
+  </div>
+  <!-- <input type="checkbox" id="searchToggle"> -->
+  <label data-bind="click:testFunction" class="search-icon">&#9776;</label>
+</header>
+<main>
+  <div id="searchBar" data-bind="slideVisible: searchBarVisible()">
+    <input id="filter-markers" type="search" placeholder="Filter Markers">
+
+    <div id="markers">
+      <ul data-bind="foreach: visibleLocations">
+        <li class="searchBar_ul_li" data-bind="text: name, click: $root:focusLocation, css: selectedStatus"></li>
+      </ul>
+    </div>
+  </div>
+  <div id="map">
+  </div>
+
+</main>
+<!-- <script src="js/config.js"></script> -->
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script src="js/bundle.js"></script>
+</body>
+</html>
