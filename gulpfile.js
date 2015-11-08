@@ -81,8 +81,9 @@ gulp.task('browserify', ['lint:js'], function(callback) {
             bundler.require('knockout');
         })
         .pipe(p.rename('bundle.js'))
+        .pipe(p.size())
         .pipe(gulp.dest(paths.scripts.dest))
-        .pipe(p.notify({ message: 'browserify task is complete' }));
+        .pipe(p.notify({ message: 'browserify task is complete.' }));
     callback();
 });
 
@@ -102,20 +103,29 @@ gulp.task('minify:css', function() {
     var streams = files.map(function(file) {
         gulp.src(file, { base: 'src' })
             .pipe(p.minifyCss())
+            .pipe(p.size())
             .pipe(gulp.dest(basePaths.dest));
     });
 });
 
 gulp.task('copy', [
     'copy:html',
-    'copy:nodeModules'
+    'copy:nodeModules',
+    'copy:perfmatters'
 ]);
 
 gulp.task('copy:nodeModules', function() {
     return gulp.src(['node_modules/bootstrap/dist/css/bootstrap.min.css',
         'node_modules/normalize.css/normalize.css'
     ])
+        .pipe(p.size())
         .pipe(gulp.dest(paths.styles.dest + 'vendor/'));
+});
+
+gulp.task('copy:perfmatters', function() {
+    return gulp.src(paths.scripts.src + 'perfmatters.js')
+        .pipe(p.size())
+        .pipe(gulp.dest(paths.scripts.dest));
 });
 
 gulp.task('copy:html', function() {
@@ -129,8 +139,9 @@ gulp.task('copy:html', function() {
 gulp.task('serve-dev', ['build_reload'], function() {
     browserSync.init(['dist/js/bundle.js'], {
         notify: false,
+        debug: true,
 
-        logPrefix: 'WSK',
+        logPrefix: 'SERVE-DEV',
 
         server: ['.tmp', 'dist'],
         browser: ['google chrome canary']
@@ -140,6 +151,7 @@ gulp.task('serve-dev', ['build_reload'], function() {
     gulp.watch(['src/js/*.js'], ['build_reload']);
     gulp.watch(['src/index.html'], ['build_reload']);
     gulp.watch(['src/css/*.css'], ['build_reload']);
+    gulp.watch(['gulpfile.js'], ['build_reload']);
 });
 
 gulp.task('serve-test', function() {
@@ -173,5 +185,6 @@ gulp.task('reload', ['browserify'], function() {
 });
 
 gulp.task('build_reload', function(done) {
+    var s = p.size();
     runSequence('clean', ['minify:css', 'copy'], 'browserify', done);
 });

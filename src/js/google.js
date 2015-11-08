@@ -5,10 +5,16 @@
 'use strict';
 var map;
 console.log('entered google.js');
+
+function googleLoaded() {
+    return (typeof google === 'object');
+}
+
 module.exports = {
 
     // return {
     addMapToCanvas: function (mapCanvas) {
+        console.log('executing addMapToCanvas()');
         var myOptions = {
             // center: new google.maps.LatLng(42.6972, -74.9269),
             center: new google.maps.LatLng(42.6638889, -74.954252),
@@ -32,19 +38,28 @@ module.exports = {
         map = new google.maps.Map(mapCanvas, myOptions);
     },
     addMarker: function (loc) {
+
+        console.log(googleLoaded());
+        if (!googleLoaded()) {
+            console.log('addMarker returned undefined');
+            return undefined;
+        }
+
         var marker = new google.maps.Marker({
             map: map,
             position: new google.maps.LatLng(loc.lat, loc.long),
-            animation: null
+            animation: google.maps.Animation.DROP
         });
-        // marker.setMap(map);
-        // console.log(marker);
+
         return marker;
     },
     getMap: function () {
         return map;
     },
     clearMarkerAnimation: function(m) {
+        if (!googleLoaded()) {
+            return undefined;
+        }
         m.setAnimation(null);
     },
 

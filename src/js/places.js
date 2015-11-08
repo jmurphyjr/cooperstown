@@ -8,6 +8,7 @@ var ko = require('knockout');
 ko.mapping = require('knockout-mapping');
 var $ = require('jquery');
 var gMaps = require('./google.js');
+var utils = require('./utils.js');
 
 var places = [
     {
@@ -89,6 +90,7 @@ ko.bindingHandlers.slideVisible = {
         var valueUnwrapped = ko.utils.unwrapObservable(value);
 
         var duration = allBindings.slideDuration || 400;
+        // console.log('duration = ' + duration);
 
         if (valueUnwrapped === true) {
             $(element).animate({ left: 1 }, { duration: duration });
@@ -101,20 +103,31 @@ ko.bindingHandlers.slideVisible = {
 
 function clearMarkerAnimation(locations) {
     locations().forEach(function(e) {
-        gMaps.clearMarkerAnimation(e.marker);
+        // If e.marker is an object and not set to null, clear animation.
+        if (utils.isObject(e.marker)) {
+            gMaps.clearMarkerAnimation(e.marker);
+        }
+    });
+}
+
+function unselectAllLocations(locations) {
+    locations().forEach(function(e) {
+        e.isSelected(false);
     });
 }
 
 module.exports = PlacesViewModel;
 
-function PlacesViewModel() {
+function PlacesViewModel(emitter) {
     var self = this;
 
-    self.searchBarVisible = ko.observable(true);
+    self.emitter = emitter;
+
+    self.searchBarVisible = ko.observable(false);
     self.isSelected = ko.observable(false);
 
-    self.testFunction = function (data) {
-        console.log(data);
+    // Bound to hamburger element to toggle search bar.
+    self.toggleSearchBar = function (data) {
         self.searchBarVisible(!self.searchBarVisible());
     };
 
@@ -132,16 +145,6 @@ function PlacesViewModel() {
 
     var mapping = {
 
-        // 'location': {
-        //     create: function (options) {
-        //         return new LocationViewModel(options.data);
-        //     }
-        // },
-        // 'address': {
-        //     create: function (options) {
-        //         return new AddressViewModel(options.data);
-        //     }
-        // }
         create: function(options) {
             var subMapping = {
                 'location': {
@@ -160,10 +163,19 @@ function PlacesViewModel() {
             // Add selected attribute
             vm.isSelected = ko.observable(false);
 
-            vm.selectedStatus = ko.pureComputed(function() {
-                return vm.isSelected() ? 'selected' : '';
+            // Subscribe to visibility attribute
+            // Change visibility of icon.
+            vm.visibility.subscribe(function(newValue) {
+                if (newValue) {
+                    vm.marker.setVisible(true);
+                }
+                else {
+                    vm.marker.setVisible(false);
+                }
             });
 
+            // Add google.maps.Marker holder.
+            vm.marker = null;
             return vm;
         }
     };
@@ -172,10 +184,11 @@ function PlacesViewModel() {
 
     ko.mapping.fromJS(places, mapping, this.locations);
 
-    console.log(this.locations());
+    // console.log(this.locations());
 
     self.visibleLocations = ko.computed(function () {
         return ko.utils.arrayFilter(self.locations(), function (p) {
+            // console.log(p);
             return p.visibility();
         });
     });
@@ -185,18 +198,30 @@ function PlacesViewModel() {
     });
 
     self.focusLocation = function (data) {
-        console.log(data.marker);
+        console.log('focusLocation' + data);
+        unselectAllLocations(self.locations);
         clearMarkerAnimation(self.locations);
         gMaps.animateMarker(data.marker);
         data.isSelected(true);
     };
 
-    self.locations().forEach(function (e) {
-        var marker;
-        // console.log(e);
-        var loc = e.location.getLocation();
-        // console.log(loc);
-        marker = gMaps.addMarker(loc);
-        e.marker = marker;
+    self.setMarkers = function() {
+        console.log('loaded event triggered');
+
+        self.locations().forEach(function (e) {
+            var marker;
+            var loc = e.location.getLocation();
+            // console.log(e.visibility());
+            if (e.visibility()) {
+                // marker = gMaps.addMarker(loc);
+                // e.marker = marker;
+                e.marker = gMaps.addMarker(loc);
+            }
+        });
+    };
+
+    self.emitter.on('googlemapsloaded', function() {
+        console.log('bind Places Triggered');
+        self.setMarkers();
     });
 }

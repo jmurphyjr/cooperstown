@@ -1,16 +1,15 @@
-* {
-    padding:0;
-    margin:0;
-    font-family: "Roboto", sans-serif;
-}
 html {
     height: 100%;
     width: 100%;
+    padding:0;
+    margin:0;
 }
 body {
+    margin:0;
     height: 100%;
     width: 100%;
     position: relative;
+    font-family: "Roboto", sans-serif;
 }
 .clear-fix {
     overflow: auto;
@@ -23,6 +22,7 @@ h2 {
 ul {
     /* list-style-type: none; */
     width: 100%;
+    padding: 0;
 }
 
 .searchBar_ul_li {
@@ -33,11 +33,11 @@ ul {
 }
 
 .selected {
-    color: #3c763d;
+    background-color: #3c763d;
 }
-/* Reference: codepen.io/shahbokhari/pen/uDahz */
+
 #searchBar {
-    width: 200px;
+    width: 100px;
     height: 100%;
     position: absolute;
     left: 1px;
@@ -48,7 +48,21 @@ ul {
     -o-transition: all .3s ease-in-out;
     z-index: 5;
     background-color: grey;
+    overflow-y: scroll;
+
 }
+/*
+@media (min-width: 320px) {
+    #searchBar {
+        width: 100px;
+
+    }
+    footer {
+        font-size: 14px;
+        font-size: .5vw;
+    }
+}
+*/
 
 #markers {
     width: 100%;
@@ -70,19 +84,6 @@ ul {
     z-index: 1;
 }
 
-#searchToggle {
-    display: none;
-}
-#searchBar .toggled {
-    position: absolute;
-    left: 1px;
-}
-
-#searchToggle:checked ~ #searchBar {
-    position: absolute;
-    left: 1px;
-}
-
 p {
     margin: auto;
     padding-left: 5px;
@@ -99,8 +100,12 @@ header {
 }
 
 main {
-    height: 100%;
+    height: calc( 95% - 50px);
     width: 100%;
+    position: absolute;
+}
+.wrapper-map {
+    height: 100%;
     position: relative;
 }
 
@@ -113,3 +118,29 @@ main {
     width: 100%;
     position: absolute;
 }
+
+footer {
+    z-index: 100;
+    left: 10px;
+    width: 100%;
+    bottom: 0;
+    position: absolute;
+    border-top: 1px solid #ccc;
+    font-size: 10px;
+}
+
+footer span {
+    float: right;
+    font-style: italic;
+}
+
+@media (min-width: 640px) {
+    #searchBar {
+        width: 200px;
+    }
+
+    footer {
+        font-size: 14px;
+    }
+}
+
