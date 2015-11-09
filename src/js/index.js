@@ -43,4 +43,3 @@ utils.loadScript('google', function(result) {
  * Instantiate PlacesViewModel and applyBindings
  */
 ko.applyBindings(new PlacesViewModel(emitter));
-
