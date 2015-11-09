@@ -4,13 +4,13 @@
 'use strict';
 
 var config = require('../config');
-var bundle = require('vinyl-buffer');
+var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
 var fs = require('fs');
 var path = require('path');
 
 var gulp = require('gulp');
-var browserify = require('gulp-browserify');
+var browserify = require('browserify');
 
 var p = require('gulp-load-plugins')();
 
@@ -24,25 +24,6 @@ if (p.util.env.dev === true) {
     config.isProduction = false;
 }
 
-function getAllFilesFromFolders(dir) {
-    var results = [];
-
-    fs.readdirSync(dir).forEach(function(file) {
-        file = path.join(dir, file);
-        var stat = fs.statSync(file);
-
-        if (stat && stat.isDirectory()) {
-            results = results.concat(getAllFilesFromFolders(file));
-        } else {
-            if (file.substring(0, 1) !== '.') {
-                results.push(file);
-            }
-        }
-    });
-
-    return results;
-}
-
 gulp.task('clean', function(done) {
     return del([
         config.basePaths.dest,
@@ -51,14 +32,35 @@ gulp.task('clean', function(done) {
 });
 
 gulp.task('browserify', ['lint:js'], function(callback) {
-    return gulp.src(config.paths.scripts.src + 'index.js')
-        .pipe(browserify({
-            debug: false
-        }))
-        .pipe(p.rename('bundle.js'))
+    browserSync.notify('Browserifying JavaScript');
+    var b = browserify({
+        debug: true,
+        entries: ['./src/js/index.js']
+    });
+
+    // bundle requires debug as well. Doesn't seem to pass through
+    // via the browserify config.
+    return b.bundle({ debug: true })
+        .on('error', p.util.log)
+        .pipe(source('bundle.js'))
+        .pipe(buffer())
+        .pipe(p.sourcemaps.init({ loadMaps: true }))
+        .pipe(p.uglify())
+        .pipe(p.rename('bundle.min.js'))
+        .pipe(p.sourcemaps.write('./'))
+        .pipe(gulp.dest(config.paths.scripts.dest));
+});
+
+gulp.task('html', function() {
+    var assets = p.useref.assets();
+
+    return gulp.src(config.basePaths.src + '*.html')
+        .pipe(assets)
+        .pipe(p.minifyCss())
+        .pipe(assets.restore())
+        .pipe(p.useref())
         .pipe(p.size())
-        .pipe(gulp.dest(config.paths.scripts.dest))
-        .pipe(p.notify({ message: 'browserify task is complete' }), callback);
+        .pipe(gulp.dest(config.basePaths.dest));
 });
 
 gulp.task('uglify', function() {
@@ -70,11 +72,19 @@ gulp.task('uglify', function() {
 });
 
 gulp.task('gzip', function() {
-    return gulp.src(config.paths.scripts.dest + 'bundle.min.js')
-        .pipe(p.gzip())
+    // return gulp.src(config.paths.scripts.dest + 'bundle.min.js')
+    //     .pipe(p.gzip())
+    //     .pipe(p.size())
+    //     .pipe(p.rename('bundle.min.jsgz'))
+    //     .pipe(gulp.dest(config.paths.scripts.dest));
+    return gulp.src(config.basePaths.dest + '**/*.{html,css,js}')
         .pipe(p.size())
-        .pipe(p.rename('bundle.min.jsgz'))
-        .pipe(gulp.dest(config.paths.scripts.dest));
+        .pipe(p.gzip())
+        .pipe(p.rename(function(path) {
+            console.log(path);
+            path.extname = path.extname.replace('.gz', 'gz');
+        }))
+        .pipe(gulp.dest(config.basePaths.dest));
 });
 
 gulp.task('lint:js', function() {
@@ -87,20 +97,15 @@ gulp.task('lint:js', function() {
 });
 
 gulp.task('minify:css', function() {
-    var files = [];
-    files = files.concat(getAllFilesFromFolders(config.paths.styles.src));
-
-    var streams = files.map(function(file) {
-        gulp.src(file, { base: 'src' })
-            .pipe(p.minifyCss())
-            .pipe(p.size())
-            .pipe(gulp.dest(config.basePaths.dest));
-    });
+    return gulp.src(config.appFiles.styles, { base: 'src' })
+        .pipe(p.minifyCss())
+        .pipe(p.size())
+        .pipe(gulp.dest(config.basePaths.dest));
 });
 
 gulp.task('copy', [
-    'copy:html',
-    'copy:nodeModules',
+    // 'copy:html',
+    // 'copy:nodeModules',
     'copy:perfmatters',
     'copy:htaccess'
 ]);
@@ -133,19 +138,12 @@ gulp.task('copy:html', function() {
 });
 
 gulp.task('serve-dev', ['build_reload'], function() {
-    browserSync({
-        notify: true,
-        open: false,
-        debug: true,
-        logPrefix: 'SERVE-DEV',
-        proxy: { target: 'http://knockout-browserify.dist' },
-        browser: ['google chrome canary']
-    });
+    browserSync.notify('Starting serve-dev');
+    browserSync(config.browsersync.development);
 
     gulp.watch(['src/js/*.js'], ['build_reload', reload]);
     gulp.watch(['src/index.html'], ['build_reload', reload]);
     gulp.watch(['src/css/*.css'], ['build_reload', reload]);
-    gulp.watch(['gulpfile.js'], ['build_reload', reload]);
 });
 
 gulp.task('serve-test', function() {
@@ -167,11 +165,13 @@ gulp.task('serve-test', function() {
 // | Main Tasks                                                                                        |
 // -----------------------------------------------------------------------------------------------------
 
-gulp.task('build', ['clean'],  function(dog) {
-    runSequence(
-        ['browserify', 'minify:css', 'copy'],
-
-        dog);
+gulp.task('build', function(done) {
+    runSequence('clean',
+        'copy',
+        'html',
+        'browserify',
+        'gzip',
+        done);
 });
 
 gulp.task('reload', ['browserify'], function() {
@@ -179,11 +179,11 @@ gulp.task('reload', ['browserify'], function() {
 });
 
 gulp.task('build_reload', function(done) {
-    var s = p.size();
     runSequence('clean',
-        ['minify:css', 'copy'],
+        'copy',
+        'html',
         'browserify',
-        'uglify',
-        'gzip',
+        // 'uglify',
+        // 'gzip',
         done);
 });

@@ -29,7 +29,24 @@ module.exports = {
         scripts: [src + 'js/*.js', '*.js']
     },
 
-    isProduction: true
+    isProduction: true,
+
+    browsersync: {
+        development: {
+            proxy: { target: 'http://knockout-browserify.dist/' },
+            browser: ['google chrome canary'],
+            logPrefix: 'SERVE-DEV',
+            debug: false,
+            open: false,
+            notify: true
+        }
+
+    },
+    browserify: {
+        // Enable source maps
+        debug: true,
+        entries: ['./src/js/index.js']
+    }
 };
 // module.exports = {
 //     paths: {
@@ -43,22 +60,6 @@ module.exports = {
 //             development: development + 'css/',
 //             production: production + 'css/'
 //         }
-//     },
-//     browsersync: {
-//         development: {
-//             proxy: { target: 'http://knockout-browserify.dist' },
-//             browser: ['google chrome canary'],
-//             logPrefix: 'SERVE-DEV',
-//             debug: true,
-//             open: false,
-//             notify: true,
-//             files: [
-//                 developmentAssets + '/css/*.css',
-//                 developmentAssets + '/js/*.js'
-//             ]
-//
-//         }
-//
 //     },
 //     delete: {
 //         src: [development]

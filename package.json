@@ -18,7 +18,7 @@
   "name": "cooperstown",
   "private": true,
   "scripts": {
-    "build": "browserify index.js -o bundle.js",
+    "build": "gulp build",
     "watch": "watchify index.js -o bundle.js --debug --verbose"
   },
   "version": "0.0.1",
@@ -42,7 +42,9 @@
     "gulp-notify": "^2.2.0",
     "gulp-rename": "^1.2.2",
     "gulp-size": "^2.0.0",
+    "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.4.2",
+    "gulp-useref": "^2.1.0",
     "gulp-util": "^3.0.7",
     "jshint-stylish": "^2.0.1",
     "require-dir": "^0.3.0",
