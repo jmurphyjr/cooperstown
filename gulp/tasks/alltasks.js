@@ -19,6 +19,7 @@ var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
 // var pagespeed = require('psi');
 var reload = browserSync.reload;
+var lazypipe = require('lazypipe');
 
 if (p.util.env.dev === true) {
     config.isProduction = false;
@@ -52,11 +53,14 @@ gulp.task('browserify', ['lint:js'], function(callback) {
 });
 
 gulp.task('html', function() {
-    var assets = p.useref.assets();
+    // Using lazy pipe to get css sourcemaps
+    // Ref: https://github.com/jonkemp/gulp-useref
+    var assets = p.useref.assets({}, lazypipe().pipe(p.sourcemaps.init, { loadMaps: true }));
 
     return gulp.src(config.basePaths.src + '*.html')
         .pipe(assets)
         .pipe(p.minifyCss())
+        .pipe(p.sourcemaps.write('./'))
         .pipe(assets.restore())
         .pipe(p.useref())
         .pipe(p.size())
