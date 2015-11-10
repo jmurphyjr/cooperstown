@@ -12,21 +12,12 @@ var utils = require('./utils.js');
 
 var places = [
     {
-        name: "mapCenter",
-        id: 0,
-        location: {
-            latitude: 42.6638889,
-            longitude: -74.954252
-        },
-        filterType: null,
-        visibility: false
-    },
-    {
         name: "Cooperstown Dreams Park",
         id: 1,
         description: 'Concessions are reasonable, parking is more than adequate and plan on ' +
         'doing some walking during the week. Fields 11-14 are a hike. Transports are available' +
         ' needing a ride.',
+        type: null,
         phone: '704-630-0050',
         location: {
             latitude: 42.63999,
@@ -39,12 +30,32 @@ var places = [
         },
         url: 'http://cooperstowndreampark.com',
         visibility: true,
-        filterType: 'poi'
+        category: 'attraction'
+    },
+    {
+        name: 'Cooperstown Bat Company',
+        id: 4,
+        description: 'Take a tour of the factory. Also, the downtown store is a great place to get your trinkets.',
+        type: null,
+        phone: '607-547-2415',
+        location: {
+            latitude: 42.70087,
+            longitude: -74.92536
+        },
+        address: {
+            street: '118 Main St',
+            city: 'Cooperstown',
+            state: 'NY'
+        },
+        url: 'http://www.cooperstownbat.com',
+        visibility: true,
+        category: 'attraction'
     },
     {
         name: "Doubleday Field",
         id: 2,
         description: 'Checkout a baseball game just about any time when the sun is shining.',
+        type: null,
         phone: '607-547-2270',
         location: {
             latitude: 42.6993,
@@ -57,12 +68,14 @@ var places = [
         },
         url: 'http://www.thisiscooperstown.com/attractions/doubleday-field',
         visibility: true,
-        filterType: 'poi'
+        category: 'attraction'
     },
     {
         name: "Green Valley",
         id: 3,
+        description: 'Single family home with 4 bedrooms and 2 full baths.',
         type: 'SFH',
+        phone: '',
         location: {
             latitude: 42.68484,
             longitude: -74.86451
@@ -75,7 +88,7 @@ var places = [
         url: 'https://www.cooperstownny.com/dreamspark-lodging/rentals-567.html',
         cost: '1800',
         visibility: true,
-        filterType: 'accommodation'
+        category: 'accommodation'
     }
 ];
 
@@ -123,13 +136,11 @@ function PlacesViewModel(emitter) {
 
     self.emitter = emitter;
 
-    self.searchBarVisible = ko.observable(false);
+    self.markerListVisible = ko.observable(false);
+    self.searchBarVisible = ko.observable(true);
     self.isSelected = ko.observable(false);
 
-    // Bound to hamburger element to toggle search bar.
-    self.toggleSearchBar = function (data) {
-        self.searchBarVisible(!self.searchBarVisible());
-    };
+    self.placeFilter = ko.observable('');
 
     function LocationViewModel(data) {
         ko.mapping.fromJS(data, mapping, this);
@@ -182,7 +193,75 @@ function PlacesViewModel(emitter) {
 
     self.locations = ko.observableArray();
 
-    ko.mapping.fromJS(places, mapping, this.locations);
+    ko.mapping.fromJS(places, mapping, self.locations);
+
+    /**
+     * @description Retrieves filtered list of locations.
+     */
+    self.filteredPlaces = ko.computed(function() {
+        var searchFilter = self.placeFilter().toLowerCase();
+        var placesFound;
+        if (!searchFilter) {
+            // No text has been entered in the search input.
+            return self.locations();
+        }
+        else {
+            // return ko.utils.arrayFilter(self.locations(), function(place) {
+            placesFound = ko.utils.arrayFilter(self.locations(), function(place) {
+                return ko.utils.stringStartsWith(place.name().toLowerCase(), searchFilter) && place.marker !== null;
+            });
+        }
+        console.log(typeof placesFound);
+        return placesFound;
+    });
+
+    /**
+     * @description Subscribes to filteredPlaces to update the markers on the map.
+     */
+    self.filteredPlaces.subscribe(function(change) {
+        console.log(change);
+        var changeIds = {};
+        var notChangedIds = {};
+
+        if (self.placeFilter().length > 0) {
+            // User is filtering the list.
+
+            change.forEach(function(loc) {
+                // First set all change elements back to visible markers.
+                console.log(loc.marker);
+                if (loc.marker !== null) loc.visibility(true);
+
+                // Capture filtered locations id for reference.;
+                changeIds[loc.id()] = loc;
+            });
+
+            // Get locations that are not currently in the filteredPlaces list
+            notChangedIds = self.locations().filter(function(loc) {
+                return !(loc.id() in changeIds);
+            });
+
+            // Set the visibility of the markers to false.
+            notChangedIds.forEach(function(m) {
+                if (m.marker !== null) {
+                    m.marker.setVisible(false);
+                }
+            });
+        }
+        else {
+            // Not filtering the list make all markers visible.
+            self.locations().forEach(function(m) {
+                if (m.marker !== null) {
+                    m.marker.setVisible(true);
+                }
+            });
+        }
+    });
+
+    // Bound to hamburger element to toggle search bar.
+    self.toggleSearchBar = function (data) {
+        self.searchBarVisible(!self.searchBarVisible());
+    };
+
 
     // console.log(this.locations());
 
@@ -210,12 +289,13 @@ function PlacesViewModel(emitter) {
 
         self.locations().forEach(function (e) {
             var marker;
-            var loc = e.location.getLocation();
+            // var loc = e.location.getLocation();
             // console.log(e.visibility());
             if (e.visibility()) {
                 // marker = gMaps.addMarker(loc);
                 // e.marker = marker;
-                e.marker = gMaps.addMarker(loc);
+                // e.marker = gMaps.addMarker(loc);
+                gMaps.addMarker(e);
             }
         });
     };

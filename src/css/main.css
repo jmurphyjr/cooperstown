@@ -22,6 +22,7 @@ h2 {
 ul {
     /* list-style-type: none; */
     width: 100%;
+    margin: 0;
     padding: 0;
 }
 
@@ -38,7 +39,7 @@ ul {
 
 #searchBar {
     width: 100px;
-    height: 100%;
+    height: auto;
     position: absolute;
     left: 1px;
     transition: all .3s ease-in-out;
@@ -49,6 +50,8 @@ ul {
     z-index: 5;
     background-color: grey;
     overflow-y: scroll;
+    padding: 0;
+    margin: 0;
 
 }
 /*

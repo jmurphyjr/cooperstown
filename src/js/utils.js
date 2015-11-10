@@ -52,5 +52,40 @@ module.exports = {
 
     isObject: function(arg) {
         return typeof arg === 'object' && arg !== null;
+    },
+
+    /**
+     * Ref: https://radu.cotescu.com/javascript-diff-function/
+     *
+     * @description Returns the difference between two arrays. Specifically, will return
+     *              values from b that are not a part of a.
+     * @param a
+     * @param b
+     * @returns {Array}
+     */
+    arrayDiff: function(a, b) {
+        var seen = [];
+        var diff = [];
+
+        console.log(a);
+        console.log(b);
+
+        for (var i =0; i < a.length; i++) {
+            console.log(a[i]);
+            seen[a[i]] = true;
+        }
+
+        for (i = 0; i < b.length; i++) {
+            console.log(b[i]);
+            if (!seen[b[i]]) {
+                diff.push(b[i]);
+            }
+        }
+
+        console.log(diff);
+
+        return diff;
     }
+
+
 };

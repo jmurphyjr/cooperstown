@@ -30,3 +30,25 @@ In addition to utilizing the [Knockout.js](http://knockoutjs.com/) framework, th
 build process utilizing [Browserify](http://browserify.org/). Browserify is a tool that allows writing
 client-side code like it is for node.js, typically reserved for the server. This allowed for concise code
 packaged into smaller files.
+
+#### Project Directory Structure Layout
+
+The directory structure is:
+
+```
+  $root
+  
+  -> src      // Where development primarily occurs
+    -> js/
+    -> css/
+    
+  -> dist     // Result of building project, mimics src directory structure.
+  
+  -> gulp     // Gulp tasks are stored in this directory
+    -> tasks
+```
+
+
+#### Classes Required
+
+The following

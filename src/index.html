@@ -27,10 +27,10 @@
 <main>
     <div class="wrapper-map">
     <div id="searchBar" data-bind="visible: searchBarVisible">
-        <input id="filter-markers" type="search" placeholder="Filter Markers">
+        <input id="filter-markers" type="search" placeholder="Filter Markers" data-bind="value: placeFilter, valueUpdate: 'afterkeydown'">
 
-        <div id="markers">
-            <ul data-bind="foreach: visibleLocations">
+        <div id="markers" data-bind="visible: filteredPlaces().length > 0">
+            <ul data-bind="foreach: filteredPlaces">
                 <li class="searchBar_ul_li"
                     data-bind="text: name, click: $root.focusLocation, css: { selected: isSelected }"></li>
             </ul>

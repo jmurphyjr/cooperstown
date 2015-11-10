@@ -6,9 +6,25 @@
 var map;
 console.log('entered google.js');
 
+/**
+ * @description Checks if google attribute is defined as an object
+ * @returns {boolean}
+ */
 function googleLoaded() {
     return (typeof google === 'object');
 }
+
+/**
+ * @description The default center of the map.
+ * @type {{location: {latitude: number, longitude: number}}}
+ */
+var mapCenter = {
+    location: {
+        latitude: 42.6638889,
+        longitude: -74.954252
+    }
+};
+
 
 module.exports = {
 
@@ -17,7 +33,7 @@ module.exports = {
         console.log('executing addMapToCanvas()');
         var myOptions = {
             // center: new google.maps.LatLng(42.6972, -74.9269),
-            center: new google.maps.LatLng(42.6638889, -74.954252),
+            center: new google.maps.LatLng(mapCenter.location.latitude, mapCenter.location.longitude),
             zoom: 11,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             mapTypeControl: true,
@@ -37,36 +53,44 @@ module.exports = {
         };
         map = new google.maps.Map(mapCanvas, myOptions);
     },
+    /**
+     * @describe Adds marker to the map and saves it to the marker attribute
+     * @param loc A Place item.
+     */
     addMarker: function (loc) {
-
-        console.log(googleLoaded());
+        var location = null;
+        // console.log(googleLoaded());
         if (!googleLoaded()) {
             console.log('addMarker returned undefined');
             return undefined;
         }
+        location = loc.location.getLocation();
+        console.log(location);
 
-        var marker = new google.maps.Marker({
+        loc.marker = new google.maps.Marker({
             map: map,
-            position: new google.maps.LatLng(loc.lat, loc.long),
+            position: new google.maps.LatLng(location.lat, location.long),
+            title: loc.name(),
+            label: loc.category().toUpperCase(),
             animation: google.maps.Animation.DROP
         });
-
-        return marker;
     },
     getMap: function () {
         return map;
     },
-    clearMarkerAnimation: function(m) {
+
+    /**
+     * @describe Sets Marker Animation to null
+     * @param m A Marker attribute.
+     */
+    clearMarkerAnimation: function (m) {
         if (!googleLoaded()) {
             return undefined;
         }
         m.setAnimation(null);
     },
 
-    animateMarker: function(m) {
+    animateMarker: function (m) {
         m.setAnimation(google.maps.Animation.BOUNCE);
     }
-    // }
-
-
 };
