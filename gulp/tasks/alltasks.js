@@ -191,3 +191,7 @@ gulp.task('build_reload', function(done) {
         // 'gzip',
         done);
 });
+
+gulp.task('watch', function(done) {
+    gulp.watch(['src/js/*.js'], ['lint:js']);
+});

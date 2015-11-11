@@ -10,6 +10,16 @@ var $ = require('jquery');
 var gMaps = require('./google.js');
 var utils = require('./utils.js');
 
+/**
+ * The information in the places object will be replaced with the information from Google Places
+ * This way, the information will remain current. When the app is tied into Firebase, then the
+ * Firebase dataset will be updated with the latest information from the Google Places query.
+ *
+ * Typically, once a place has been queried and updated, Google Places will then be queried
+ * once every per day to ensure the information remains accurate. This assumes Google Places
+ * has the best information that is easily accessible.
+ *
+ */
 var places = [
     {
         name: "Cooperstown Dreams Park",
@@ -71,7 +81,7 @@ var places = [
         category: 'attraction'
     },
     {
-        name: "Green Valley",
+        name: "Evergreen Valley",
         id: 3,
         description: 'Single family home with 4 bedrooms and 2 full baths.',
         type: 'SFH',
@@ -87,6 +97,32 @@ var places = [
         },
         url: 'https://www.cooperstownny.com/dreamspark-lodging/rentals-567.html',
         cost: '1800',
+        visibility: true,
+        category: 'accommodation'
+    },
+    {
+        name: 'Holiday Inn Express & Suites Cooperstown',
+        id: 5,
+        description: '<ul>' +
+                        '<li>about 3 minutes from park.  SO EASY & CONVENIENT !!!!!</li>' +
+                        '<li>it had free wifi so could get reception without issues</li>' +
+                        '<li>had a room with 2 queens, 1 bath ($250/ night) Note:  if cancelled reservation by 11 am would only charge $75 so good if early loss & wanted to head home</li>' +
+                        '<li>hotel had  indoor pool, hot tube, great hot breakfast, grills for families/teams, small playground and baseball field.  Lobby was huge with 2 TVs, easy for hanging out.</li>' +
+                        '<li>Beds & shower were great !!!!  Two nights a coach or kid or two would come over & take a REAL shower</li>' +
+                        '<li>small shopping center 1 minute away with bank, McDonalds, Super market, Chinese restaurant, etc...</li>' +
+                     '</ul>',
+        type: 'HOTEL',
+        phone: null,
+        location: {
+            latitude: 42.65337,
+            longitude: -74.96278
+        },
+        address: {
+            street: null,
+            city: null,
+            state: null
+        },
+        url: null,
         visibility: true,
         category: 'accommodation'
     }
@@ -187,6 +223,44 @@ function PlacesViewModel(emitter) {
 
             // Add google.maps.Marker holder.
             vm.marker = null;
+
+            vm.distanceToDP = ko.observable('');
+            vm.travelTimeToDP = ko.observable('');
+
+            vm.googlePlacesDetail = undefined;
+
+            /**
+             * Sets the distance attribute on a place.
+             * @param result
+             */
+            vm.setDistance = function(result) {
+                if (result !== undefined) {
+                    // Set distance
+                    console.log(result);
+                    vm.distanceToDP(result.rows[0].elements[0].distance.text);
+
+                    // Set Travel Time
+                    vm.travelTimeToDP(result.rows[0].elements[0].duration.text);
+                }
+
+            };
+
+            vm.setGooglePlacesDetail = function(result) {
+                if (result !== undefined) {
+                    vm.googlePlacesDetail = result;
+                }
+            };
+
+            // Create the content string for the google maps info window.
+            vm.content = '<div id="infowindow-container">' +
+                            '<div class="infowindow-name">' + vm.name() + '</div>' +
+                            '<div class="infowindow-description">' + vm.description() + '</div>' +
+                            '<div class="infowindow-address"><address>' + vm.address.street() + '<br>' +
+                            vm.address.city() + ', ' + vm.address.state() +
+                            '</address>' +
+                            '</div>' +
+                            '<div class="infowindow-distance" data-bind="text: distanceToDP"></div>' +
+                         '</div>';
             return vm;
         }
     };
@@ -203,7 +277,8 @@ function PlacesViewModel(emitter) {
         var placesFound;
         if (!searchFilter) {
             // No text has been entered in the search input.
-            return self.locations();
+            // return self.locations();
+            placesFound = self.locations();
         }
         else {
             // return ko.utils.arrayFilter(self.locations(), function(place) {
@@ -276,26 +351,38 @@ function PlacesViewModel(emitter) {
         return self.isSelected() ? 'selected' : '';
     });
 
+    /**
+     *
+     * @param data
+     */
     self.focusLocation = function (data) {
         console.log('focusLocation' + data);
         unselectAllLocations(self.locations);
         clearMarkerAnimation(self.locations);
-        gMaps.animateMarker(data.marker);
+        gMaps.animateMarker(data);
         data.isSelected(true);
     };
 
+    /**
+     * Sets the marker attribute on each location after google.maps has loaded.
+     *
+     */
     self.setMarkers = function() {
         console.log('loaded event triggered');
 
+        var dreamsPark;
         self.locations().forEach(function (e) {
-            var marker;
-            // var loc = e.location.getLocation();
-            // console.log(e.visibility());
             if (e.visibility()) {
-                // marker = gMaps.addMarker(loc);
-                // e.marker = marker;
-                // e.marker = gMaps.addMarker(loc);
                 gMaps.addMarker(e);
+                if (e.name() === 'Cooperstown Dreams Park') {
+                    console.log('Set dreamsPark');
+                    dreamsPark = e;
+                }
+                else {
+                    gMaps.distanceToDreamsPark(dreamsPark, e, e.setDistance);
+                }
+
+                gMaps.queryPlaces(e.name(), function() {});
             }
         });
     };

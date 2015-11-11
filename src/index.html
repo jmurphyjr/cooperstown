@@ -29,10 +29,13 @@
     <div id="searchBar" data-bind="visible: searchBarVisible">
         <input id="filter-markers" type="search" placeholder="Filter Markers" data-bind="value: placeFilter, valueUpdate: 'afterkeydown'">
 
-        <div id="markers" data-bind="visible: filteredPlaces().length > 0">
+        <div id="markers" class="markers-container" data-bind="visible: filteredPlaces().length > 0">
             <ul data-bind="foreach: filteredPlaces">
-                <li class="searchBar_ul_li"
-                    data-bind="text: name, click: $root.focusLocation, css: { selected: isSelected }"></li>
+                <li class="searchBar_ul_li" data-bind="click: $root.focusLocation, css: { selected: isSelected }">
+                    <div class="searchBar_ul_li_name"><a data-bind="attr: { href: url, title: name }, text: name"></a></div>
+                    <div class="searchBar_ul_li_distance" data-bind="if: distanceToDP">Distance to DP: <!--ko text: distanceToDP--><!--/ko--></div>
+                    <div class="searchBar_ul_li_duration" data-bind="if: travelTimeToDP">Travel Time to DP: <!--ko text: travelTimeToDP--><!--/ko--></div>
+                </li>
             </ul>
         </div>
     </div>
@@ -44,7 +47,7 @@
     <p>&copy; Web Performance 2014 <span id="crp-stats"></span></p>
 </footer>
 
-<script async defer src="https://maps.googleapis.com/maps/api/js"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPOgwyxo3y_6PaY200JDqzCMH8vgxwUUk&libraries=places,geometry"></script>
 <script src="js/bundle.min.js"></script>
 </body>
 </html>
