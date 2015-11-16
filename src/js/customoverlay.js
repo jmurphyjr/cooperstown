@@ -1,15 +1,17 @@
 /**
  * Created by jack on 11/10/15.
  */
+/* global google */
+'use strict';
 
 /**
  * Inspired by the project InfoBox Project:
  * ref: http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js
  *
- * @description Module to allow for ease of creating custom overlays for Google Maps API.
- * The module will allow for creating any overlay and attaching it to any position on the map.
- * The styling of the overlay is left to the user, however the structure of the overlay content
- * will be as follows:
+ * @description Module to allow for ease of creating custom overlays for Google
+ * Maps API. The module will allow for creating any overlay and attaching it to
+ * any position on the map. The styling of the overlay is left to the user,
+ * however the structure of the overlay content will be as follows:
  *
  * <div id="co-container">
  *     <div class="co-opt-['data']['key']">['data']['key'].value</div>
@@ -22,7 +24,8 @@
  *
  * options -
  *      target: What the overlay will be bound to
- *      relative: position as it relates to the target ['above', 'below', 'left', 'right']
+ *      relative: position as it relates to the target
+ *                  ['above', 'below', 'left', 'right']
  *      offset: distance in pixels overlay will be offset from target.
  *      data: an object of the information to be displayed on the overlay
  *         ex. data: {
@@ -51,7 +54,7 @@ function CustomOverlay(map, options) {
         throw Error('CustomOverlay depends on Google Maps API Version 3.22.12a');
 
     // Must explicitly call setMap on the overlay according to documentation.
-    // Ref: https://developers.google.com/maps/documentation/javascript/3.exp/reference#OverlayView
+    // Ref: https://developers.google.com/maps/documentation/javascript/3.exp/
     this.setMap(this._map);
 }
 

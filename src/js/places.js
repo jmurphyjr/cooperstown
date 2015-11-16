@@ -2,31 +2,34 @@
  * Created by jack on 11/5/15.
  */
 /* jshint node: true */
+/* global $ */
 'use strict';
 
 var ko = require('knockout');
 ko.mapping = require('knockout-mapping');
-var $ = require('jquery');
+// var $ = require('jquery');
 var gMaps = require('./google.js');
 var utils = require('./utils.js');
 
 /**
- * The information in the places object will be replaced with the information from Google Places
- * This way, the information will remain current. When the app is tied into Firebase, then the
- * Firebase dataset will be updated with the latest information from the Google Places query.
+ * The information in the places object will be replaced with the information
+ * from Google Places. This way, the information will remain current. When the
+ * app is tied into Firebase, then the Firebase dataset will be updated with
+ * the latest information from the Google Places query.
  *
- * Typically, once a place has been queried and updated, Google Places will then be queried
- * once every per day to ensure the information remains accurate. This assumes Google Places
- * has the best information that is easily accessible.
+ * Typically, once a place has been queried and updated, Google Places will
+ * then be queried once every per day to ensure the information remains
+ * accurate. This assumes Google Places has the best information that is easily
+ * accessible.
  *
  */
 var places = [
     {
-        name: "Cooperstown Dreams Park",
+        name: 'Cooperstown Dreams Park',
         id: 1,
-        description: 'Concessions are reasonable, parking is more than adequate and plan on ' +
-        'doing some walking during the week. Fields 11-14 are a hike. Transports are available' +
-        ' needing a ride.',
+        description: 'Concessions are reasonable, parking is more than' +
+        'adequate and plan on doing some walking during the week. Fields' +
+        '11-14 are a hike. Transports are available needing a ride.',
         type: null,
         phone: '704-630-0050',
         location: {
@@ -45,7 +48,8 @@ var places = [
     {
         name: 'Cooperstown Bat Company',
         id: 4,
-        description: 'Take a tour of the factory. Also, the downtown store is a great place to get your trinkets.',
+        description: 'Take a tour of the factory. Also, the downtown store is' +
+        'a great place to get your trinkets.',
         type: null,
         phone: '607-547-2415',
         location: {
@@ -62,9 +66,10 @@ var places = [
         category: 'attraction'
     },
     {
-        name: "Doubleday Field",
+        name: 'Doubleday Field',
         id: 2,
-        description: 'Checkout a baseball game just about any time when the sun is shining.',
+        description: 'Checkout a baseball game just about any time when the' +
+        'sun is shining.',
         type: null,
         phone: '607-547-2270',
         location: {
@@ -81,7 +86,7 @@ var places = [
         category: 'attraction'
     },
     {
-        name: "Evergreen Valley",
+        name: 'Evergreen Valley',
         id: 3,
         description: 'Single family home with 4 bedrooms and 2 full baths.',
         type: 'SFH',
@@ -95,7 +100,8 @@ var places = [
             city: 'Cooperstown',
             state: 'NY'
         },
-        url: 'https://www.cooperstownny.com/dreamspark-lodging/rentals-567.html',
+        url: 'https://www.cooperstownny.com/dreamspark-lodging/' +
+        'rentals-567.html',
         cost: '1800',
         visibility: true,
         category: 'accommodation'
@@ -103,14 +109,21 @@ var places = [
     {
         name: 'Holiday Inn Express & Suites Cooperstown',
         id: 5,
-        description: '<ul>' +
-                        '<li>about 3 minutes from park.  SO EASY & CONVENIENT !!!!!</li>' +
-                        '<li>it had free wifi so could get reception without issues</li>' +
-                        '<li>had a room with 2 queens, 1 bath ($250/ night) Note:  if cancelled reservation by 11 am would only charge $75 so good if early loss & wanted to head home</li>' +
-                        '<li>hotel had  indoor pool, hot tube, great hot breakfast, grills for families/teams, small playground and baseball field.  Lobby was huge with 2 TVs, easy for hanging out.</li>' +
-                        '<li>Beds & shower were great !!!!  Two nights a coach or kid or two would come over & take a REAL shower</li>' +
-                        '<li>small shopping center 1 minute away with bank, McDonalds, Super market, Chinese restaurant, etc...</li>' +
-                     '</ul>',
+        description:
+        '<ul>' +
+            '<li>about 3 minutes from park.  SO EASY & CONVENIENT !!!!!</li>' +
+            '<li>it had free wifi so could get reception without issues</li>' +
+            '<li>had a room with 2 queens, 1 bath ($250/ night) Note:  if' +
+            'cancelled reservation by 11 am would only charge $75 so good' +
+            'if early loss & wanted to head home</li>' +
+            '<li>hotel had  indoor pool, hot tube, great hot breakfast,' +
+            'grills for families/teams, small playground and baseball' +
+            'field.  Lobby was huge with 2 TVs, easy for hanging out.</li>' +
+            '<li>Beds & shower were great !!!!  Two nights a coach or kid' +
+            'or two would come over & take a REAL shower</li>' +
+            '<li>small shopping center 1 minute away with bank, McDonalds,' +
+            'Super market, Chinese restaurant, etc...</li>' +
+        '</ul>',
         type: 'HOTEL',
         phone: null,
         location: {
@@ -164,8 +177,6 @@ function unselectAllLocations(locations) {
         e.isSelected(false);
     });
 }
-
-module.exports = PlacesViewModel;
 
 function PlacesViewModel(emitter) {
     var self = this;
@@ -252,15 +263,23 @@ function PlacesViewModel(emitter) {
             };
 
             // Create the content string for the google maps info window.
-            vm.content = '<div id="infowindow-container">' +
-                            '<div class="infowindow-name">' + vm.name() + '</div>' +
-                            '<div class="infowindow-description">' + vm.description() + '</div>' +
-                            '<div class="infowindow-address"><address>' + vm.address.street() + '<br>' +
+            vm.content =
+                '<div id="infowindow-container">' +
+                    '<div class="infowindow-name">' +
+                        vm.name() +
+                    '</div>' +
+                    '<div class="infowindow-description">' +
+                        vm.description() +
+                    '</div>' +
+                    '<div class="infowindow-address">' +
+                        '<address>' +
+                            vm.address.street() + '<br>' +
                             vm.address.city() + ', ' + vm.address.state() +
-                            '</address>' +
-                            '</div>' +
-                            '<div class="infowindow-distance" data-bind="text: distanceToDP"></div>' +
-                         '</div>';
+                        '</address>' +
+                    '</div>' +
+                    '<div class="infowindow-distance"' +
+                        'data-bind="text: distanceToDP"></div>' +
+                '</div>';
             return vm;
         }
     };
@@ -282,16 +301,21 @@ function PlacesViewModel(emitter) {
         }
         else {
             // return ko.utils.arrayFilter(self.locations(), function(place) {
-            placesFound = ko.utils.arrayFilter(self.locations(), function(place) {
-                return ko.utils.stringStartsWith(place.name().toLowerCase(), searchFilter) && place.marker !== null;
-            });
+            placesFound = ko.utils.arrayFilter(self.locations(),
+                function(place) {
+                    return ko.utils.stringStartsWith(
+                            place.name().toLowerCase(),
+                            searchFilter) && place.marker !== null;
+                }
+            );
         }
         console.log(typeof placesFound);
         return placesFound;
     });
 
     /**
-     * @description Subscribes to filteredPlaces to update the markers on the map.
+     * @description Subscribes to filteredPlaces to update the markers
+     * on the map.
      */
     self.filteredPlaces.subscribe(function(change) {
         console.log(change);
@@ -333,7 +357,7 @@ function PlacesViewModel(emitter) {
     });
 
     // Bound to hamburger element to toggle search bar.
-    self.toggleSearchBar = function (data) {
+    self.toggleSearchBar = function () {
         self.searchBarVisible(!self.searchBarVisible());
     };
 
@@ -361,6 +385,7 @@ function PlacesViewModel(emitter) {
         clearMarkerAnimation(self.locations);
         gMaps.animateMarker(data);
         data.isSelected(true);
+        return true;
     };
 
     /**
@@ -392,3 +417,6 @@ function PlacesViewModel(emitter) {
         self.setMarkers();
     });
 }
+
+module.exports = PlacesViewModel;
+

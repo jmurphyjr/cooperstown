@@ -52,3 +52,8 @@ The directory structure is:
 #### Classes Required
 
 The following
+
+
+### Attributions
+
+* [Baseball Map Icon Provided by: Designed by Freepik](http://www.freepik.com/free-vector/sport-balls_800206.htm)

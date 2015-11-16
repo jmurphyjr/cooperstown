@@ -5,12 +5,14 @@
 var src = 'src/';
 var dest = 'dist/';
 var archive = 'archive/';
+var home = '.';
 
 module.exports = {
     basePaths: {
         src: src,
         dest: dest,
-        archive: archive
+        archive: archive,
+        home: home
     },
 
     paths: {

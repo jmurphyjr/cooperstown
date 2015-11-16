@@ -21,6 +21,10 @@ var browserSync = require('browser-sync');
 var reload = browserSync.reload;
 var lazypipe = require('lazypipe');
 
+// Karma related testing framework
+var karma = require('karma').server;
+
+
 if (p.util.env.dev === true) {
     config.isProduction = false;
 }
@@ -195,3 +199,28 @@ gulp.task('build_reload', function(done) {
 gulp.task('watch', function(done) {
     gulp.watch(['src/js/*.js'], ['lint:js']);
 });
+
+gulp.task('test', function() {
+    return gulp.src(['test/**/*.js'], { read: false })
+        .pipe(p.mocha({ reporter: 'spec' }))
+        .on('error', p.util.log);
+});
+
+gulp.task('watch-test', function() {
+    gulp.watch(['src/js/*.js', 'test/**/*.js'], ['test']);
+});
+
+gulp.task('karma-test', function(done) {
+    karma.start({
+        configFile: '/Users/jack/Development/src/github.com/knockout-browserify/' + 'karma.conf.js',
+        singleRun: false
+    }, done);
+});
+
+// gulp.task('karma-test', function() {
+//     return gulp.src(config.paths.scripts.src + 'google.js')
+//         .pipe(karma({
+//             configFile: '/Users/jack/Development/src/github.com/knockout-browserify/' + 'karma.conf.js',
+//             action: 'run'
+//         }));
+// });
