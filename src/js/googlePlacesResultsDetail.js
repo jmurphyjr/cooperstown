@@ -30,21 +30,18 @@ GooglePlacesResultsDetail.prototype.params = [
 ];
 
 GooglePlacesResultsDetail.prototype.getResults = function(results) {
-    var rtnResults = [];
+    var rtnResults = {};
 
-    for (var i = 0; i < results.length; i++) {
-        var loc = {};
-        loc.formatted_address = results[i].formatted_address;
-        loc.formatted_phone_number = results[i].formatted_phone_number;
-        loc.icon = results[i].icon;
-        loc.name = results[i].name;
-        loc.place_id = results[i].place_id;
-        loc.rating = results[i].rating;
-        loc.reviews = results[i].reviews;
-        loc.user_ratings_total = results[i].user_ratings_total;
+    rtnResults.formatted_address = results.formatted_address;
+    rtnResults.formatted_phone_number = results.formatted_phone_number;
+    rtnResults.icon = results.icon;
+    rtnResults.name = results.name;
+    rtnResults.place_id = results.place_id;
+    rtnResults.rating = results.rating;
+    rtnResults.reviews = results.reviews;
+    rtnResults.user_ratings_total = results.user_ratings_total;
+    rtnResults.website = results.website;
 
-        rtnResults.push(loc);
-    }
 
     return rtnResults;
 };

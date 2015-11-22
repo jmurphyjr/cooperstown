@@ -288,6 +288,8 @@ function PlacesViewModel(emitter) {
 
     ko.mapping.fromJS(places, mapping, self.locations);
 
+    console.log(self.locations());
+
     /**
      * @description Retrieves filtered list of locations.
      */
@@ -398,23 +400,23 @@ function PlacesViewModel(emitter) {
         var dreamsPark;
         self.locations().forEach(function (e) {
             if (e.visibility()) {
-                gMaps.addMarker(e);
-                if (e.name() === 'Cooperstown Dreams Park') {
-                    console.log('Set dreamsPark');
-                    dreamsPark = e;
-                }
-                else {
-                    gMaps.distanceToDreamsPark(dreamsPark, e, e.setDistance);
-                }
-
-                gMaps.queryPlaces(e.name(), function() {});
+//                 gMaps.addMarker(e);
+//                 if (e.name() === 'Cooperstown Dreams Park') {
+//                     console.log('Set dreamsPark');
+//                     dreamsPark = e;
+//                 }
+//                 else {
+//                     gMaps.distanceToDreamsPark(dreamsPark, e, e.setDistance);
+//                 }
+//
+//                 gMaps.queryPlaces(e.name(), function() {});
             }
         });
     };
 
     self.emitter.on('googlemapsloaded', function() {
         console.log('bind Places Triggered');
-        self.setMarkers();
+//         self.setMarkers();
     });
 }
 

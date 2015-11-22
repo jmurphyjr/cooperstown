@@ -8,13 +8,13 @@
 
 var $ = require('jquery');
 var GooglePlacesResultsNearby = require('./googlePlacesResultsNearby.js');
+var GooglePlacesResultsDetail = require('./googlePlacesResultsDetail.js');
 
 var GooglePlacesSearch = function(map, opts) {
     console.log('Constructed GooglePlacesSearch Instance');
     if ( !(this instanceof GooglePlacesSearch) ) {
         return new GooglePlacesSearch(map, opts);
     }
-
     this.map = map;
     this.placesService = new google.maps.places.PlacesService(this.map);
 };
@@ -38,18 +38,21 @@ GooglePlacesSearch.prototype._fetch = function(searchType, options) {
     }
 
     this.placesService[searchType](options, function(results, status) {
-
         if (status === google.maps.places.PlacesServiceStatus.OK) {
 
-            dfd.resolve(results);
+            setTimeout(function() {
+                dfd.resolve(results);
+            }, 500);
         }
         else {
             // Return null to indicate an error
+            // console.log(status);
+            // console.log(searchType + ': ' + JSON.stringify(options));
             dfd.reject(status);
         }
     });
 
-    return dfd.promise();
+    return dfd;
 };
 
 /**
@@ -58,21 +61,33 @@ GooglePlacesSearch.prototype._fetch = function(searchType, options) {
  *
  * @param query
  */
-GooglePlacesSearch.prototype.detail = function(query) {
+GooglePlacesSearch.prototype.detailSearch = function(query) {
+
+    var dfd = $.Deferred();
 
     var request = { placeId: query };
+    var detailResults = new GooglePlacesResultsDetail();
 
     this._fetch('getDetails', request)
-        .then(function(resp) {
-            console.log(resp);
-        },
-        function(err) {
-            console.error('Uh oh! on error occurred! ', err);
-        });
+        .then(
+            // On Success
+            function(resp) {
+                // console.log(resp);
+                var results = detailResults.getResults(resp);
+                // dfd.resolve(gResults.getResults(resp));
+                dfd.resolve(results);
+            },
+            // On Error
+            function(err) {
+                dfd.reject('Uh oh! on error occurred! ', err);
+            }
+        );
 
+    return dfd;
 };
 
 GooglePlacesSearch.prototype.nearby = function(query) {
+    var dfd = $.Deferred();
 
     var gResults = new GooglePlacesResultsNearby();
     var request = {
@@ -82,12 +97,26 @@ GooglePlacesSearch.prototype.nearby = function(query) {
         name: query
     };
     this._fetch('nearbySearch', request)
-        .then(function(resp) {
-            return gResults.getResults(resp);
-        },
-        function(err) {
-            console.error('Uh oh! an error occurred! ', err);
-        });
+        .then(
+            // On Success
+            function(resp) {
+                // console.log(resp);
+                var results = gResults.getResults(resp);
+                // dfd.resolve( gResults.getResults(resp));
+                dfd.resolve(results);
+            },
+            // On Error
+            function(err) {
+                if (err === 'ZERO_RESULTS') {
+                    dfd.resolve(undefined);
+                }
+                else {
+                    dfd.reject('Uh oh! an error occurred! ' + err);
+                }
+            }
+        );
+
+    return dfd;
 };
 
 module.exports = GooglePlacesSearch;

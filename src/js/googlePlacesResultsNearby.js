@@ -18,12 +18,12 @@ GooglePlacesResultsNearby.prototype = Object.create(GooglePlacesResults.prototyp
 
 GooglePlacesResultsNearby.prototype.constructor = GooglePlacesResultsNearby;
 
-GooglePlacesResultsNearby.prototype.params = [
-    'icon',
-    'name',
-    'place_id',
-    'types'
-];
+GooglePlacesResultsNearby.prototype.nearByComponents = {
+    icon: 'icon',
+    name: 'name',
+    place_id: 'place_id',
+    types: 'types'
+};
 
 GooglePlacesResultsNearby.prototype.getResults = function(results) {
     var rtnResults = [];

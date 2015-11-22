@@ -3,6 +3,7 @@
  */
 /* jshint node: true */
 /* global google */
+/* global document */
 
 'use strict';
 
@@ -47,23 +48,30 @@ var GoogleMaps = function(node, options) {
     } else {
         this.options = defaultOptions;
     }
-    console.log(this.options);
+
+    this.initMap();
 };
 
 GoogleMaps.prototype.map = undefined;
 
-GoogleMaps.prototype.distanceService = undefined;
-
-GoogleMaps.prototype.placesService = undefined;
-
 GoogleMaps.prototype.initMap = function() {
     this.map = new google.maps.Map(this.node, this.options);
-    // this.placesService = new google.maps.places.PlacesService(this.map);
-    // this.placesService = new GooglePlacesSearch(this.map);
 };
 
 GoogleMaps.prototype.getMap = function() {
     return this.map;
+};
+
+GoogleMaps.prototype.addMarker = function(loc) {
+    // console.log(loc);
+    return new google.maps.Marker({
+        map: this.map,
+        position: new google.maps.LatLng(loc.location.latitude, loc.location.longitude),
+        title: loc.name,
+        // TODO: label does not animate with the marker dropping for now.
+        // label: { text: loc.category().toUpperCase() },
+        animation: google.maps.Animation.DROP
+    });
 };
 
 module.exports = GoogleMaps;

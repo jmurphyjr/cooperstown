@@ -1,6 +1,5 @@
-
-  [{
-    "name": "Cooperstown Dreams Park",
+{
+  "Cooperstown Dreams Park": {
     "id"         : 1,
     "description": "Concessions are reasonable, parking is more than adequate and plan on doing some walking during the week. Fields 11-14 are a hike. Transports are available needing a ride.",
     "type"       : null,
@@ -14,11 +13,11 @@
       "city"  : "Milford",
       "state" : "NY"
     },
-    "website"        : "http://cooperstowndreampark.com",
+    "website"    : "http://cooperstowndreampark.com",
     "visibility" : true,
     "category"   : "attraction"
-  }, {
-    "name": "Cooperstown Bat Company",
+  },
+  "Cooperstown Bat Company": {
     "id"         : 2,
     "description": "Take a tour of the factory. Also, the downtown store is a great place to get your trinkets.",
     "type"       : null,
@@ -32,56 +31,55 @@
       "city"  : "Cooperstown",
       "state" : "NY"
     },
-    "website"        : "http://www.cooperstownbat.com",
+    "website"    : "http://www.cooperstownbat.com",
     "visibility" : true,
     "category"   : "attraction"
-  },{
-    "name": "Doubleday Field",
-    "id"         : 3,
+  },
+  "Doubleday Field": {
+    "id": 3,
     "description": "Checkout a baseball game just about any time when the sun is shining.",
-    "type"       : null,
-    "phone"      : "607-547-2270",
-    "location"   : {
-      "latitude" : 42.6993,
+    "type": null,
+    "phone": "607-547-2270",
+    "location": {
+      "latitude": 42.6993,
       "longitude": -74.92676
     },
-    "address"    : {
+    "address": {
       "street": "1 Doubleday Court",
-      "city"  : "Cooperstown",
-      "state" : "NY"
+      "city": "Cooperstown",
+      "state": "NY"
     },
     "website"        : "http://www.thisiscooperstown.com/attractions/doubleday-field",
-    "visibility" : true,
-    "category"   : "attraction"
-  },{
-    "name": "Evergreen Valley",
-    "id"         : 4,
+    "visibility": true,
+    "category": "attraction"
+  },
+  "Evergreen Valley": {
+    "id": 1,
     "description": "Single family home with 4 bedrooms and 2 full baths.",
-    "type"       : "SFH",
+    "type": "SFH",
     "phone"      : null,
-    "location"   : {
-      "latitude" : 42.684865,
+    "location": {
+      "latitude": 42.684865,
       "longitude": -74.864754
     },
-    "address"    : {
+    "address": {
       "street": "1885 Highway 166",
-      "city"  : "Cooperstown",
-      "state" : "NY"
+      "city": "Cooperstown",
+      "state": "NY"
     },
-    "website"        : "https://www.cooperstownny.com/dreamspark-lodging/rentals-567.html",
-    "visibility" : true,
+    "website": "https://www.cooperstownny.com/dreamspark-lodging/rentals-567.html",
+    "visibility": true,
     "category"   : "accommodation"
-  },{
-    "name": "Holiday Inn Express & Suites Cooperstown",
-    "id": 5,
+  },
+  "Holiday Inn Express & Suites Cooperstown": {
+    "id": 2,
     "description": "<ul><li>about 3 minutes from park.  SO EASY & CONVENIENT !!!!!</li><li>it had free wifi so could get reception without issues</li><li>had a room with 2 queens, 1 bath ($250/ night)      Note:  if cancelled reservation by 11 am would only charge $75 so good if early loss & wanted to head home</li><li>hotel had  indoor pool, hot tube, great hot breakfast, grills for families/teams, small playground and baseball field.  Lobby was huge with 2 TVs, easy for hanging out.</li><li>Beds & shower were great !!!!  Two nights a coach or kid or two would come over & take a REAL shower</li><li>small shopping center 1 minute away with bank, McDonalds, Super market, Chinese restaurant, etc...</li></ul>",
     "type": "HOTEL",
-    "phone": "",
-    "location": { "latitude": 0.0, "longitude": 0.0 },
-    "address": { "street": "", "city": "", "state": "" },
-    "website": "",
+    "phone": null,
+    "location": null,
+    "address": null,
+    "website": null,
     "visibility": true,
     "category": "accommodation"
-  }]
-
-
+  }
+}
