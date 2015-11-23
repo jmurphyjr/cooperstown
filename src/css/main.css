@@ -96,7 +96,7 @@ main {
     margin: 0;
 
 }
-#markers {
+#cooperstown-list {
     width: 100%;
 }
 
@@ -108,7 +108,7 @@ main {
     width: 100% !important;
 }
 
-.searchBar_ul_li {
+.ctown_ul_li {
     padding: 5px;
     display: block;
     width: 100%;
@@ -116,7 +116,7 @@ main {
 }
 
 
-.searchBar_ul_li_name a{
+.ctown_ul_li_name a{
     color: wheat;
 }
 .searchBar_inline {

@@ -29,11 +29,16 @@
         <div id="searchBar">
             <input id="filter-markers" type="search" placeholder="Filter Markers" data-bind="value: filter, valueUpdate: 'afterkeydown'">
         </div>
-        <div id="markers" class="markers-container">
+        <div id="cooperstown-list" class="cooperstown-container">
             <ul data-bind="foreach: filteredPlaces">
-                <li class="searchBar_ul_li" data-bind="click: $root.focusLocation, css: { selected: isSelected }">
-                    <div class="searchBar_ul_li_name"><a target="_blank" data-bind="attr: { href: website, title: name }, text: name"></a></div>
+                <li class="ctown_ul_li" data-bind="click: $root.focusLocation, css: { selected: isSelected }">
+                    <div class="ctown_ul_li_name"><a target="_blank" data-bind="attr: { href: website, title: name }, text: name"></a></div>
                 </li>
+            </ul>
+        </div>
+        <div id="places-list" class="places-container no-results">
+            <ul>
+                <li></li>
             </ul>
         </div>
     </div>
@@ -51,3 +56,7 @@
 <script src="js/bundle.min.js"></script>
 </body>
 </html>
+
+<!--
+
+-->

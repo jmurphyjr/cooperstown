@@ -6,7 +6,12 @@
  *
  */
 
-var Main = require('./main.js');
+var main = require('./main.js');
 
-Main();
+window.onload = function() {
+    console.log('page is fully loaded');
+};
+
+main();
+// main();
 

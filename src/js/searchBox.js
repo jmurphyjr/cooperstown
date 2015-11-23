@@ -7,16 +7,14 @@
 var ko = require('knockout');
 
 var SearchBox = function SearchBox() {
-    var self = this;
 
-    self.filter = ko.observable('').publishOn('filterPlaces');
+    this.filter = ko.observable('').publishOn('filterPlaces');
 
 };
 
 SearchBox.prototype.loadBindings = function(bindto) {
-    var self = this;
     ko.applyBindings(this, bindto);
 };
 
 
-module.exports = SearchBox;
+module.exports = new SearchBox();

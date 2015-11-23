@@ -28,6 +28,7 @@
     "jquery": "^2.1.4",
     "knockout": "^3.4.0",
     "knockout-mapping": "^2.5.0",
+    "knockout-postbox": "^0.5.2",
     "normalize.css": "^3.0.3"
   },
   "devDependencies": {

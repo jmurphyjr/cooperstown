@@ -3,17 +3,51 @@
  */
 'use strict';
 var Firebase = require('firebase');
-var $ = require('jquery');
+var utils = require('./utils');
 
-var FirebaseInterface = {
-    'config': {
-        'db': new Firebase('https://cooperstown.firebaseio.com/places')
-    },
-    'init': function(initCallback, callback) {
-        FirebaseInterface.config.db.once('value', initCallback);
-        FirebaseInterface.config.db.on('child_added', callback);
-        FirebaseInterface.config.db.on('child_removed', callback);
+var FirebaseInterface = function() {
+
+    if (!(this instanceof FirebaseInterface)) {
+        return new FirebaseInterface();
     }
+
+    this.defaultOptions = {
+        'dbURL': 'https://cooperstown.firebaseio.com/places'
+    };
 };
 
-module.exports = FirebaseInterface;
+FirebaseInterface.prototype.cTownRef = '';
+
+FirebaseInterface.prototype.options = null;
+
+FirebaseInterface.prototype.init = function(callback) {
+
+    var options = '';
+
+    if (arguments.length === 2) {
+        console.log(arguments);
+        options = arguments[1];
+    }
+
+    if (typeof options === 'object') {
+        this.options = utils.extend(this.defaultOptions, options);
+    }
+    else {
+        this.options = this.defaultOptions;
+    }
+
+    console.log('defaultOptions: ' + JSON.stringify(this.defaultOptions));
+    console.log('options: ' + JSON.stringify(this.options));
+
+    if (typeof callback !== 'function') {
+        console.log('callback must be a function');
+    }
+
+    this.cTownRef = new Firebase(this.options.dbURL);
+
+    this.cTownRef.on('child_added', callback);
+    this.cTownRef.on('child_removed', callback);
+
+};
+
+module.exports = new FirebaseInterface();

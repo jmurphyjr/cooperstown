@@ -88,9 +88,14 @@ module.exports = {
         return diff;
     },
 
-    // Ref: https://remysharp.com/2010/07/21/throttling-function-calls
+    extend: function(target, source) {
+        return Object.assign({}, target, source);
+    },
+
+
+// Ref: https://remysharp.com/2010/07/21/throttling-function-calls
     throttle: function(fn, threshhold, scope) {
-        threshhold || (threshhold = 250);
+        threshhold = threshhold || (threshhold = 250);
         var last,
             deferTimer;
         return function () {

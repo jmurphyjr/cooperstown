@@ -2,4 +2,4 @@ dist
 *.old
 report
 test/data/*
-
+oldjs

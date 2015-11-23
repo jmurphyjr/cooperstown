@@ -9,7 +9,8 @@
 
 console.log('entered google.js');
 
-var $ = require('jquery');  // jshint ignore:line
+// var $ = require('jquery');  // jshint ignore:line
+var utils = require('./utils');
 
 /**
  * @description GoogleMaps is the interface for this application into the
@@ -19,9 +20,9 @@ var $ = require('jquery');  // jshint ignore:line
  * @returns {GoogleMaps}
  * @constructor
  */
-var GoogleMaps = function(node, options) {
+var GoogleMaps = function() {
     if ( !(this instanceof GoogleMaps) ) {
-        return new GoogleMaps(node, options);
+        return new GoogleMaps();
     }
 
     /**
@@ -31,11 +32,17 @@ var GoogleMaps = function(node, options) {
      *
      * @type {{center: Window.google.maps.LatLng, zoom: number}}
      */
-    var defaultOptions = {
+    this.defaultOptions = {
         // Default to the center of the United States and a zoom level of 1.
-        center: new google.maps.LatLng(39.8282, -98.5795),
+        center: { lat: 39.8282, lng: -98.5795 },
         zoom: 1
     };
+
+};
+
+GoogleMaps.prototype.map = undefined;
+
+GoogleMaps.prototype.initMap = function(node, options) {
 
     if (typeof node === 'string') {
         this.node = document.getElementById(node);
@@ -44,17 +51,11 @@ var GoogleMaps = function(node, options) {
     }
 
     if (typeof options === 'object') {
-        this.options = $.extend({}, defaultOptions, options);
+        this.options = utils.extend(this.defaultOptions, options);
     } else {
-        this.options = defaultOptions;
+        this.options = this.defaultOptions;
     }
 
-    this.initMap();
-};
-
-GoogleMaps.prototype.map = undefined;
-
-GoogleMaps.prototype.initMap = function() {
     this.map = new google.maps.Map(this.node, this.options);
 };
 
@@ -74,7 +75,7 @@ GoogleMaps.prototype.addMarker = function(loc) {
     });
 };
 
-module.exports = GoogleMaps;
+module.exports = new GoogleMaps();
 // {
 //
 //     // return {
