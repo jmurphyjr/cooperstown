@@ -28,19 +28,19 @@ var Main = function() {
      * @param data
      */
     function dataProcess(data) {
-        // viewModel.places().push(new Place(data.val()));
         cooperstownList.addPlace(data.val());
-        emitter.emit('dataProcessExecuted');
     }
 
     utils.loadScript('google', function(result) {
         if (result === 'success') {
             console.log('google maps should be loaded');
-            GoogleMaps.initMap('map', {
-                zoom: 11,
-                center: { lat: 42.6638889, lng: -74.954252 }
-            });
-            cooperstownList.init(GoogleMaps.getMap());
+            // GoogleMaps = require('./google');
+            // GoogleMaps.initMap('map', {
+            //     zoom: 11,
+            //     center: { lat: 42.6638889, lng: -74.954252 }
+            // });
+            GoogleMaps.loadMap('map');
+            // cooperstownList.init(GoogleMaps.getMap());
             emitter.emit('googlemapsloaded');
         }
         else if (result === 'timeout') {

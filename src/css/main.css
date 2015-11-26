@@ -100,6 +100,12 @@ main {
     width: 100%;
 }
 
+.cooperstown-list-label {
+    background-color: #fff;
+    margin: 0;
+    padding: 5px 0 5px 0;
+}
+
 /*.markers-container {
     position: relative;
 }

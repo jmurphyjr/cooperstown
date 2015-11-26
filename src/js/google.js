@@ -12,70 +12,183 @@ console.log('entered google.js');
 // var $ = require('jquery');  // jshint ignore:line
 var utils = require('./utils');
 
-/**
- * @description GoogleMaps is the interface for this application into the
- * Google Maps Javascript API.
- * @param {String} node The DOM element to attach the map to.
- * @param {Object} options Accepts a google.maps.MapOptions object. See docs.
- * @returns {GoogleMaps}
- * @constructor
- */
-var GoogleMaps = function() {
-    if ( !(this instanceof GoogleMaps) ) {
-        return new GoogleMaps();
-    }
+var _element;
+var _options;
+var _map;
+
+// /**
+//  * @description GoogleMaps is the interface for this application into the
+//  * Google Maps Javascript API.
+//  * @param {String} node The DOM element to attach the map to.
+//  * @param {Object} options Accepts a google.maps.MapOptions object. See docs.
+//  * @returns {GoogleMaps}
+//  * @constructor
+//  */
+// var GoogleMaps = function() {
+//     if ( !(this instanceof GoogleMaps) ) {
+//         return new GoogleMaps();
+//     }
+//
+//     /**
+//      * defaultOptions represents the required parameters in order to initialize
+//      * a google.maps.Map instance. The Map will default to the geographical
+//      * center of the United States with a zoom level of 1.
+//      *
+//      * @type {{center: Window.google.maps.LatLng, zoom: number}}
+//      */
+//     this.defaultOptions = {
+//         // Default to the center of the United States and a zoom level of 1.
+//         center: { lat: 39.8282, lng: -98.5795 },
+//         zoom: 1
+//     };
+//
+// };
+//
+// GoogleMaps.prototype.map = undefined;
+//
+// GoogleMaps.prototype.initMap = function(node, options) {
+//
+//     if (typeof node === 'string') {
+//         this.node = document.getElementById(node);
+//     } else {
+//         throw new TypeError('node must be of type string');
+//     }
+//
+//     if (typeof options === 'object') {
+//         this.options = utils.extend(this.defaultOptions, options);
+//     } else {
+//         this.options = this.defaultOptions;
+//     }
+//
+//     this.map = new google.maps.Map(this.node, this.options);
+// };
+//
+// GoogleMaps.prototype.getMap = function() {
+//     return this.map;
+// };
+//
+// GoogleMaps.prototype.addMarker = function(loc) {
+//     // console.log(loc);
+//     return new google.maps.Marker({
+//         map: this.map,
+//         position: new google.maps.LatLng(loc.location.latitude, loc.location.longitude),
+//         title: loc.name,
+//         // TODO: label does not animate with the marker dropping for now.
+//         // label: { text: loc.category().toUpperCase() },
+//         animation: google.maps.Animation.DROP
+//     });
+// };
+
+var maps = {
 
     /**
-     * defaultOptions represents the required parameters in order to initialize
-     * a google.maps.Map instance. The Map will default to the geographical
-     * center of the United States with a zoom level of 1.
-     *
-     * @type {{center: Window.google.maps.LatLng, zoom: number}}
+     * Default google.maps.Map options for this applicaiton
      */
-    this.defaultOptions = {
-        // Default to the center of the United States and a zoom level of 1.
-        center: { lat: 39.8282, lng: -98.5795 },
-        zoom: 1
-    };
+    options: {},
 
-};
+    element: undefined,
 
-GoogleMaps.prototype.map = undefined;
+    setElement: function( element ) {
 
-GoogleMaps.prototype.initMap = function(node, options) {
+        maps.element = document.getElementById(element);;
+    },
 
-    if (typeof node === 'string') {
-        this.node = document.getElementById(node);
-    } else {
-        throw new TypeError('node must be of type string');
+    setOptions: function( options ) {
+        maps.options = {
+            center: new google.maps.LatLng(42.6638889, -74.954252),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            zoom: 11,
+            mapTypeControl: true,
+            mapTypeControlOptions: {
+                style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                position: google.maps.ControlPosition.TOP_CENTER
+            },
+            zoomControl: true,
+            zoomControlOptions: {
+                position: google.maps.ControlPosition.RIGHT_TOP
+            },
+            scaleControl: true,
+            streetViewControl: false,
+            streetViewControlOptions: {
+                position: google.maps.ControlPosition.RIGHT_CENTER
+            }
+        };
+    },
+
+    loadMap: function(element) {
+        maps.setElement(element);
+        maps.setOptions();
+        _map = new google.maps.Map(maps.element, maps.options);
+    },
+
+    getMap: function() {
+        return _map;
+    },
+
+
+    Marker: {
+
+        /**
+         * options associated with the google.maps.Marker Class object used by this
+         * application.
+         */
+        options: {},
+
+        setDefaultOptions: function() {
+            maps.Marker.options = {
+                anchorPoint: new google.maps.Point(0, 0),
+                animation: google.maps.Animation.DROP,
+                clickable: true,
+                crossOnDrag: true,
+                draggable: false,
+                label: '',
+                map: maps.getMap(),
+                opacity: 1.0,
+                optimized: true,
+                position: null,
+                title: '',
+                visible: true,
+                zIndex: 5
+            };
+        },
+
+        /**
+         * Sets options for the google.maps.MarkerOptions object
+         * @param option
+         * @param value
+         */
+        setOption: function(option, value) {
+            if (option in maps.Marker.options) {
+                maps.Marker.options[option] = value;
+            }
+            else {
+                throw new Error(options + ' does not exist on google.maps.Marker object');
+            }
+        },
+
+        /**
+         * @description Sets a Marker on the map.
+         * @returns {Window.google.maps.Marker}
+         */
+        setMarker: function() {
+            maps.Marker.options.map = maps.Map.getMap();
+            return new google.maps.Marker(maps.Marker.options);
+        },
+
+        animate: function(marker) {
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(function(marker) {
+                marker.setAnimation(null);
+            }, 1000);
+        }
     }
 
-    if (typeof options === 'object') {
-        this.options = utils.extend(this.defaultOptions, options);
-    } else {
-        this.options = this.defaultOptions;
-    }
-
-    this.map = new google.maps.Map(this.node, this.options);
 };
 
-GoogleMaps.prototype.getMap = function() {
-    return this.map;
-};
+// module.exports = new GoogleMaps();
 
-GoogleMaps.prototype.addMarker = function(loc) {
-    // console.log(loc);
-    return new google.maps.Marker({
-        map: this.map,
-        position: new google.maps.LatLng(loc.location.latitude, loc.location.longitude),
-        title: loc.name,
-        // TODO: label does not animate with the marker dropping for now.
-        // label: { text: loc.category().toUpperCase() },
-        animation: google.maps.Animation.DROP
-    });
-};
+module.exports = maps;
 
-module.exports = new GoogleMaps();
 // {
 //
 //     // return {
