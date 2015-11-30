@@ -29,7 +29,8 @@
     "knockout": "^3.4.0",
     "knockout-mapping": "^2.5.0",
     "knockout-postbox": "^0.5.2",
-    "normalize.css": "^3.0.3"
+    "normalize.css": "^3.0.3",
+    "q": "^1.4.1"
   },
   "devDependencies": {
     "browser-sync": "^2.9.12",

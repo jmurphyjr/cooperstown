@@ -9,11 +9,8 @@
 
 console.log('entered google.js');
 
-// var $ = require('jquery');  // jshint ignore:line
-var utils = require('./utils');
+var Q = require('q');
 
-var _element;
-var _options;
 var _map;
 
 // /**
@@ -90,7 +87,7 @@ var maps = {
 
     setElement: function( element ) {
 
-        maps.element = document.getElementById(element);;
+        maps.element = document.getElementById(element);
     },
 
     setOptions: function( options ) {
@@ -119,70 +116,49 @@ var maps = {
         maps.setElement(element);
         maps.setOptions();
         _map = new google.maps.Map(maps.element, maps.options);
+        maps.DistanceService.init();
     },
 
     getMap: function() {
         return _map;
     },
 
+    DistanceService: {
+        _distanceService: '',
 
-    Marker: {
-
-        /**
-         * options associated with the google.maps.Marker Class object used by this
-         * application.
-         */
-        options: {},
-
-        setDefaultOptions: function() {
-            maps.Marker.options = {
-                anchorPoint: new google.maps.Point(0, 0),
-                animation: google.maps.Animation.DROP,
-                clickable: true,
-                crossOnDrag: true,
-                draggable: false,
-                label: '',
-                map: maps.getMap(),
-                opacity: 1.0,
-                optimized: true,
-                position: null,
-                title: '',
-                visible: true,
-                zIndex: 5
-            };
+        init: function() {
+            maps.DistanceService._distanceService = new google.maps.DistanceMatrixService();
         },
 
-        /**
-         * Sets options for the google.maps.MarkerOptions object
-         * @param option
-         * @param value
-         */
-        setOption: function(option, value) {
-            if (option in maps.Marker.options) {
-                maps.Marker.options[option] = value;
+        distanceToCooperstownPark: function(destination) {
+            var deferred = Q.defer();
+
+            maps.DistanceService._distanceService.getDistanceMatrix({
+                origins: [destination],
+                destinations: [ new google.maps.LatLng(42.63999, -74.96033)],
+                travelMode: google.maps.TravelMode.DRIVING,
+                unitSystem: google.maps.UnitSystem.IMPERIAL
+            }, function(response, status) {
+                    if (status === google.maps.DistanceMatrixStatus.OK) {
+                        deferred.resolve(response);
+                    }
+                    else {
+                        deferred.reject(status);
+                    }
+            });
+
+            return deferred.promise;
+        },
+
+        distanceResult: function(data) {
+            if (data.rows[0].elements[0].status === 'OK') {
+                return data.rows[0].elements[0].distance.text;
             }
             else {
-                throw new Error(options + ' does not exist on google.maps.Marker object');
+                return undefined;
             }
-        },
-
-        /**
-         * @description Sets a Marker on the map.
-         * @returns {Window.google.maps.Marker}
-         */
-        setMarker: function() {
-            maps.Marker.options.map = maps.Map.getMap();
-            return new google.maps.Marker(maps.Marker.options);
-        },
-
-        animate: function(marker) {
-            marker.setAnimation(google.maps.Animation.BOUNCE);
-            setTimeout(function(marker) {
-                marker.setAnimation(null);
-            }, 1000);
         }
     }
-
 };
 
 // module.exports = new GoogleMaps();

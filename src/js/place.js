@@ -29,10 +29,11 @@ function Place(data) {
     this.website = ko.observable(data.website);
     this.address = new Address(data.address);
     this.location = new Location(data.location);
+    this.distanceToDreamsPark = ko.observable('');
 
     this.isSelected = ko.observable(false);
     this.getLocation = ko.computed(function() {
-        return { lat: self.location.lat(), lng: self.location.lng() };
+        return  self.location.lat() + ',' + self.location.lng();
     });
 
     var map = GoogleMaps.getMap();
@@ -51,20 +52,40 @@ function Place(data) {
         marker.setVisible(visible);
     };
 
-    this.setMarkerAnimation = function(animation) {
-        marker.setAnimation(animation);
+    this.isSelected.subscribe(function(selected) {
+
+        marker.setAnimation(null);
+        if (selected) {
+        marker.setAnimation(google.maps.Animation.BOUNCE);
         (function() {
             var edit = marker;
             setTimeout(function() {
-                console.log(edit);
                 edit.setAnimation(null);
             }, 2000);
         })();
-    };
+        }
+    });
 
     this.isVisible.subscribe(function(current) {
             marker.setVisible(current);
     });
+
+    this.distanceToCp = function() {
+
+        if (self.name() !== 'Cooperstown Dreams Park') {
+            GoogleMaps.DistanceService.distanceToCooperstownPark(marker.getPosition())
+                // .then(GoogleMaps.DistanceService.distanceResult);
+                .then(function(result) {
+                    var distance = GoogleMaps.DistanceService.distanceResult(result);
+
+                    if (distance !== undefined) {
+                        self.distanceToDreamsPark('Distance to DP: ' + distance);
+                    }
+                });
+        }
+    };
+
+    this.distanceToCp();
 }
 
 module.exports = Place;

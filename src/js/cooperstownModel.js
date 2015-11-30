@@ -8,11 +8,8 @@
 /**
  * Bring in requirements to support this module.
  */
-var $ = require('jquery');
 var ko = require('knockout');
 ko.postbox = require('knockout-postbox');
-
-var GoogleMaps = require('./google');
 
 var Place = require('./place');
 
@@ -32,9 +29,6 @@ var CooperstownViewModel = function() {
     this.filteredPlaces.subscribe(this._filterSubscribe, this);
 };
 
-
-CooperstownViewModel.prototype.map = '';
-
 CooperstownViewModel.prototype.loadBindings = function(bindto) {
     ko.applyBindings(this, bindto);
 };
@@ -46,14 +40,8 @@ CooperstownViewModel.prototype._isVisible = function () {
 };
 
 CooperstownViewModel.prototype.addPlace = function(place) {
-    // Set the map attribute if not already set.
-    if (this.map === '') {
-        this.map = GoogleMaps.getMap();
-    }
+    this.places().push(new Place(place));
 
-    this.places().push(new Place(place, this.map));
-
-    console.log(this.places());
     // On initial load, the places list will not show. Force an update
     // by notifying subscribers to the filter
     this.filter.notifySubscribers();
@@ -86,7 +74,6 @@ CooperstownViewModel.prototype._filtered = function() {
 };
 
 CooperstownViewModel.prototype.focusLocation = function(data) {
-    var self = this;
 
     // First set isSelected to false for all places
     this.places().forEach(function (p) {
@@ -94,12 +81,9 @@ CooperstownViewModel.prototype.focusLocation = function(data) {
     });
     // Set this elements isSelected to true;
     data.isSelected(true);
-    data.setMarkerAnimation(google.maps.Animation.BOUNCE);
 };
 
 CooperstownViewModel.prototype._filterSubscribe = function(newValue) {
-    console.log('filterPlaces subscription');
-    // console.log(newValue);
     this.places().forEach(function(p) {
         if (p in newValue) {
             console.log(p);

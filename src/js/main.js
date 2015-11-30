@@ -6,7 +6,6 @@
 
 'use strict';
 
-// var $ = require('jquery');
 var EventsEmitter = require('events');
 
 var cooperstownFirebase = require('./firebaseInterface');
@@ -34,13 +33,7 @@ var Main = function() {
     utils.loadScript('google', function(result) {
         if (result === 'success') {
             console.log('google maps should be loaded');
-            // GoogleMaps = require('./google');
-            // GoogleMaps.initMap('map', {
-            //     zoom: 11,
-            //     center: { lat: 42.6638889, lng: -74.954252 }
-            // });
             GoogleMaps.loadMap('map');
-            // cooperstownList.init(GoogleMaps.getMap());
             emitter.emit('googlemapsloaded');
         }
         else if (result === 'timeout') {
@@ -58,8 +51,6 @@ var Main = function() {
 
     cooperstownList.loadBindings(cooperstownId);
     searchBox.loadBindings(searchBarId);
-
-
 };
 
 module.exports = Main;

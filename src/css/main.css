@@ -72,7 +72,7 @@ main {
 
 #left-sidebar {
     float: left;
-    width: 10%;
+    width: 100px;
     height: 100%;
     z-index: 5;
     position: relative;
@@ -129,7 +129,7 @@ main {
     display: inline-block;
 }
 
-.searchBar_ul_li_distance {
+.ctown_ul_li_distance {
     font-size: 1vw;
 }
 
