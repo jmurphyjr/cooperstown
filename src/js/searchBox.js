@@ -8,7 +8,7 @@ var ko = require('knockout');
 
 var SearchBox = function SearchBox() {
 
-    this.filter = ko.observable('').publishOn('filterPlaces');
+    this.filter = ko.observable('').publishOn('filterPlaces').extend({ rateLimit: 1000 });
 
 };
 

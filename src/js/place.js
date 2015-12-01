@@ -70,22 +70,19 @@ function Place(data) {
             marker.setVisible(current);
     });
 
-    this.distanceToCp = function() {
+    this.distanceToCp = (function() {
 
         if (self.name() !== 'Cooperstown Dreams Park') {
             GoogleMaps.DistanceService.distanceToCooperstownPark(marker.getPosition())
-                // .then(GoogleMaps.DistanceService.distanceResult);
                 .then(function(result) {
-                    var distance = GoogleMaps.DistanceService.distanceResult(result);
-
-                    if (distance !== undefined) {
-                        self.distanceToDreamsPark('Distance to DP: ' + distance);
+                    if (result !== undefined) {
+                        self.distanceToDreamsPark('Distance to DP: ' + result);
                     }
                 });
         }
-    };
+    })();
 
-    this.distanceToCp();
+    // this.distanceToCp();
 }
 
 module.exports = Place;

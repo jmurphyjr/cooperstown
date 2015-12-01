@@ -10,7 +10,7 @@
  */
 var ko = require('knockout');
 ko.postbox = require('knockout-postbox');
-
+ko.options.deferUpdates = true;
 var Place = require('./place');
 
 var CooperstownViewModel = function() {

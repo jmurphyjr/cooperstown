@@ -76,6 +76,8 @@ var _map;
 //     });
 // };
 
+var _coopersTown;
+
 var maps = {
 
     /**
@@ -90,7 +92,7 @@ var maps = {
         maps.element = document.getElementById(element);
     },
 
-    setOptions: function( options ) {
+    setOptions: function() {
         maps.options = {
             center: new google.maps.LatLng(42.6638889, -74.954252),
             mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -117,6 +119,8 @@ var maps = {
         maps.setOptions();
         _map = new google.maps.Map(maps.element, maps.options);
         maps.DistanceService.init();
+        _coopersTown = new google.maps.LatLng(42.63999, -74.96033);
+        maps.PlacesService.init();
     },
 
     getMap: function() {
@@ -135,16 +139,18 @@ var maps = {
 
             maps.DistanceService._distanceService.getDistanceMatrix({
                 origins: [destination],
-                destinations: [ new google.maps.LatLng(42.63999, -74.96033)],
+                destinations: [ _coopersTown ],
                 travelMode: google.maps.TravelMode.DRIVING,
                 unitSystem: google.maps.UnitSystem.IMPERIAL
             }, function(response, status) {
-                    if (status === google.maps.DistanceMatrixStatus.OK) {
-                        deferred.resolve(response);
-                    }
-                    else {
-                        deferred.reject(status);
-                    }
+                if (status === google.maps.DistanceMatrixStatus.OK) {
+                    var distance = maps.DistanceService.distanceResult(response);
+                    // deferred.resolve(response);
+                    deferred.resolve(distance);
+                }
+                else {
+                    deferred.reject(status);
+                }
             });
 
             return deferred.promise;
@@ -158,7 +164,70 @@ var maps = {
                 return undefined;
             }
         }
+    },
+
+    PlacesService: {
+        _placesService: '',
+
+        init: function() {
+            maps.PlacesService._placesService = new google.maps.places.PlacesService(_map);
+            // maps.PlacesService._placesService = new google.maps.places.AutocompleteService();
+        },
+
+        autoCompleteService: function(search) {
+            var deferred = Q.defer();
+
+            if (search === '') {
+                deferred.resolve([]);
+            }
+            else {
+                maps.PlacesService._placesService.nearbySearch( {
+                    location: _coopersTown,
+                    radius: 40234,
+                    name: search
+                }, function(results, status) {
+                    if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        // console.log(results);
+                        deferred.resolve(results);
+                    }
+                    else {
+                        console.log(status);
+                        deferred.resolve([]);
+                    }
+                });
+            }
+            return deferred.promise;
+        },
+
+        /**
+         *
+         * @param input An array of google.maps.places.PlaceResult
+         *
+         */
+        placeResult: function(input) {
+
+            var length = input.length;
+            var results = [];
+
+            for (var i = length - 1; i >= 0; i--) {
+                // console.log(input[i]);
+                var temp = {};
+                temp.id = undefined;
+                temp.name = input[i].name;
+                temp.description = undefined;
+                temp.id = input[i].place_id;
+                temp.icon = input[i].icon;
+                temp.location = input[i].geometry.location;
+                temp.address = undefined;
+                temp.distanceToDreamsPark = undefined;
+                // console.log(temp);
+                results.push(temp);
+            }
+
+            return results;
+        }
     }
+
 };
 
 // module.exports = new GoogleMaps();

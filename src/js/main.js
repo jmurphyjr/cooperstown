@@ -7,20 +7,24 @@
 'use strict';
 
 var EventsEmitter = require('events');
+var GoogleMaps = require('./google.js');
+
 
 var cooperstownFirebase = require('./firebaseInterface');
 var cooperstownList = require('./cooperstownModel');
 var searchBox = require('./searchBox');
-var utils = require('./utils');
+var gPlacesSearch = require('./googlePlacesAutoComplete');
 
-var GoogleMaps = require('./google.js');
+var utils = require('./utils');
 
 var emitter = new EventsEmitter();
 
 var Main = function() {
 
+    var test;
     var cooperstownId = document.getElementById('cooperstown-list');
     var searchBarId = document.getElementById('searchBar');
+    var placesListId = document.getElementById('places-list');
 
     /**
      * Function to load initial data set, as well as update on additions or changes.
@@ -46,6 +50,8 @@ var Main = function() {
 
     emitter.on('googlemapsloaded', function() {
         cooperstownFirebase.init(dataProcess);
+        test = new gPlacesSearch();
+        test.loadBindings(placesListId);
 
     });
 
