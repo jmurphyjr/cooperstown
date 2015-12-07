@@ -218,7 +218,7 @@ var maps = {
                 temp.id = input[i].place_id;
                 temp.icon = input[i].icon;
                 temp.location = input[i].geometry.location;
-                temp.address = undefined;
+                temp.address = '';
                 temp.distanceToDreamsPark = undefined;
                 // console.log(temp);
                 results.push(temp);

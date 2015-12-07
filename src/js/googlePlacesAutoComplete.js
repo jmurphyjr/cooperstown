@@ -11,6 +11,7 @@ var Place = require('./place');
 
 var PlacesAutoComplete = function() {
 
+    var marker = '';
     this.filter = ko.observable('').subscribeTo('filterPlaces');
 
     this.place = ko.observable('').publishOn('addPlace');
@@ -23,11 +24,32 @@ var PlacesAutoComplete = function() {
 
     this.googlePlaces.subscribe(function(data) {
         console.log(data);
+        data.forEach(function(p) {
+            var image = {
+                url: p.icon,
+                scaledSize: new google.maps.Size(20, 20)
+            };
+            p.marker = new google.maps.Marker({
+                map: GoogleMaps.getMap(),
+                opacity: 1.0,
+                position: new google.maps.LatLng(p.location.lat(), p.location.lng()),
+                title: p.name,
+                icon: image,
+                // TODO: label does not animate with the marker dropping for now.
+                // label: { text: loc.category().toUpperCase() },
+                animation: google.maps.Animation.DROP
+            });
+        });
     });
 };
 
 PlacesAutoComplete.prototype.loadBindings = function(bindto) {
     ko.applyBindings(this, bindto);
+};
+
+PlacesAutoComplete.prototype.addLocation = function(data) {
+    console.log(data);
+    this.place(data);
 };
 
 PlacesAutoComplete.prototype._autoplaces = function() {

@@ -7,6 +7,7 @@
 
 var ko = require('knockout');
 var GoogleMaps = require('./google');
+var cooperstownFirebase = require('./firebaseInterface');
 
 function Address(data) {
     this.street = ko.observable(data.street);
@@ -15,21 +16,35 @@ function Address(data) {
 }
 
 function Location(data) {
-    this.lat = ko.observable(data.latitude);
-    this.lng = ko.observable(data.longitude);
+    console.log(typeof data.lat);
+    if (typeof data.lat === 'function') {
+        this.lat = ko.observable(data.lat());
+    }
+    else {
+        this.lat = ko.observable(data.lat);
+    }
+
+    if (typeof data.lng === 'function') {
+        this.lng = ko.observable(data.lng());
+    }
+    else {
+        this.lng = ko.observable(data.lng);
+    }
 }
 
-function Place(data) {
+function Place(data, type) {
     // ko.mapping.fromJS(data, {}, this);
     var self = this;
     this.id = ko.observable(data.id);
     this.name = ko.observable(data.name);
-    this.description = ko.observable(data.description);
-    this.isVisible = ko.observable(data.visibility);
-    this.website = ko.observable(data.website);
-    this.address = new Address(data.address);
+    // this.description = ko.observable(data.description);
+    this.isVisible = ko.observable(true);
+    // this.website = ko.observable(data.website);
+    // this.address = new Address(data.address);
+    console.log(data);
     this.location = new Location(data.location);
     this.distanceToDreamsPark = ko.observable('');
+    this.icon = ko.observable(data.icon);
 
     this.isSelected = ko.observable(false);
     this.getLocation = ko.computed(function() {
@@ -37,18 +52,22 @@ function Place(data) {
     });
 
     var map = GoogleMaps.getMap();
-
+    var image = {
+        url: self.icon(),
+        scaledSize: new google.maps.Size(20, 20)
+    };
     var marker = new google.maps.Marker({
         map: map,
         opacity: 1.0,
         position: new google.maps.LatLng(self.location.lat(), self.location.lng()),
         title: self.name(),
+        icon: image,
         // TODO: label does not animate with the marker dropping for now.
         // label: { text: loc.category().toUpperCase() },
         animation: google.maps.Animation.DROP
     });
 
-    this.setMarkerVisibility = function(visible) {
+    var setMarkerVisibility = function(visible) {
         marker.setVisible(visible);
     };
 
@@ -70,7 +89,7 @@ function Place(data) {
             marker.setVisible(current);
     });
 
-    this.distanceToCp = (function() {
+    var distanceToCp = (function() {
 
         if (self.name() !== 'Cooperstown Dreams Park') {
             GoogleMaps.DistanceService.distanceToCooperstownPark(marker.getPosition())
@@ -82,6 +101,10 @@ function Place(data) {
         }
     })();
 
+    if (type === 'new') {
+        console.log(ko.toJS(this));
+        cooperstownFirebase.tryCreateNewPlace(this.name(), ko.toJS(this));
+    }
     // this.distanceToCp();
 }
 

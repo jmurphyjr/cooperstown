@@ -12,6 +12,8 @@ var ko = require('knockout');
 ko.postbox = require('knockout-postbox');
 ko.options.deferUpdates = true;
 var Place = require('./place');
+var cooperstownFirebase = require('./firebaseInterface');
+
 
 var CooperstownViewModel = function() {
     if ( !(this instanceof CooperstownViewModel) ) {
@@ -27,6 +29,10 @@ var CooperstownViewModel = function() {
     this.filteredPlaces = ko.computed(this._filtered, this).publishOn('filteredList');
 
     this.filteredPlaces.subscribe(this._filterSubscribe, this);
+
+    this.selectedPlace = ko.observable().subscribeTo('addPlace');
+
+    this.selectedPlace.subscribe(this.addPlace,this);
 };
 
 CooperstownViewModel.prototype.loadBindings = function(bindto) {
@@ -40,11 +46,24 @@ CooperstownViewModel.prototype._isVisible = function () {
 };
 
 CooperstownViewModel.prototype.addPlace = function(place) {
-    this.places().push(new Place(place));
+    if (typeof place  === 'object') {
+        this.places().push(new Place(place, 'new'));
+    }
 
     // On initial load, the places list will not show. Force an update
     // by notifying subscribers to the filter
-    this.filter.notifySubscribers();
+    // this.filter.notifySubscribers();
+};
+
+CooperstownViewModel.prototype.loadSavedPlaces = function(place) {
+    console.log(place);
+    if (typeof place === 'object') {
+        this.places().push(new Place(place, 'saved'));
+        // On initial load, the places list will not show. Force an update
+        // by notifying subscribers to the filter
+        this.filter.notifySubscribers();
+    }
+
 };
 
 CooperstownViewModel.prototype._filtered = function() {

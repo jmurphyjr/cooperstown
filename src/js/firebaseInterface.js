@@ -12,7 +12,9 @@ var FirebaseInterface = function() {
     }
 
     this.defaultOptions = {
-        'dbURL': 'https://cooperstown.firebaseio.com/places'
+        'dbURL': 'https://cooperstown.firebaseio.com/',
+        'placesLocation': 'https://cooperstown.firebaseio.com/places',
+        'commentsLocation': 'https://cooperstown.firebaseio.com/comments'
     };
 };
 
@@ -20,15 +22,15 @@ FirebaseInterface.prototype.cTownRef = '';
 
 FirebaseInterface.prototype.options = null;
 
-FirebaseInterface.prototype.init = function(callback) {
+FirebaseInterface.prototype.init = function(initialLoad, update) {
 
     var options = '';
 
-    if (arguments.length === 2) {
-        console.log(arguments);
-        options = arguments[1];
-    }
-
+    // if (arguments.length === 2) {
+    //     console.log(arguments);
+    //     options = arguments[1];
+    // }
+    //
     if (typeof options === 'object') {
         this.options = utils.extend(this.defaultOptions, options);
     }
@@ -36,18 +38,41 @@ FirebaseInterface.prototype.init = function(callback) {
         this.options = this.defaultOptions;
     }
 
-    console.log('defaultOptions: ' + JSON.stringify(this.defaultOptions));
-    console.log('options: ' + JSON.stringify(this.options));
-
-    if (typeof callback !== 'function') {
-        console.log('callback must be a function');
-    }
+    // console.log('defaultOptions: ' + JSON.stringify(this.defaultOptions));
+    // console.log('options: ' + JSON.stringify(this.options));
+    //
+    // if (typeof callback !== 'function') {
+    //     console.log('callback must be a function');
+    // }
 
     this.cTownRef = new Firebase(this.options.dbURL);
+    this.placesRef = new Firebase(this.options.placesLocation);
 
-    this.cTownRef.on('child_added', callback);
-    this.cTownRef.on('child_removed', callback);
+    this.placesRef.once('value', initialLoad);
+    // this.placesRef.on('child_added', update);
+    this.placesRef.on('child_removed', update);
+    // this.newPlaceRef = this.placesRef.push();
 
+};
+
+FirebaseInterface.prototype.tryCreateNewPlace = function(place, placeData) {
+    var self = this;
+    self.placesRef.child(place).transaction(function(currentPlaceData) {
+        if (currentPlaceData === null) {
+            return placeData;
+        }
+    }, function(error, committed) {
+            self.placeCreated(place, committed);
+    });
+};
+
+FirebaseInterface.prototype.placeCreated = function(placeId, success) {
+    if (!success) {
+        console.error('place ' + placeId + ' already exists!');
+    }
+    else {
+        console.log('Successfully created ' + placeId);
+    }
 };
 
 module.exports = new FirebaseInterface();

@@ -33,7 +33,7 @@
             <h5 class="cooperstown-list-label" data-bind="visible: filteredPlaces().length">Suggested Places</h5>
             <ul data-bind="foreach: filteredPlaces">
                 <li class="ctown_ul_li" data-bind="click: $parent.focusLocation.bind($parent), css: { selected: isSelected }">
-                    <div class="ctown_ul_li_name"><a target="_blank" data-bind="attr: { href: website, title: name }, text: name"></a></div>
+                    <div class="ctown_ul_li_name"><a target="_blank" data-bind="text: name"></a></div>
                     <div class="ctown_ul_li_distance" data-bind="text: distanceToDreamsPark"></div>
                 </li>
             </ul>
@@ -41,8 +41,9 @@
         <div id="places-list" class="places-container no-results">
             <h5 class="cooperstown-list-label" data-bind="visible: googlePlaces().length">Google Suggestions</h5>
             <ul data-bind="foreach: googlePlaces">
-                <li>
+                <li class="ctown_ul_li">
                     <div class="ctown_ul_li_name" data-bind="text: name"></div>
+                    <div class="ctown_ul_li_add" data-bind="click: $parent.addLocation.bind($parent)">Save Location</div>
                     <div class="ctown_ul_li_distance" data-bind="text: distanceToDreamsPark"></div>
                 </li>
             </ul>

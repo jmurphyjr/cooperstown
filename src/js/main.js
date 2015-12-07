@@ -30,8 +30,19 @@ var Main = function() {
      * Function to load initial data set, as well as update on additions or changes.
      * @param data
      */
-    function dataProcess(data) {
-        cooperstownList.addPlace(data.val());
+    function initialPlaceLoad(data) {
+        console.log(data);
+        if (data.val() !== null) {
+        var i = data.val().length;
+        data.forEach(function(e) {
+            console.log(e.val());
+            cooperstownList.loadSavedPlaces(e.val());
+        });
+        }
+    }
+
+    function updatePlace(data) {
+
     }
 
     utils.loadScript('google', function(result) {
@@ -49,7 +60,7 @@ var Main = function() {
     });
 
     emitter.on('googlemapsloaded', function() {
-        cooperstownFirebase.init(dataProcess);
+        cooperstownFirebase.init(initialPlaceLoad, updatePlace);
         test = new gPlacesSearch();
         test.loadBindings(placesListId);
 
