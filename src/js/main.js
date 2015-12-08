@@ -31,7 +31,7 @@ var Main = function() {
      * @param data
      */
     function initialPlaceLoad(data) {
-        console.log(data);
+
         if (data.val() !== null) {
         var i = data.val().length;
         data.forEach(function(e) {
@@ -63,11 +63,11 @@ var Main = function() {
         cooperstownFirebase.init(initialPlaceLoad, updatePlace);
         test = new gPlacesSearch();
         test.loadBindings(placesListId);
+        cooperstownList.loadBindings(cooperstownId);
+        searchBox.loadBindings(searchBarId);
 
     });
 
-    cooperstownList.loadBindings(cooperstownId);
-    searchBox.loadBindings(searchBarId);
 };
 
 module.exports = Main;

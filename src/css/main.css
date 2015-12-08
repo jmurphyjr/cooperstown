@@ -98,6 +98,7 @@ main {
 }
 #cooperstown-list {
     width: 100%;
+    overflow-y: auto;
 }
 
 .cooperstown-list-label {

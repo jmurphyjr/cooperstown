@@ -76,7 +76,7 @@ var _map;
 //     });
 // };
 
-var _coopersTown;
+var _coopersTown;  // openweathermap.org id 5113664
 
 var maps = {
 
@@ -84,6 +84,8 @@ var maps = {
      * Default google.maps.Map options for this applicaiton
      */
     options: {},
+
+    contextMenu: null,
 
     element: undefined,
 
@@ -121,10 +123,22 @@ var maps = {
         maps.DistanceService.init();
         _coopersTown = new google.maps.LatLng(42.63999, -74.96033);
         maps.PlacesService.init();
+        maps.contextMenu = google.maps.event.addListener(
+            _map,
+            'rightclick',
+            function(event) {
+                console.log(event);
+            }
+        );
     },
 
     getMap: function() {
         return _map;
+    },
+
+    setDefaultZoomAndCenter: function() {
+        _map.setZoom(11);
+        _map.setCenter(_coopersTown);
     },
 
     DistanceService: {
@@ -183,7 +197,7 @@ var maps = {
             else {
                 maps.PlacesService._placesService.nearbySearch( {
                     location: _coopersTown,
-                    radius: 40234,
+                    radius: 20234,
                     name: search
                 }, function(results, status) {
                     if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -225,6 +239,80 @@ var maps = {
             }
 
             return results;
+        }
+    },
+
+    MarkerService: {
+        markers: {},
+
+        iconUrl: 'http://maps.google.com/mapfiles/kml/paddle/',
+
+        iconMapping: {
+            'restaurant': 'red-circle.png',
+            'lodging': 'blu-circle.png',
+            'sites': 'ylw-circle.png'
+        },
+
+        addMarker: function(name, location, locationtype, curated) {
+
+            if (curated === undefined) {
+                curated = false;
+            }
+
+            // If Marker already exists, then exit
+            if (maps.MarkerService.markerExist(name)) {
+                console.log(name + 'already exists in markers list');
+            }
+            else {
+                var icon = maps.MarkerService.iconUrl + maps.MarkerService.iconMapping[locationtype];
+
+                var marker = new google.maps.Marker({
+                    map: _map,
+                    opacity: 1.0,
+                    position: new google.maps.LatLng(location.lat(), location.lng()),
+                    title: name,
+                    icon: icon,
+                    // TODO: label does not animate with the marker dropping for now.
+                    // label: { text: loc.category().toUpperCase() },
+                    animation: google.maps.Animation.DROP
+                });
+
+                maps.MarkerService.markers[name] = {
+                    marker: marker,
+                    stored: curated
+                };
+            }
+        },
+
+        allVisible: function() {
+            for (var key in maps.MarkerService.markers) {
+                if (maps.MarkerService.markerExist(key)) {
+                    var value = maps.MarkerService.markers[key];
+                    value.marker.setVisible(true);
+                }
+            }
+        },
+
+        markerExist: function(name) {
+            var alreadyExists = false;
+            if (maps.MarkerService.markers.hasOwnProperty(name)) {
+                alreadyExists = true;
+            }
+            return alreadyExists;
+        },
+
+        removeMarker: function(name) {
+            // If marker exists, then delete
+            if (maps.MarkerService.markerExist(name)) {
+                delete maps.MarkerService.markers[name];
+            }
+        },
+
+        animateMarker: function(name) {
+            if (maps.MarkerService.markerExist(name)) {
+                var thisMarker = maps.MarkerService.markers[name];
+                thisMarker.marker.setAnimation(google.maps.Animation.BOUNCE);
+            }
         }
     }
 

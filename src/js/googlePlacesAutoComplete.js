@@ -11,6 +11,7 @@ var Place = require('./place');
 
 var PlacesAutoComplete = function() {
 
+    var self = this;
     var marker = '';
     this.filter = ko.observable('').subscribeTo('filterPlaces');
 
@@ -22,8 +23,12 @@ var PlacesAutoComplete = function() {
 
     this.autoCompletePlaces = ko.computed(this._autoplaces, this);
 
+    this.markers = [];
+
     this.googlePlaces.subscribe(function(data) {
         console.log(data);
+        self.clearMarkers();
+
         data.forEach(function(p) {
             var image = {
                 url: p.icon,
@@ -39,6 +44,8 @@ var PlacesAutoComplete = function() {
                 // label: { text: loc.category().toUpperCase() },
                 animation: google.maps.Animation.DROP
             });
+            self.markers.push(p);
+
         });
     });
 };
@@ -47,9 +54,19 @@ PlacesAutoComplete.prototype.loadBindings = function(bindto) {
     ko.applyBindings(this, bindto);
 };
 
+PlacesAutoComplete.prototype.clearMarkers = function() {
+    this.markers.forEach(function(m) {
+        if (m.marker.setVisible) {
+            m.marker.setVisible(false);
+        }
+    });
+    this.markers = [];
+};
+
 PlacesAutoComplete.prototype.addLocation = function(data) {
     console.log(data);
-    this.place(data);
+    data.marker = '';
+    this.place(data, 'new');
 };
 
 PlacesAutoComplete.prototype._autoplaces = function() {
@@ -69,6 +86,8 @@ PlacesAutoComplete.prototype._autoplaces = function() {
             else {
                 console.log('empty result');
             }});
+
+    // var test = GoogleMaps.AutoCompleteService.query(searchFilter);
 };
 
 /**

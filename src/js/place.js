@@ -9,12 +9,6 @@ var ko = require('knockout');
 var GoogleMaps = require('./google');
 var cooperstownFirebase = require('./firebaseInterface');
 
-function Address(data) {
-    this.street = ko.observable(data.street);
-    this.city = ko.observable(data.city);
-    this.state = ko.observable(data.state);
-}
-
 function Location(data) {
     console.log(typeof data.lat);
     if (typeof data.lat === 'function') {
@@ -37,11 +31,7 @@ function Place(data, type) {
     var self = this;
     this.id = ko.observable(data.id);
     this.name = ko.observable(data.name);
-    // this.description = ko.observable(data.description);
     this.isVisible = ko.observable(true);
-    // this.website = ko.observable(data.website);
-    // this.address = new Address(data.address);
-    console.log(data);
     this.location = new Location(data.location);
     this.distanceToDreamsPark = ko.observable('');
     this.icon = ko.observable(data.icon);
@@ -67,21 +57,28 @@ function Place(data, type) {
         animation: google.maps.Animation.DROP
     });
 
-    var setMarkerVisibility = function(visible) {
-        marker.setVisible(visible);
-    };
+    // var setMarkerVisibility = function(visible) {
+    //     marker.setVisible(visible);
+    // };
 
     this.isSelected.subscribe(function(selected) {
 
         marker.setAnimation(null);
         if (selected) {
-        marker.setAnimation(google.maps.Animation.BOUNCE);
-        (function() {
-            var edit = marker;
-            setTimeout(function() {
-                edit.setAnimation(null);
-            }, 2000);
-        })();
+            var map = GoogleMaps.getMap();
+            var markerPosition = marker.getPosition();
+
+            // If Marker not contained in current bounds, set center and zoom to default values
+            if (!map.getBounds().contains(markerPosition)) {
+                GoogleMaps.setDefaultZoomAndCenter();
+            }
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            (function() {
+                var markerContext = marker;
+                setTimeout(function() {
+                    markerContext.setAnimation(null);
+                }, 2000);
+            })();
         }
     });
 
@@ -89,7 +86,10 @@ function Place(data, type) {
             marker.setVisible(current);
     });
 
-    var distanceToCp = (function() {
+    /**
+     * IIFE to calculate the distance to Dreams Park for all curated locations, except DP itself
+     */
+    (function distanceToCp() {
 
         if (self.name() !== 'Cooperstown Dreams Park') {
             GoogleMaps.DistanceService.distanceToCooperstownPark(marker.getPosition())
