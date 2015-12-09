@@ -67,7 +67,7 @@ CooperstownViewModel.prototype.loadSavedPlaces = function(place) {
 };
 
 CooperstownViewModel.prototype._filtered = function() {
-    var searchFilter = this.filter().toLowerCase();
+    var searchFilter = this.filter().trim().toLowerCase();
     var placesFound;
 
     if (!searchFilter) {
@@ -77,13 +77,13 @@ CooperstownViewModel.prototype._filtered = function() {
     else {
         placesFound = ko.utils.arrayFilter(this.places(),
             function(place) {
-                if (!(place.name().toLowerCase().indexOf(searchFilter) !== -1)) {
+                if (!(place.name().trim().toLowerCase().indexOf(searchFilter) !== -1)) {
                     place.isVisible(false);
                 }
                 else {
                     place.isVisible(true);
                 }
-                return place.name().toLowerCase().indexOf(searchFilter) !== -1;
+                return place.name().trim().toLowerCase().indexOf(searchFilter) !== -1;
 
             });
     }

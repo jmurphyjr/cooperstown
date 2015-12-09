@@ -27,40 +27,16 @@ var PlacesAutoComplete = function() {
 
     this.googlePlaces.subscribe(function(data) {
         console.log(data);
-        self.clearMarkers();
+        // self.clearMarkers();
 
         data.forEach(function(p) {
-            var image = {
-                url: p.icon,
-                scaledSize: new google.maps.Size(20, 20)
-            };
-            p.marker = new google.maps.Marker({
-                map: GoogleMaps.getMap(),
-                opacity: 1.0,
-                position: new google.maps.LatLng(p.location.lat(), p.location.lng()),
-                title: p.name,
-                icon: image,
-                // TODO: label does not animate with the marker dropping for now.
-                // label: { text: loc.category().toUpperCase() },
-                animation: google.maps.Animation.DROP
-            });
-            self.markers.push(p);
-
+            GoogleMaps.MarkerService.addMarker(p.name.trim(), p.location, p.category, false);
         });
     });
 };
 
 PlacesAutoComplete.prototype.loadBindings = function(bindto) {
     ko.applyBindings(this, bindto);
-};
-
-PlacesAutoComplete.prototype.clearMarkers = function() {
-    this.markers.forEach(function(m) {
-        if (m.marker.setVisible) {
-            m.marker.setVisible(false);
-        }
-    });
-    this.markers = [];
 };
 
 PlacesAutoComplete.prototype.addLocation = function(data) {
@@ -70,7 +46,7 @@ PlacesAutoComplete.prototype.addLocation = function(data) {
 };
 
 PlacesAutoComplete.prototype._autoplaces = function() {
-    var searchFilter = this.filter().toLowerCase();
+    var searchFilter = this.filter().trim().toLowerCase();
 
     var self = this;
     self.googlePlaces.removeAll();
@@ -84,6 +60,7 @@ PlacesAutoComplete.prototype._autoplaces = function() {
                 self.googlePlaces(self._getResults(result));
             }
             else {
+                GoogleMaps.MarkerService.removeAllMarkers();
                 console.log('empty result');
             }});
 
@@ -99,12 +76,12 @@ PlacesAutoComplete.prototype._autoplaces = function() {
 PlacesAutoComplete.prototype._getResults = function(data) {
     var self = this;
     // var test = data;
-    console.log(self.curatedCooperstown());
+    // console.log(self.curatedCooperstown());
     ko.utils.arrayForEach(self.curatedCooperstown(), function(p) {
         var i = data.length;
 
         while(i--) {
-            if (data[i].name === p.name()) {
+            if (data[i].name.trim() === p.name().trim()) {
                 // console.log('deleting ' + data[i].name);
                 data.splice(i, 1);
             }

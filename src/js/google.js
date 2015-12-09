@@ -201,7 +201,7 @@ var maps = {
                     name: search
                 }, function(results, status) {
                     if (status === google.maps.places.PlacesServiceStatus.OK) {
-                        // console.log(results);
+                        console.log(results);
                         deferred.resolve(results);
                     }
                     else {
@@ -213,6 +213,41 @@ var maps = {
             return deferred.promise;
         },
 
+        setCategory: function(types) {
+            var food = ['restaurant', 'bar', 'cafe', 'food', 'grocery_or_supermarket', 'bakery'];
+            var lodging = ['lodging'];
+            var fun = ['amusement_park', 'aquarium', 'art_gallery', 'bowling_alley', 'casino',
+                'movie_theater', 'museum', 'night_club', 'park', 'zoo'];
+            var response = false;
+
+
+            if (types.indexOf('lodging') > -1) {
+                response = 'lodging';
+            }
+
+            if (!response) {
+                food.forEach(function(f) {
+                    if (types.indexOf(f) > -1) {
+                        response = 'restaurant';
+                    }
+                });
+            }
+
+            if (!response) {
+                fun.forEach(function(f) {
+                    if (types.indexOf(f) > -1) {
+                        response = 'fun';
+                    }
+                });
+            }
+
+            if (!response) {
+                response = 'general';
+            }
+
+            return response;
+        },
+
         /**
          *
          * @param input An array of google.maps.places.PlaceResult
@@ -222,9 +257,11 @@ var maps = {
 
             var length = input.length;
             var results = [];
+            var t; // Variable to hold the types for this location.
 
             for (var i = length - 1; i >= 0; i--) {
                 // console.log(input[i]);
+                console.log(input[i].types);
                 var temp = {};
                 temp.id = undefined;
                 temp.name = input[i].name;
@@ -234,6 +271,18 @@ var maps = {
                 temp.location = input[i].geometry.location;
                 temp.address = '';
                 temp.distanceToDreamsPark = undefined;
+
+                t = input[i].types;
+                console.log(t);
+                temp.category = maps.PlacesService.setCategory(t);
+                // Set Category for specific places to 'baseball'
+                if (input[i].name === 'Cooperstown Dreams Park' ||
+                    input[i].name === 'National Baseball Hall of Fame and Museum' ||
+                    input[i].name === 'Doubleday Field') {
+                    temp.category = 'baseball';
+                }
+                console.log(temp.category);
+
                 // console.log(temp);
                 results.push(temp);
             }
@@ -250,7 +299,8 @@ var maps = {
         iconMapping: {
             'restaurant': 'red-circle.png',
             'lodging': 'blu-circle.png',
-            'sites': 'ylw-circle.png'
+            'fun': 'ylw-circle.png',
+            'general': 'purple-circle.png'
         },
 
         addMarker: function(name, location, locationtype, curated) {
@@ -260,18 +310,25 @@ var maps = {
             }
 
             // If Marker already exists, then exit
-            if (maps.MarkerService.markerExist(name)) {
-                console.log(name + 'already exists in markers list');
-            }
-            else {
-                var icon = maps.MarkerService.iconUrl + maps.MarkerService.iconMapping[locationtype];
+            // if (maps.MarkerService.markerExist(name)) {
+            //     console.log(name + 'already exists in markers list');
+            // }
+            // else {
+                maps.MarkerService.removeAllMarkers();
+                var catIcon = maps.MarkerService.iconUrl + maps.MarkerService.iconMapping[locationtype];
+
+                var image = {
+                    url: catIcon,
+                    scaledSize: new google.maps.Size(30, 30)
+                };
+
 
                 var marker = new google.maps.Marker({
                     map: _map,
                     opacity: 1.0,
                     position: new google.maps.LatLng(location.lat(), location.lng()),
                     title: name,
-                    icon: icon,
+                    icon: image,
                     // TODO: label does not animate with the marker dropping for now.
                     // label: { text: loc.category().toUpperCase() },
                     animation: google.maps.Animation.DROP
@@ -281,7 +338,7 @@ var maps = {
                     marker: marker,
                     stored: curated
                 };
-            }
+            // }
         },
 
         allVisible: function() {
@@ -302,9 +359,18 @@ var maps = {
         },
 
         removeMarker: function(name) {
-            // If marker exists, then delete
-            if (maps.MarkerService.markerExist(name)) {
+            // If marker exists and NOT curated, then delete
+            if (maps.MarkerService.markerExist(name) && !maps.MarkerService.markers[name].curated) {
                 delete maps.MarkerService.markers[name];
+            }
+        },
+
+        removeAllMarkers: function() {
+            for (var key in maps.MarkerService.markers) {
+                if (!maps.MarkerService.markers[key].curated) {
+                    maps.MarkerService.markers[key].marker.setMap(null);
+                    delete maps.MarkerService.markers[key];
+                }
             }
         },
 
