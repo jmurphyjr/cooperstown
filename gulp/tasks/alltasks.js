@@ -113,7 +113,8 @@ gulp.task('minify:css', function() {
 
 gulp.task('copy', [
     // 'copy:html',
-    // 'copy:nodeModules',
+    // 'copy:nodeModules'
+    'copy:images',
     'copy:perfmatters',
     'copy:htaccess'
 ]);
@@ -129,6 +130,11 @@ gulp.task('copy:nodeModules', function() {
         ])
         .pipe(p.size())
         .pipe(gulp.dest(config.paths.styles.dest + 'vendor/'));
+});
+
+gulp.task('copy:images', function() {
+    return gulp.src(config.basePaths.src + 'images/*')
+        .pipe(gulp.dest(config.basePaths.dest + 'images/'));
 });
 
 gulp.task('copy:perfmatters', function() {

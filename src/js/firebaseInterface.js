@@ -1,6 +1,7 @@
 /**
  * Created by jack on 11/19/15.
  */
+/* jshint node: true */
 'use strict';
 var Firebase = require('firebase');
 var utils = require('./utils');
@@ -72,6 +73,20 @@ FirebaseInterface.prototype.placeCreated = function(placeId, success) {
     }
     else {
         console.log('Successfully created ' + placeId);
+    }
+};
+
+FirebaseInterface.prototype.updatePlace = function(child, data) {
+    var self = this;
+    this.placesRef.child(child).update(data, self.updated);
+};
+
+FirebaseInterface.prototype.updated = function(error) {
+    if (error) {
+        console.log('Synchronization failed');
+    }
+    else {
+        console.log('Synchronization succeeded');
     }
 };
 

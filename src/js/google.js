@@ -13,69 +13,6 @@ var Q = require('q');
 
 var _map;
 
-// /**
-//  * @description GoogleMaps is the interface for this application into the
-//  * Google Maps Javascript API.
-//  * @param {String} node The DOM element to attach the map to.
-//  * @param {Object} options Accepts a google.maps.MapOptions object. See docs.
-//  * @returns {GoogleMaps}
-//  * @constructor
-//  */
-// var GoogleMaps = function() {
-//     if ( !(this instanceof GoogleMaps) ) {
-//         return new GoogleMaps();
-//     }
-//
-//     /**
-//      * defaultOptions represents the required parameters in order to initialize
-//      * a google.maps.Map instance. The Map will default to the geographical
-//      * center of the United States with a zoom level of 1.
-//      *
-//      * @type {{center: Window.google.maps.LatLng, zoom: number}}
-//      */
-//     this.defaultOptions = {
-//         // Default to the center of the United States and a zoom level of 1.
-//         center: { lat: 39.8282, lng: -98.5795 },
-//         zoom: 1
-//     };
-//
-// };
-//
-// GoogleMaps.prototype.map = undefined;
-//
-// GoogleMaps.prototype.initMap = function(node, options) {
-//
-//     if (typeof node === 'string') {
-//         this.node = document.getElementById(node);
-//     } else {
-//         throw new TypeError('node must be of type string');
-//     }
-//
-//     if (typeof options === 'object') {
-//         this.options = utils.extend(this.defaultOptions, options);
-//     } else {
-//         this.options = this.defaultOptions;
-//     }
-//
-//     this.map = new google.maps.Map(this.node, this.options);
-// };
-//
-// GoogleMaps.prototype.getMap = function() {
-//     return this.map;
-// };
-//
-// GoogleMaps.prototype.addMarker = function(loc) {
-//     // console.log(loc);
-//     return new google.maps.Marker({
-//         map: this.map,
-//         position: new google.maps.LatLng(loc.location.latitude, loc.location.longitude),
-//         title: loc.name,
-//         // TODO: label does not animate with the marker dropping for now.
-//         // label: { text: loc.category().toUpperCase() },
-//         animation: google.maps.Animation.DROP
-//     });
-// };
-
 var _coopersTown;  // openweathermap.org id 5113664
 
 var maps = {
@@ -185,7 +122,6 @@ var maps = {
 
         init: function() {
             maps.PlacesService._placesService = new google.maps.places.PlacesService(_map);
-            // maps.PlacesService._placesService = new google.maps.places.AutocompleteService();
         },
 
         autoCompleteService: function(search) {
@@ -199,9 +135,10 @@ var maps = {
                     location: _coopersTown,
                     radius: 20234,
                     name: search
-                }, function(results, status) {
+                }, function(results, status, pagination) {
                     if (status === google.maps.places.PlacesServiceStatus.OK) {
                         console.log(results);
+                        console.log(pagination);
                         deferred.resolve(results);
                     }
                     else {
@@ -213,7 +150,7 @@ var maps = {
             return deferred.promise;
         },
 
-        setCategory: function(types) {
+        setCategory: function(place) {
             var food = ['restaurant', 'bar', 'cafe', 'food', 'grocery_or_supermarket', 'bakery'];
             var lodging = ['lodging'];
             var fun = ['amusement_park', 'aquarium', 'art_gallery', 'bowling_alley', 'casino',
@@ -221,13 +158,13 @@ var maps = {
             var response = false;
 
 
-            if (types.indexOf('lodging') > -1) {
+            if (place.types.indexOf('lodging') > -1) {
                 response = 'lodging';
             }
 
             if (!response) {
                 food.forEach(function(f) {
-                    if (types.indexOf(f) > -1) {
+                    if (place.types.indexOf(f) > -1) {
                         response = 'restaurant';
                     }
                 });
@@ -235,7 +172,7 @@ var maps = {
 
             if (!response) {
                 fun.forEach(function(f) {
-                    if (types.indexOf(f) > -1) {
+                    if (place.types.indexOf(f) > -1) {
                         response = 'fun';
                     }
                 });
@@ -243,6 +180,13 @@ var maps = {
 
             if (!response) {
                 response = 'general';
+            }
+
+            // Set Category for specific places to 'baseball'
+            if (place.name === 'Cooperstown Dreams Park' ||
+                place.name === 'National Baseball Hall of Fame and Museum' ||
+                place.name === 'Doubleday Field') {
+                response = 'baseball';
             }
 
             return response;
@@ -260,8 +204,6 @@ var maps = {
             var t; // Variable to hold the types for this location.
 
             for (var i = length - 1; i >= 0; i--) {
-                // console.log(input[i]);
-                console.log(input[i].types);
                 var temp = {};
                 temp.id = undefined;
                 temp.name = input[i].name;
@@ -272,17 +214,8 @@ var maps = {
                 temp.address = '';
                 temp.distanceToDreamsPark = undefined;
 
-                t = input[i].types;
-                console.log(t);
-                temp.category = maps.PlacesService.setCategory(t);
-                // Set Category for specific places to 'baseball'
-                if (input[i].name === 'Cooperstown Dreams Park' ||
-                    input[i].name === 'National Baseball Hall of Fame and Museum' ||
-                    input[i].name === 'Doubleday Field') {
-                    temp.category = 'baseball';
-                }
-                console.log(temp.category);
-
+                // Set Category based on Google Places Types
+                temp.category = maps.PlacesService.setCategory(input[i]);
                 // console.log(temp);
                 results.push(temp);
             }
@@ -294,13 +227,14 @@ var maps = {
     MarkerService: {
         markers: {},
 
-        iconUrl: 'http://maps.google.com/mapfiles/kml/paddle/',
+        // iconUrl: 'http://maps.google.com/mapfiles/kml/paddle/',
 
         iconMapping: {
-            'restaurant': 'red-circle.png',
-            'lodging': 'blu-circle.png',
-            'fun': 'ylw-circle.png',
-            'general': 'purple-circle.png'
+            'restaurant': 'http://maps.google.com/mapfiles/kml/paddle/red-circle.png',
+            'lodging': 'http://maps.google.com/mapfiles/kml/paddle/blu-circle.png',
+            'fun': 'http://maps.google.com/mapfiles/kml/paddle/ylw-circle.png',
+            'baseball': 'images/baseball.png',
+            'general': 'http://maps.google.com/mapfiles/kml/paddle/purple-circle.png'
         },
 
         addMarker: function(name, location, locationtype, curated) {
@@ -308,14 +242,13 @@ var maps = {
             if (curated === undefined) {
                 curated = false;
             }
-
             // If Marker already exists, then exit
-            // if (maps.MarkerService.markerExist(name)) {
-            //     console.log(name + 'already exists in markers list');
-            // }
-            // else {
-                maps.MarkerService.removeAllMarkers();
-                var catIcon = maps.MarkerService.iconUrl + maps.MarkerService.iconMapping[locationtype];
+            if (maps.MarkerService.markerExist(name)) {
+                console.log(name + ' already exists in markers list');
+            }
+            else {
+                // maps.MarkerService.removeAllMarkers();
+                var catIcon = maps.MarkerService.iconMapping[locationtype];
 
                 var image = {
                     url: catIcon,
@@ -329,8 +262,6 @@ var maps = {
                     position: new google.maps.LatLng(location.lat(), location.lng()),
                     title: name,
                     icon: image,
-                    // TODO: label does not animate with the marker dropping for now.
-                    // label: { text: loc.category().toUpperCase() },
                     animation: google.maps.Animation.DROP
                 });
 
@@ -338,7 +269,7 @@ var maps = {
                     marker: marker,
                     stored: curated
                 };
-            // }
+            }
         },
 
         allVisible: function() {
@@ -350,6 +281,13 @@ var maps = {
             }
         },
 
+        setVisible: function(name, visible) {
+            console.log(name + ': ' + visible);
+            if (maps.MarkerService.markerExist(name)) {
+                maps.MarkerService.markers[name].marker.setVisible(visible);
+            }
+        },
+
         markerExist: function(name) {
             var alreadyExists = false;
             if (maps.MarkerService.markers.hasOwnProperty(name)) {
@@ -358,26 +296,61 @@ var maps = {
             return alreadyExists;
         },
 
+        /**
+         * @description removes a single or an array of markers from the map
+         * @param {Array} name Locations to Remove from the Map.
+         */
         removeMarker: function(name) {
+
+            if (Object.prototype.toString.call(name) === '[object Array]') {
+                console.log('name is array');
+            }
+            else if (Object.prototype.toString.call(name) === '[object String]') {
+                console.log('name is a string');
+            }
+
             // If marker exists and NOT curated, then delete
-            if (maps.MarkerService.markerExist(name) && !maps.MarkerService.markers[name].curated) {
+            if (maps.MarkerService.markerExist(name) && !maps.MarkerService.markers[name].stored) {
+                maps.MarkerService.markers[name].marker.setMap(null);
                 delete maps.MarkerService.markers[name];
             }
         },
 
         removeAllMarkers: function() {
             for (var key in maps.MarkerService.markers) {
-                if (!maps.MarkerService.markers[key].curated) {
+                if (!maps.MarkerService.markers[key].stored) {
                     maps.MarkerService.markers[key].marker.setMap(null);
                     delete maps.MarkerService.markers[key];
                 }
             }
         },
 
+        /**
+         * @description terminates animation for all markers
+         */
+        terminateAnimation: function() {
+            for (var key in maps.MarkerService.markers) {
+                maps.MarkerService.markers[key].marker.setAnimation(null);
+            }
+        },
+
+        /**
+         * @description Animates the specified Marker
+         * @param name
+         */
         animateMarker: function(name) {
+            maps.MarkerService.terminateAnimation();
+
             if (maps.MarkerService.markerExist(name)) {
                 var thisMarker = maps.MarkerService.markers[name];
                 thisMarker.marker.setAnimation(google.maps.Animation.BOUNCE);
+
+                (function() {
+                    var markerContext = thisMarker.marker;
+                    setTimeout(function() {
+                        markerContext.setAnimation(null);
+                    }, 2000);
+                })();
             }
         }
     }

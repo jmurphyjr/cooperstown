@@ -12,8 +12,6 @@ var ko = require('knockout');
 ko.postbox = require('knockout-postbox');
 ko.options.deferUpdates = true;
 var Place = require('./place');
-var cooperstownFirebase = require('./firebaseInterface');
-
 
 var CooperstownViewModel = function() {
     if ( !(this instanceof CooperstownViewModel) ) {
@@ -52,7 +50,7 @@ CooperstownViewModel.prototype.addPlace = function(place) {
 
     // On initial load, the places list will not show. Force an update
     // by notifying subscribers to the filter
-    // this.filter.notifySubscribers();
+    this.filter.notifySubscribers();
 };
 
 CooperstownViewModel.prototype.loadSavedPlaces = function(place) {
@@ -77,7 +75,7 @@ CooperstownViewModel.prototype._filtered = function() {
     else {
         placesFound = ko.utils.arrayFilter(this.places(),
             function(place) {
-                if (!(place.name().trim().toLowerCase().indexOf(searchFilter) !== -1)) {
+                if ((place.name().trim().toLowerCase().indexOf(searchFilter) === -1)) {
                     place.isVisible(false);
                 }
                 else {
