@@ -6,7 +6,6 @@
 var config = require('../config');
 var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
-var fs = require('fs');
 var path = require('path');
 
 var gulp = require('gulp');
@@ -89,7 +88,6 @@ gulp.task('gzip', function() {
         .pipe(p.size())
         .pipe(p.gzip())
         .pipe(p.rename(function(path) {
-            console.log(path);
             path.extname = path.extname.replace('.gz', 'gz');
         }))
         .pipe(gulp.dest(config.basePaths.dest));
@@ -175,9 +173,9 @@ gulp.task('serve-test', function() {
     gulp.watch(['src/**/*.js'], reload);
 });
 
-// -----------------------------------------------------------------------------------------------------
-// | Main Tasks                                                                                        |
-// -----------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+// | Main Tasks                                                                                   |
+// ------------------------------------------------------------------------------------------------
 
 gulp.task('build', function(done) {
     runSequence('clean',
@@ -223,10 +221,3 @@ gulp.task('karma-test', function(done) {
     }, done);
 });
 
-// gulp.task('karma-test', function() {
-//     return gulp.src(config.paths.scripts.src + 'google.js')
-//         .pipe(karma({
-//             configFile: '/Users/jack/Development/src/github.com/knockout-browserify/' + 'karma.conf.js',
-//             action: 'run'
-//         }));
-// });
