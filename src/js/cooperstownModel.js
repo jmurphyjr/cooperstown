@@ -54,14 +54,12 @@ CooperstownViewModel.prototype.addPlace = function(place) {
 };
 
 CooperstownViewModel.prototype.loadSavedPlaces = function(place) {
-    console.log(place);
-    if (typeof place === 'object') {
+    if (Object.prototype.toString(place) === '[object Object]') {
         this.places().push(new Place(place, 'saved'));
         // On initial load, the places list will not show. Force an update
         // by notifying subscribers to the filter
         this.filter.notifySubscribers();
     }
-
 };
 
 CooperstownViewModel.prototype._filtered = function() {

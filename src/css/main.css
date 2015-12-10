@@ -149,6 +149,21 @@ main {
     position: absolute;
 }
 
+.styled-infobox {
+    overflow: hidden;
+    position: absolute;
+    background-color: red;
+    border-radius: 5%;
+    min-height: 100px;
+    min-width: 100px;
+    padding: 10px 5px 10px 5px;
+}
+
+.styled-infobox .styled-infobox-close {
+    float: right;
+    cursor: pointer;
+}
+
 footer {
     z-index: 100;
     /* left: 10px; */

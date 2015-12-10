@@ -33,9 +33,7 @@ var Main = function() {
     function initialPlaceLoad(data) {
 
         if (data.val() !== null) {
-        var i = data.val().length;
         data.forEach(function(e) {
-            console.log(e.val());
             cooperstownList.loadSavedPlaces(e.val());
         });
         }

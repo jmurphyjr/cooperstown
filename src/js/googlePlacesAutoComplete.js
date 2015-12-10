@@ -40,10 +40,11 @@ PlacesAutoComplete.prototype._autoplaces = function() {
     // var placesFound = ko.observable();
 
     GoogleMaps.PlacesService.autoCompleteService(searchFilter)
-        .then(GoogleMaps.PlacesService.placeResult)
+        // .then(GoogleMaps.PlacesService.placeResult)
         .then(function(result) {
+            console.log(result);
             if (result.length > 0) {
-
+                console.log(GoogleMaps.MarkerService.markers);
                 // 1. Remove Markers Not Included in result latest search update.
 
                 // 2. Add Markers not already displayed on map.
@@ -52,11 +53,15 @@ PlacesAutoComplete.prototype._autoplaces = function() {
 
 
                 var newResultNames = result.map(function(obj) { return obj.name; } );
-                var oldPlaceNames = ko.utils.arrayMap(self.googlePlaces(), function(obj) { return obj.name; });
+                var oldPlaceNames = ko.utils.arrayMap(self.googlePlaces(), function(obj) {
+                    return obj.name;
+                });
                 console.log(newResultNames);
                 console.log(oldPlaceNames);
                 // GoogleMaps.MarkerService.removeMarker(newResultNames);
-                var diffNames = newResultNames.filter( function(el) { return oldPlaceNames.indexOf(el) < 0; });
+                var diffNames = newResultNames.filter( function(el) {
+                    return oldPlaceNames.indexOf(el) < 0;
+                });
                 console.log(diffNames);
 
                 // Filter out existing locations from the Google Places Results
