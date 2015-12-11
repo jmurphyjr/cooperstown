@@ -20,6 +20,17 @@ var PlacesAutoComplete = function() {
 
     this.autoCompletePlaces = ko.computed(this._autoplaces, this);
 
+    this.googlePlaces.subscribe(function(updated) {
+        ko.utils.arrayForEach(updated, function(item) {
+            if (item.distanceToDreamsPark === undefined) {
+                GoogleMaps.DistanceService.distanceToCooperstownPark(item.location)
+                    .then(function(result) {
+                        item.distanceToDreamsPark = ko.observable(result);
+                    });
+            }
+        });
+    });
+
 };
 
 PlacesAutoComplete.prototype.loadBindings = function(bindto) {
@@ -29,7 +40,8 @@ PlacesAutoComplete.prototype.loadBindings = function(bindto) {
 PlacesAutoComplete.prototype.addLocation = function(data) {
     console.log(data);
     this.place(data, 'new');
-    this.googlePlaces().remove(data);
+    GoogleMaps.MarkerService.removeMarker(data.name);
+    this.googlePlaces.remove(data);
 };
 
 PlacesAutoComplete.prototype._autoplaces = function() {
@@ -59,10 +71,13 @@ PlacesAutoComplete.prototype._autoplaces = function() {
                 console.log(newResultNames);
                 console.log(oldPlaceNames);
                 // GoogleMaps.MarkerService.removeMarker(newResultNames);
-                var diffNames = newResultNames.filter( function(el) {
-                    return oldPlaceNames.indexOf(el) < 0;
-                });
-                console.log(diffNames);
+                if (oldPlaceNames.length >= 1) {
+                    var diffNames = newResultNames( function(el) {
+                        return oldPlaceNames.indexOf(el) < 0;
+                    });
+                    console.log('Diff Names');
+                    console.log(diffNames);
+                }
 
                 // Filter out existing locations from the Google Places Results
                 console.log(self.googlePlaces());
@@ -79,33 +94,19 @@ PlacesAutoComplete.prototype._autoplaces = function() {
         });
 };
 
-PlacesAutoComplete.prototype.areDifferentBy = function(inPlace) {
-    // var namesGooglePlaces = this.googlePlaces().map( function(x) { return x.name; }).unique();
-    var namesInPlace = inPlace.map(function(x) { return x.name; }).unique();
-    var names = namesInPlace.concat(namesGooglePlaces).unique();
-    console.log(names);
-};
-
 PlacesAutoComplete.prototype._removeFilteredPlaces = function(inPlaces) {
-
     inPlaces.forEach(function(p) {
-
-
-
-    });
-    ko.utils.arrayForEach(this.googlePlaces(), function(p) {
-        console.log(p.name);
-        if (!(inPlaces.indexOf(p.name) > -1)) {
-            console.log('removing ' + p.name + ' from Markers');
-            GoogleMaps.MarkerService.removeMarker(p.name());
-
+        if (GoogleMaps.MarkerService.markers.hasOwnProperty(p)) {
+            GoogleMaps.MarkerService.removeMarker(p);
         }
     });
 };
 
 PlacesAutoComplete.prototype._addMarkers = function(result) {
     result.forEach(function(p) {
-        GoogleMaps.MarkerService.addMarker(p.name, p.location, p.category, false);
+        if (!GoogleMaps.MarkerService.markers.hasOwnProperty(p.name)) {
+            GoogleMaps.MarkerService.addMarker(p.name, p.location, p.category, false);
+        }
     });
 };
 
