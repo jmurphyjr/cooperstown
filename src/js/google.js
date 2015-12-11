@@ -9,14 +9,13 @@
 // var CustomOverlay = require('./customoverlay');
 
 console.log('entered google.js');
-
-var Q = require('q');
-
 var _map;
 
 var _infoWindow;  // The single inforWindow.
 
 var _coopersTown;  // openweathermap.org id 5113664
+
+var _initialMapBounds;
 
 var maps = {
 
@@ -74,6 +73,9 @@ var maps = {
                 console.log(event);
             }
         );
+        _initialMapBounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(42.50969783834314, -75.29208158984375),
+            new google.maps.LatLng(42.81769848711016, -74.61642241015625));
     },
 
     getMap: function() {
@@ -93,25 +95,23 @@ var maps = {
         },
 
         distanceToCooperstownPark: function(destination) {
-            var deferred = Q.defer();
 
-            maps.DistanceService._distanceService.getDistanceMatrix({
-                origins: [destination],
-                destinations: [ _coopersTown ],
-                travelMode: google.maps.TravelMode.DRIVING,
-                unitSystem: google.maps.UnitSystem.IMPERIAL
-            }, function(response, status) {
-                if (status === google.maps.DistanceMatrixStatus.OK) {
-                    var distance = maps.DistanceService.distanceResult(response);
-                    // deferred.resolve(response);
-                    deferred.resolve(distance);
-                }
-                else {
-                    deferred.reject(status);
-                }
+            return new Promise(function(resolve, reject) {
+                maps.DistanceService._distanceService.getDistanceMatrix({
+                    origins: [destination],
+                    destinations: [ _coopersTown ],
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    unitSystem: google.maps.UnitSystem.IMPERIAL
+                }, function(response, status) {
+                    if (status === google.maps.DistanceMatrixStatus.OK) {
+                        var distance = maps.DistanceService.distanceResult(response);
+                        resolve(distance);
+                    }
+                    else {
+                        reject(status);
+                    }
+                });
             });
-
-            return deferred.promise;
         },
 
         distanceResult: function(data) {
@@ -138,28 +138,25 @@ var maps = {
          * @returns {promise}
          */
         autoCompleteService: function(search) {
-            var deferred = Q.defer();
+            return new Promise(function(resolve, reject) {
+                if (search === '') {
+                    resolve([]);
+                }
+                else {
+                    maps.PlacesService._placesService.nearbySearch({
+                        location: _coopersTown,
+                        // name: search,
+                        keyword: search,
+                        rankBy: google.maps.places.RankBy.DISTANCE
+                    }, function (results, status, pagination) {
+                        var rtnData;
+                        rtnData = maps.PlacesService.placeResult(results, status, pagination);
+                        console.log(rtnData);
+                        resolve(rtnData);
 
-            if (search === '') {
-                deferred.resolve([]);
-            }
-            else {
-                maps.PlacesService._placesService.nearbySearch( {
-                    location: _coopersTown,
-                    radius: 20234,
-                    name: search
-                }, function(results, status, pagination) {
-                    var rtnData;
-                    rtnData = maps.PlacesService.placeResult(results, status, pagination);
-                    console.log(rtnData);
-                    deferred.resolve(rtnData);
-                    // console.log(rtnData);
-
-                    // deferred.resolve(rtnData);
-
-                });
-            }
-            return deferred.promise;
+                    });
+                }
+            });
         },
 
         setCategory: function(place) {
@@ -213,31 +210,39 @@ var maps = {
          */
         placeResult: function(results, status, pagination) {
 
-            var deferred = Q.defer();
             var length = results.length;
             var rtnPlaces = [];
 
             if (status !== google.maps.places.PlacesServiceStatus.OK) {
-                // deferred.resolve(rtnPlaces);
                 return rtnPlaces;
             }
             else {
                 console.log(results);
                 for (var i = length - 1; i >= 0; i--) {
-                    var temp = {};
-                    temp.id = undefined;
-                    temp.name = results[i].name;
-                    temp.description = undefined;
-                    temp.id = results[i].place_id;
-                    temp.icon = results[i].icon;
-                    temp.location = results[i].geometry.location;
-                    temp.address = '';
-                    temp.distanceToDreamsPark = undefined;
 
-                    // Set Category based on Google Places Types
-                    temp.category = maps.PlacesService.setCategory(results[i]);
-                    // console.log(temp);
-                    rtnPlaces.push(temp);
+                    console.log(results[i].geometry.location.toString());
+                    if (_initialMapBounds.contains(results[i].geometry.location)) {
+                        maps.DistanceService.distanceToCooperstownPark(results[i].geometry.location)
+                            .then(function(distance) {
+                               console.log(distance);
+                            });
+
+                        console.log('outside then');
+                        var temp = {};
+                        temp.id = undefined;
+                        temp.name = results[i].name;
+                        temp.description = undefined;
+                        temp.id = results[i].place_id;
+                        temp.icon = results[i].icon;
+                        temp.location = results[i].geometry.location;
+                        temp.address = '';
+                        temp.distanceToDreamsPark = undefined;
+
+                        // Set Category based on Google Places Types
+                        temp.category = maps.PlacesService.setCategory(results[i]);
+                        // console.log(temp);
+                        rtnPlaces.push(temp);
+                    }
                 }
                 var moreResultsButton = document.getElementById('btn-places');
                 var handler = function() {
@@ -259,7 +264,6 @@ var maps = {
                     moreResultsButton.disabled = false;
                     moreResultsButton.removeEventListener('click', handler);
                 }
-                // deferred.resolve(rtnPlaces);
             }
             return rtnPlaces;
         }
@@ -288,7 +292,6 @@ var maps = {
                 console.log(name + ' already exists in markers list');
             }
             else {
-                // maps.MarkerService.removeAllMarkers();
                 var catIcon = maps.MarkerService.iconMapping[locationtype];
 
                 var image = {
@@ -306,6 +309,10 @@ var maps = {
                     animation: google.maps.Animation.DROP
                 });
 
+                // Make sure Marker is visible on the map, if set center and zoom to initial value
+                if (!_map.getBounds().contains(marker.getPosition())) {
+                    maps.setDefaultZoomAndCenter();
+                }
                 google.maps.event.addListener(marker, 'click', function() {
                     _infoWindow.setContent('<p>' + name + '</p>');
                     _infoWindow.open(_map, marker);
@@ -386,9 +393,12 @@ var maps = {
          */
         animateMarker: function(name) {
             maps.MarkerService.terminateAnimation();
+            _infoWindow.close();
 
             if (maps.MarkerService.markerExist(name)) {
                 var thisMarker = maps.MarkerService.markers[name];
+                _infoWindow.setContent('<p>' + name + '</p>');
+                _infoWindow.open(_map, thisMarker.marker);
                 _map.setCenter(thisMarker.marker.getPosition());
                 thisMarker.marker.setAnimation(google.maps.Animation.BOUNCE);
 
