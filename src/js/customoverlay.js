@@ -5,8 +5,8 @@
 'use strict';
 
 /**
- * Inspired by the project InfoBox Project:
- * ref: http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js
+ * Inspired by:
+ * @ref http://artandlogic.com/2014/02/custom-google-maps-info-windows/
  *
  * @description Module to allow for ease of creating custom overlays for Google
  * Maps API. The module will allow for creating any overlay and attaching it to
@@ -50,6 +50,11 @@ function CustomOverlay() {
     this.layer = null;
     this.marker = null;
     this.position = null;
+
+    var closeX = document.createElement('div');
+    closeX.classList.add('styled-infobox-close');
+    closeX.innerHTML = 'x';
+    this.div.appendChild(closeX);
 }
 
 module.exports = CustomOverlay;
@@ -63,6 +68,11 @@ CustomOverlay.prototype.onAdd = function() {
 
     this.layer = this.getPanes().floatPane;
 
+    this.div.getElementsByClassName('styled-infobox-close')[0].addEventListener('click', function(){
+        // Close info window on click
+        this.close();
+    }.bind(this), false);
+
     this.layer.appendChild(this.div);
 };
 
@@ -72,7 +82,7 @@ CustomOverlay.prototype.draw = function() {
 
     var markerIcon = this.marker.getIcon();
     var cBounds = this.div.getBoundingClientRect();
-    var cHeight = cBounds.height + markerIcon.scaledSize.height + 10;
+    var cHeight = cBounds.height + markerIcon.scaledSize.height + 10 + 14;
     var cWidth = cBounds.width / 2;
 
     this.position = this.getProjection().fromLatLngToDivPixel(this.marker.getPosition());
@@ -97,5 +107,5 @@ CustomOverlay.prototype.close = function() {
 };
 
 CustomOverlay.prototype.setContent = function(html) {
-    this.div.innerHTML = html;
+    this.div.innerHTML = this.div.innerHTML + html;
 };
