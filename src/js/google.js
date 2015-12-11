@@ -275,11 +275,11 @@ var maps = {
         // iconUrl: 'http://maps.google.com/mapfiles/kml/paddle/',
 
         iconMapping: {
-            'restaurant': 'http://maps.google.com/mapfiles/kml/paddle/red-circle.png',
-            'lodging': 'http://maps.google.com/mapfiles/kml/paddle/blu-circle.png',
-            'fun': 'http://maps.google.com/mapfiles/kml/paddle/ylw-circle.png',
+            'restaurant': 'https://maps.google.com/mapfiles/kml/paddle/red-circle.png',
+            'lodging': 'https://maps.google.com/mapfiles/kml/paddle/blu-circle.png',
+            'fun': 'https://maps.google.com/mapfiles/kml/paddle/ylw-circle.png',
             'baseball': 'images/baseball.png',
-            'general': 'http://maps.google.com/mapfiles/kml/paddle/purple-circle.png'
+            'general': 'https://maps.google.com/mapfiles/kml/paddle/purple-circle.png'
         },
 
         addMarker: function(name, location, locationtype, curated) {
