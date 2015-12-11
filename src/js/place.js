@@ -62,22 +62,14 @@ function Place(data, type) {
         GoogleMaps.MarkerService.setVisible(self.name(), current);
     });
 
-    /**
-     * IIFE to calculate the distance to Dreams Park for all curated locations, except DP itself
-     */
-    if (this.distanceToDreamsPark() === '') {
-        (function distanceToCp() {
-
-            if (self.name() !== 'Cooperstown Dreams Park') {
-                GoogleMaps.DistanceService.distanceToCooperstownPark(self.location.getLocation())
-                    .then(function (result) {
-                        if (result !== undefined) {
-                            self.distanceToDreamsPark('Distance to DP: ' + result);
-                            cooperstownFirebase.updatePlace(self.name(), ko.toJS(self));
-                        }
-                    });
-            }
-        })();
+    if (self.name() !== 'Cooperstown Dreams Park' && self.distanceToDreamsPark() === '') {
+        GoogleMaps.DistanceService.distanceToCooperstownPark(self.location.getLocation())
+            .then(function (result) {
+                if (result !== undefined) {
+                    self.distanceToDreamsPark('Distance to DP: ' + result);
+                    cooperstownFirebase.updatePlace(self.name(), ko.toJS(self));
+                }
+            });
     }
 
     if (type === 'new') {
