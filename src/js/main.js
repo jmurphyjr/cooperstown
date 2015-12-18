@@ -59,10 +59,10 @@ var Main = function() {
 
     emitter.on('googlemapsloaded', function() {
         cooperstownFirebase.init(initialPlaceLoad, updatePlace);
-        test = new gPlacesSearch();
-        test.loadBindings(placesListId);
         cooperstownList.loadBindings(cooperstownId);
         searchBox.loadBindings(searchBarId);
+        test = new gPlacesSearch();
+        test.loadBindings(placesListId);
 
     });
 

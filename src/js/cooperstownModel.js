@@ -13,11 +13,14 @@ ko.postbox = require('knockout-postbox');
 ko.options.deferUpdates = true;
 var Place = require('./place');
 
+var GoogleMaps = require('./google');
+
 var CooperstownViewModel = function() {
     if ( !(this instanceof CooperstownViewModel) ) {
         return new CooperstownViewModel();
     }
 
+    this.currentPlace = ko.observable().publishOn('currentPlace');
     this.places = ko.observableArray([]);
 
     this.visiblePlaces = ko.computed(this._isVisible, this);
@@ -44,8 +47,11 @@ CooperstownViewModel.prototype._isVisible = function () {
 };
 
 CooperstownViewModel.prototype.addPlace = function(place) {
-    if (typeof place  === 'object') {
+    if (Object.prototype.toString(place) === '[object Object]' && place !== '') {
         this.places().push(new Place(place, 'new'));
+    }
+    else {
+        console.log('++' + place + '++');
     }
 
     // On initial load, the places list will not show. Force an update
@@ -55,7 +61,9 @@ CooperstownViewModel.prototype.addPlace = function(place) {
 
 CooperstownViewModel.prototype.loadSavedPlaces = function(place) {
     if (Object.prototype.toString(place) === '[object Object]') {
-        this.places().push(new Place(place, 'saved'));
+        var tPlace = new Place(place, 'saved');
+        this.places().push(tPlace);
+        this.currentPlace(tPlace);
         // On initial load, the places list will not show. Force an update
         // by notifying subscribers to the filter
         this.filter.notifySubscribers();
@@ -92,8 +100,10 @@ CooperstownViewModel.prototype.focusLocation = function(data) {
     this.places().forEach(function (p) {
         p.isSelected(false);
     });
+    this.currentPlace(data);
     // Set this elements isSelected to true;
     data.isSelected(true);
+    GoogleMaps.PlacesService.detailInfo(data.id());
 
     return true;
 };

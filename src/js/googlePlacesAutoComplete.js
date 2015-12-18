@@ -7,8 +7,11 @@
 
 var ko = require('knockout');
 var GoogleMaps = require('./google');
+var Place = require('./place');
 
 var PlacesAutoComplete = function() {
+
+    var self = this;
 
     this.filter = ko.observable('').subscribeTo('filterPlaces');
 
@@ -16,20 +19,20 @@ var PlacesAutoComplete = function() {
 
     this.curatedCooperstown = ko.observableArray([]).subscribeTo('filteredList');
 
-    this.googlePlaces = ko.observableArray();
+    this.googlePlaces = ko.observableArray([]);
 
     this.autoCompletePlaces = ko.computed(this._autoplaces, this);
 
-    this.googlePlaces.subscribe(function(updated) {
-        ko.utils.arrayForEach(updated, function(item) {
-            if (item.distanceToDreamsPark === undefined) {
-                GoogleMaps.DistanceService.distanceToCooperstownPark(item.location)
-                    .then(function(result) {
-                        item.distanceToDreamsPark = ko.observable(result);
-                    });
-            }
-        });
-    });
+    // this.googlePlaces.subscribe(function(updated) {
+    //     ko.utils.arrayForEach(updated, function(item) {
+    //         if (item.distanceToDreamsPark === undefined) {
+    //             GoogleMaps.DistanceService.distanceToCooperstownPark(item.location)
+    //                 .then(function(result) {
+    //                     item.distanceToDreamsPark = ko.observable(result);
+    //                 });
+    //         }
+    //     });
+    // });
 
 };
 
@@ -47,51 +50,36 @@ PlacesAutoComplete.prototype.addLocation = function(data) {
 PlacesAutoComplete.prototype._autoplaces = function() {
     var searchFilter = this.filter().trim().toLowerCase();
 
-    var self = this;
-    // self.googlePlaces.removeAll();
-    // var placesFound = ko.observable();
 
     GoogleMaps.PlacesService.autoCompleteService(searchFilter)
-        // .then(GoogleMaps.PlacesService.placeResult)
+
         .then(function(result) {
-            console.log(result);
+            var self = this;
+            console.log(this);
+            //console.log(result);
             if (result.length > 0) {
-                console.log(GoogleMaps.MarkerService.markers);
-                // 1. Remove Markers Not Included in result latest search update.
-
-                // 2. Add Markers not already displayed on map.
-
-                // 3. Update googlePlaces with new results.
-
-
-                var newResultNames = result.map(function(obj) { return obj.name; } );
-                var oldPlaceNames = ko.utils.arrayMap(self.googlePlaces(), function(obj) {
-                    return obj.name;
-                });
-                console.log(newResultNames);
-                console.log(oldPlaceNames);
-                // GoogleMaps.MarkerService.removeMarker(newResultNames);
-                if (oldPlaceNames.length >= 1) {
-                    var diffNames = newResultNames( function(el) {
-                        return oldPlaceNames.indexOf(el) < 0;
+                self._getResults(result).forEach(function(p) {
+                    ko.utils.arrayForEach(self.googlePlaces, function(x) {
+                        if (x.name().toLowerCase().indexOf(searchFilter) === -1) {
+                            x.isVisible(false);
+                        }
                     });
-                    console.log('Diff Names');
-                    console.log(diffNames);
-                }
+                    self.googlePlaces.push(new Place(p, 'temp'));
+                    // placesFound.push(new Place(p, 'temp'));
+                    // self.googlePlaces.push(p);
 
-                // Filter out existing locations from the Google Places Results
-                console.log(self.googlePlaces());
-                console.log(result);
-                console.log(self.googlePlaces());
-                self._addMarkers(result);
-                self.googlePlaces(self._getResults(result));
+                });
+
+
             }
             else {
                 GoogleMaps.MarkerService.removeAllMarkers();
                 self.googlePlaces([]);
-                console.log('empty result');
+                // placesFound = [];
+                // console.log('empty result');
             }
-        });
+        }.bind(this));
+    // return placesFound;
 };
 
 PlacesAutoComplete.prototype._removeFilteredPlaces = function(inPlaces) {
