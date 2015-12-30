@@ -40,7 +40,7 @@ var Main = function() {
     }
 
     function updatePlace(data) {
-
+        console.log(data);
     }
 
     utils.loadScript('google', function(result) {

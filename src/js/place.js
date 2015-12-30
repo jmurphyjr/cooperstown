@@ -2,6 +2,7 @@
  * Created by jack on 11/22/15.
  */
 /* jshint node: true */
+/* global google */
 'use strict';
 
 var ko = require('knockout');
@@ -61,7 +62,10 @@ function Place(data, type) {
         return response;
     });
 
-    var marker = GoogleMaps.MarkerService.addMarker(this.name(), this.location, this.category(), store);
+    var marker = GoogleMaps.MarkerService.addMarker(this.name(),
+        this.location,
+        this.category(),
+        store);
 
     this.isSelected.subscribe(function(selected) {
         if (selected) {

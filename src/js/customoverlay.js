@@ -94,7 +94,8 @@ CustomOverlay.prototype.onAdd = function() {
 
     this.layer = this.getPanes().floatPane;
 
-    this.container.getElementsByClassName('styled-infobox-close')[0].addEventListener('click', function(){
+    this.container.getElementsByClassName('styled-infobox-close')[0].addEventListener('click',
+        function() {
         // Close info window on click
         this.close();
     }.bind(this), false);
