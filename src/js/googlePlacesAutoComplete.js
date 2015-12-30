@@ -62,6 +62,7 @@ PlacesAutoComplete.prototype._autoplaces = function() {
                     ko.utils.arrayForEach(self.googlePlaces, function(x) {
                         if (x.name().toLowerCase().indexOf(searchFilter) === -1) {
                             x.isVisible(false);
+                            self.googlePlaces.remove(x);
                         }
                     });
                     self.googlePlaces.push(new Place(p, 'temp'));

@@ -61,12 +61,26 @@ function Place(data, type) {
         return response;
     });
 
-    GoogleMaps.MarkerService.addMarker(this.name(), this.location, this.category(), store);
+    var marker = GoogleMaps.MarkerService.addMarker(this.name(), this.location, this.category(), store);
 
     this.isSelected.subscribe(function(selected) {
-
         if (selected) {
-            GoogleMaps.MarkerService.animateMarker(self.name());
+            var map = GoogleMaps.getMap();
+            if (!map.getBounds().contains(marker.getPosition())) {
+                GoogleMaps.setDefaultZoomAndCenter();
+            }
+
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+
+            (function() {
+                var markerContext = marker;
+                setTimeout(function() {
+                    markerContext.setAnimation(null);
+                }, 2000);
+            })();
+        }
+        else {
+            marker.setAnimation(null);
         }
     });
 
@@ -74,7 +88,7 @@ function Place(data, type) {
      * @description Set Marker visibility
      */
     this.isVisible.subscribe(function(current) {
-        GoogleMaps.MarkerService.setVisible(self.name(), current);
+        marker.setVisible(current);
     });
 
     if (type === 'new') {

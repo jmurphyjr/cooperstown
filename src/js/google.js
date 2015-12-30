@@ -285,8 +285,11 @@ var maps = {
             return rtnPlaces;
         },
 
+        detailResult: function(result, status) {
+            console.log(result);
+        },
+
         detailInfo: function(placeId) {
-            console.log(placeId);
             return new Promise(function(resolve, reject) {
                 if (placeId === '') {
                     resolve([]);
@@ -294,11 +297,11 @@ var maps = {
                 else {
                     maps.PlacesService._placesService.getDetails({
                         placeId: placeId
-                    }, function (results, status, pagination) {
-                        console.log(results);
+                    }, function (result, status) {
+                        // console.log(results);
                         if (status === google.maps.places.PlacesServiceStatus.OK) {
                             var rtnData;
-                            rtnData = maps.PlacesService.placeResult(results, status, pagination);
+                            rtnData = maps.PlacesService.detailResult(result, status);
                             resolve(rtnData);
                         }
                         else {
@@ -329,42 +332,34 @@ var maps = {
             if (curated === undefined) {
                 curated = false;
             }
-            // If Marker already exists, then exit
-            if (maps.MarkerService.markerExist(name)) {
-                return;
+
+            var catIcon = maps.MarkerService.iconMapping[locationtype];
+
+            var image = {
+                url: catIcon,
+                scaledSize: new google.maps.Size(30, 30)
+            };
+
+
+            var marker = new google.maps.Marker({
+                map: _map,
+                opacity: 1.0,
+                position: new google.maps.LatLng(location.lat(), location.lng()),
+                title: name,
+                icon: image,
+                animation: google.maps.Animation.DROP
+            });
+
+            // Make sure Marker is visible on the map, if set center and zoom to initial value
+            if (!_map.getBounds().contains(marker.getPosition())) {
+                maps.setDefaultZoomAndCenter();
             }
-            else {
-                var catIcon = maps.MarkerService.iconMapping[locationtype];
+            google.maps.event.addListener(marker, 'click', function() {
+                _infoWindow.setContent('<p>' + name + '</p>');
+                _infoWindow.open(_map, marker);
+            }.bind(marker));
 
-                var image = {
-                    url: catIcon,
-                    scaledSize: new google.maps.Size(30, 30)
-                };
-
-
-                var marker = new google.maps.Marker({
-                    map: _map,
-                    opacity: 1.0,
-                    position: new google.maps.LatLng(location.lat(), location.lng()),
-                    title: name,
-                    icon: image,
-                    animation: google.maps.Animation.DROP
-                });
-
-                // Make sure Marker is visible on the map, if set center and zoom to initial value
-                if (!_map.getBounds().contains(marker.getPosition())) {
-                    maps.setDefaultZoomAndCenter();
-                }
-                google.maps.event.addListener(marker, 'click', function() {
-                    _infoWindow.setContent('<p>' + name + '</p>');
-                    _infoWindow.open(_map, marker);
-                }.bind(marker));
-
-                maps.MarkerService.markers[name] = {
-                    marker: marker,
-                    stored: curated
-                };
-            }
+            return marker;
         },
 
         allVisible: function() {
