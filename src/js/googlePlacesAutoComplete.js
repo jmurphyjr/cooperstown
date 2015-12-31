@@ -14,6 +14,15 @@ var PlacesAutoComplete = function() {
     var self = this;
 
     this.filter = ko.observable('').subscribeTo('filterPlaces');
+    this.isFiltered = ko.observable(false);
+    this.filter.subscribe(function(update) {
+        if (update.length > 0) {
+            self.isFiltered(true);
+        }
+        else {
+            self.isFiltered(false);
+        }
+    });
 
     this.place = ko.observable('').publishOn('addPlace');
 
@@ -22,18 +31,6 @@ var PlacesAutoComplete = function() {
     this.googlePlaces = ko.observableArray([]);
 
     this.autoCompletePlaces = ko.computed(this._autoplaces, this);
-
-    // this.googlePlaces.subscribe(function(updated) {
-    //     ko.utils.arrayForEach(updated, function(item) {
-    //         if (item.distanceToDreamsPark === undefined) {
-    //             GoogleMaps.DistanceService.distanceToCooperstownPark(item.location)
-    //                 .then(function(result) {
-    //                     item.distanceToDreamsPark = ko.observable(result);
-    //                 });
-    //         }
-    //     });
-    // });
-
 };
 
 PlacesAutoComplete.prototype.loadBindings = function(bindto) {
@@ -47,56 +44,90 @@ PlacesAutoComplete.prototype.addLocation = function(data) {
     this.googlePlaces.remove(data);
 };
 
+PlacesAutoComplete.prototype._alreadyExists = function(place) {
+    var found = false;
+    ko.utils.arrayForEach(this.googlePlaces(), function(x) {
+        if (x.name() === place.name) {
+            found = true;
+        }
+    });
+    return found;
+};
+
+PlacesAutoComplete.prototype._removePlace = function(place) {
+    console.log(place);
+    ko.utils.arrayForEach(this.googlePlaces(), function(x) {
+        if (x.name() === place.name) {
+            x.isVisible(false);
+            this.googlePlaces.remove(x);
+        }
+    }.bind(this));
+};
+
+PlacesAutoComplete.prototype._cleanPlaces = function(searchedPlaces) {
+
+    var i = this.googlePlaces().length;
+
+    while(i--) {
+        var found = false;
+        var currentPlace = this.googlePlaces()[i];
+        searchedPlaces.forEach(function(place) {
+            if (place.name === currentPlace.name()) {
+                found = true;
+            }
+        });
+
+        if (!found) {
+            currentPlace.isVisible(false);
+            this.googlePlaces.remove(currentPlace);
+        }
+    }
+};
+
 PlacesAutoComplete.prototype._autoplaces = function() {
     var searchFilter = this.filter().trim().toLowerCase();
 
 
+    // Query Google Nearby Search for searchFilter
     GoogleMaps.PlacesService.autoCompleteService(searchFilter)
-
         .then(function(result) {
+            console.log('Search Filter = ' + searchFilter);
             var self = this;
-            console.log(this);
-            //console.log(result);
-            if (result.length > 0) {
-                self._getResults(result).forEach(function(p) {
-                    ko.utils.arrayForEach(self.googlePlaces, function(x) {
-                        if (x.name().toLowerCase().indexOf(searchFilter) === -1) {
-                            x.isVisible(false);
-                            self.googlePlaces.remove(x);
+
+            // Filtering using the searchBox
+            if (self.isFiltered()) {
+                var searchedPlaces = self._getResults(result);
+
+                if (self.googlePlaces().length > 0) {
+                    // Removes existing googlePlaces that are not in the current searchFilter
+                    self._cleanPlaces(searchedPlaces);
+                }
+
+                searchedPlaces.forEach(function(place) {
+                    console.log('searchedPlace: ' + place.name.toLowerCase());
+                    if (place.name.toLowerCase().indexOf(searchFilter) === -1) {
+                        self._removePlace(place);
+                    }
+                    else {
+                        if (self._alreadyExists(place)) {
+                            console.log(place.name + ' already exists, thus will not be added');
                         }
-                    });
-                    self.googlePlaces.push(new Place(p, 'temp'));
-                    // placesFound.push(new Place(p, 'temp'));
-                    // self.googlePlaces.push(p);
-
+                        else {
+                            console.log(JSON.stringify(place, null, 4) + ' will be added');
+                            self.googlePlaces.push(new Place(place, 'temp'));
+                            console.log(self.googlePlaces());
+                        }
+                    }
                 });
-
-
             }
             else {
-                GoogleMaps.MarkerService.removeAllMarkers();
+                console.log('No data is in the searchbox');
+                ko.utils.arrayForEach(self.googlePlaces(), function(place) {
+                    place.isVisible(false);
+                });
                 self.googlePlaces([]);
-                // placesFound = [];
-                // console.log('empty result');
             }
         }.bind(this));
-    // return placesFound;
-};
-
-PlacesAutoComplete.prototype._removeFilteredPlaces = function(inPlaces) {
-    inPlaces.forEach(function(p) {
-        if (GoogleMaps.MarkerService.markers.hasOwnProperty(p)) {
-            GoogleMaps.MarkerService.removeMarker(p);
-        }
-    });
-};
-
-PlacesAutoComplete.prototype._addMarkers = function(result) {
-    result.forEach(function(p) {
-        if (!GoogleMaps.MarkerService.markers.hasOwnProperty(p.name)) {
-            GoogleMaps.MarkerService.addMarker(p.name, p.location, p.category, false);
-        }
-    });
 };
 
 /**

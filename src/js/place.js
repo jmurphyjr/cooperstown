@@ -103,7 +103,9 @@ function Place(data, type) {
         });
     }
     else if (type === 'temp') {
-        self.getDistance();
+        self.getDistance().then(function(result) {
+            self.distanceToDreamsPark('Distance to DP: ' + result);
+        });
     }
 }
 
