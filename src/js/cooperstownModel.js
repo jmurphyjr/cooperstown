@@ -76,21 +76,20 @@ CooperstownViewModel.prototype._filtered = function() {
 
     if (!searchFilter) {
         placesFound = this.places();
-        ko.utils.arrayForEach(this.places(), this._makeVisible);
     }
     else {
         placesFound = ko.utils.arrayFilter(this.places(),
             function(place) {
-                if ((place.name().trim().toLowerCase().indexOf(searchFilter) === -1)) {
+                if ((place.name().trim().toLowerCase().indexOf(searchFilter) === -1) ||
+                    (place.category().trim().toLowerCase().indexOf(searchFilter) === -1)) {
                     place.isVisible(false);
                 }
-                else {
-                    place.isVisible(true);
-                }
-                return place.name().trim().toLowerCase().indexOf(searchFilter) !== -1;
+                return (place.name().trim().toLowerCase().indexOf(searchFilter) !== -1 ||
+                place.category().trim().toLowerCase().indexOf(searchFilter) !== -1);
 
             });
     }
+    ko.utils.arrayForEach(placesFound, this._makeVisible);
     return placesFound;
 };
 

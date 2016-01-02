@@ -246,14 +246,10 @@ var maps = {
 
                     if (_initialMapBounds.contains(results[i].geometry.location)) {
                         var temp = {};
-                        // temp.id = undefined;
                         temp.name = results[i].name;
-                        // temp.description = undefined;
                         temp.id = results[i].place_id;
                         temp.icon = results[i].icon;
                         temp.location = results[i].geometry.location;
-                        // temp.address = '';
-                        // temp.distanceToDreamsPark = undefined;
 
                         // Set Category based on Google Places Types
                         temp.category = maps.PlacesService.setCategory(results[i]);

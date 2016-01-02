@@ -68,7 +68,9 @@ function Place(data, type) {
         store);
 
     this.isSelected.subscribe(function(selected) {
+        console.log(selected);
         if (selected) {
+            self.isVisible(true);
             var map = GoogleMaps.getMap();
             if (!map.getBounds().contains(marker.getPosition())) {
                 GoogleMaps.setDefaultZoomAndCenter();

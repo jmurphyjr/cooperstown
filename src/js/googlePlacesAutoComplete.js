@@ -97,27 +97,28 @@ PlacesAutoComplete.prototype._autoplaces = function() {
             // Filtering using the searchBox
             if (self.isFiltered()) {
                 var searchedPlaces = self._getResults(result);
-
+                // console.log('searchedPlaces: ' + JSON.stringify(searchedPlaces));
                 if (self.googlePlaces().length > 0) {
                     // Removes existing googlePlaces that are not in the current searchFilter
                     self._cleanPlaces(searchedPlaces);
                 }
 
                 searchedPlaces.forEach(function(place) {
-                    console.log('searchedPlace: ' + place.name.toLowerCase());
-                    if (place.name.toLowerCase().indexOf(searchFilter) === -1) {
-                        self._removePlace(place);
-                    }
-                    else {
+                    // console.log('searchedPlace: ' + place.name.toLowerCase());
+                    // if (place.name.toLowerCase().indexOf(searchFilter) === -1) {
+                    //     self._removePlace(place);
+                    // }
+                    // else {
                         if (self._alreadyExists(place)) {
-                            console.log(place.name + ' already exists, thus will not be added');
+                            // console.log(place.name + ' already exists, thus will not be added');
+
                         }
                         else {
-                            console.log(JSON.stringify(place, null, 4) + ' will be added');
+                            // console.log(JSON.stringify(place, null, 4) + ' will be added');
                             self.googlePlaces.push(new Place(place, 'temp'));
-                            console.log(self.googlePlaces());
+                            // console.log(self.googlePlaces());
                         }
-                    }
+                    // }
                 });
             }
             else {

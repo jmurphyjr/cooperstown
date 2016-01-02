@@ -121,8 +121,11 @@ main {
     border: 1px outset #0000AA;
 }
 
+.ctown_ul_li_name {
+    color: wheat;
+}
 
-.ctown_ul_li_name a{
+.ctown_ul_li_name a {
     color: wheat;
 }
 .searchBar_inline {
