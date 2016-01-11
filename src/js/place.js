@@ -100,13 +100,13 @@ function Place(data, type) {
     if (type === 'new') {
 
         self.getDistance().then(function(result) {
-            self.distanceToDreamsPark('Distance to DP: ' + result);
+            self.distanceToDreamsPark('Distance to DreamsPark: ' + result);
             cooperstownFirebase.tryCreateNewPlace(this.name(), ko.toJS(this));
         });
     }
     else if (type === 'temp') {
         self.getDistance().then(function(result) {
-            self.distanceToDreamsPark('Distance to DP: ' + result);
+            self.distanceToDreamsPark('Distance to DreamsPark: ' + result);
         });
     }
 }
