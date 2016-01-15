@@ -239,7 +239,7 @@ var maps = {
 
             var length = results.length;
             var rtnPlaces = [];
-            console.log(status + length);
+
             if (status !== google.maps.places.PlacesServiceStatus.OK) {
                 return rtnPlaces;
             }
@@ -259,7 +259,7 @@ var maps = {
                     }
                 }
             }
-            console.log(rtnPlaces);
+
             return rtnPlaces;
         },
 
