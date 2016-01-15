@@ -140,6 +140,7 @@ var maps = {
          * @returns {promise}
          */
         autoCompleteService: function(search) {
+            var rtnData = [];
             return new Promise(function(resolve, reject) {
                 if (search === '') {
                     resolve([]);
@@ -147,18 +148,19 @@ var maps = {
                 else {
                     maps.PlacesService._placesService.nearbySearch({
                         location: _coopersTown,
-                        // name: search,
                         keyword: search,
                         rankBy: google.maps.places.RankBy.DISTANCE
                     }, function (results, status, pagination) {
-                        console.log(results);
-                        if (status === google.maps.places.PlacesServiceStatus.OK) {
-                            var rtnData;
-                            rtnData = maps.PlacesService.placeResult(results, status, pagination);
+                        if (status === google.maps.places.PlacesServiceStatus.OK && pagination.hasNextPage) {
+                            rtnData = rtnData.concat(maps.PlacesService.placeResult(results, status));
+                            pagination.nextPage();
+                        }
+                        else if (status === google.maps.places.PlacesServiceStatus.OK && !pagination.hasNextPage) {
+                            rtnData = rtnData.concat(maps.PlacesService.placeResult(results, status));
                             resolve(rtnData);
                         }
                         else {
-                            reject(Error('No Places Returned: ' + status.toString()));
+                            resolve([]);
                         }
 
 
@@ -237,7 +239,7 @@ var maps = {
 
             var length = results.length;
             var rtnPlaces = [];
-
+            console.log(status + length);
             if (status !== google.maps.places.PlacesServiceStatus.OK) {
                 return rtnPlaces;
             }
@@ -253,31 +255,11 @@ var maps = {
 
                         // Set Category based on Google Places Types
                         temp.category = maps.PlacesService.setCategory(results[i]);
-                        // console.log(temp);
                         rtnPlaces.push(temp);
                     }
                 }
-                var moreResultsButton = document.getElementById('btn-places');
-                var handler = function() {
-                    // var moreResultsButton = document.getElementById('btn-places');
-                    moreResultsButton.disabled = true;
-                    pagination.nextPage();
-                };
-
-                if (pagination.hasNextPage) {
-
-                    moreResultsButton.disabled = false;
-
-                    moreResultsButton.addEventListener('click', handler); // function() {
-                    //     moreResultsButton.disabled = true;
-                    //     pagination.nextPage();
-                    // });
-                }
-                else {
-                    moreResultsButton.disabled = false;
-                    moreResultsButton.removeEventListener('click', handler);
-                }
             }
+            console.log(rtnPlaces);
             return rtnPlaces;
         },
 
@@ -358,14 +340,14 @@ var maps = {
             return marker;
         },
 
-        allVisible: function() {
-            for (var key in maps.MarkerService.markers) {
-                if (maps.MarkerService.markerExist(key)) {
-                    var value = maps.MarkerService.markers[key];
-                    value.marker.setVisible(true);
-                }
-            }
-        },
+        //allVisible: function() {
+        //    for (var key in maps.MarkerService.markers) {
+        //        if (maps.MarkerService.markerExist(key)) {
+        //            var value = maps.MarkerService.markers[key];
+        //            value.marker.setVisible(true);
+        //        }
+        //    }
+        //},
 
         setVisible: function(name, visible) {
             // console.log(name + ': ' + visible);
@@ -402,23 +384,23 @@ var maps = {
             }
         },
 
-        removeAllMarkers: function() {
-            for (var key in maps.MarkerService.markers) {
-                if (!maps.MarkerService.markers[key].stored) {
-                    maps.MarkerService.markers[key].marker.setMap(null);
-                    delete maps.MarkerService.markers[key];
-                }
-            }
-        },
+        //removeAllMarkers: function() {
+        //    for (var key in maps.MarkerService.markers) {
+        //        if (!maps.MarkerService.markers[key].stored) {
+        //            maps.MarkerService.markers[key].marker.setMap(null);
+        //            delete maps.MarkerService.markers[key];
+        //        }
+        //    }
+        //},
 
-        /**
-         * @description terminates animation for all markers
-         */
-        terminateAnimation: function() {
-            for (var key in maps.MarkerService.markers) {
-                maps.MarkerService.markers[key].marker.setAnimation(null);
-            }
-        },
+        ///**
+        // * @description terminates animation for all markers
+        // */
+        //terminateAnimation: function() {
+        //    for (var key in maps.MarkerService.markers) {
+        //        maps.MarkerService.markers[key].marker.setAnimation(null);
+        //    }
+        //},
 
         /**
          * @description Animates the specified Marker
