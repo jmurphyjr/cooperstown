@@ -24,6 +24,7 @@ var PlacesAutoComplete = function() {
         }
     });
 
+    this.currentPlace = ko.observable().publishOn('currentPlace');
     this.place = ko.observable('').publishOn('addPlace');
 
     this.curatedCooperstown = ko.observableArray([]).subscribeTo('filteredList');
@@ -31,6 +32,10 @@ var PlacesAutoComplete = function() {
     this.googlePlaces = ko.observableArray([]);
 
     this.autoCompletePlaces = ko.computed(this._autoplaces, this);
+
+    this.onClick = function() {
+        console.log('execute on click');
+    };
 };
 
 PlacesAutoComplete.prototype.loadBindings = function(bindto) {
@@ -40,7 +45,7 @@ PlacesAutoComplete.prototype.loadBindings = function(bindto) {
 PlacesAutoComplete.prototype.addLocation = function(data) {
     console.log(data);
     this.place(data, 'new');
-    GoogleMaps.MarkerService.removeMarker(data.name);
+    GoogleMaps.MarkerService.removeMarker(data.name());
     this.googlePlaces.remove(data);
 };
 
@@ -63,6 +68,21 @@ PlacesAutoComplete.prototype._removePlace = function(place) {
         }
     }.bind(this));
 };
+
+PlacesAutoComplete.prototype.focusLocation = function(data) {
+
+    // First set isSelected to false for all places
+    this.googlePlaces().forEach(function (p) {
+        p.isSelected(false);
+    });
+    this.currentPlace(data);
+    // Set this elements isSelected to true;
+    data.isSelected(true);
+    GoogleMaps.PlacesService.detailInfo(data.id());
+
+    return true;
+};
+
 
 PlacesAutoComplete.prototype._cleanPlaces = function(searchedPlaces) {
 
@@ -97,32 +117,19 @@ PlacesAutoComplete.prototype._autoplaces = function() {
             // Filtering using the searchBox
             if (self.isFiltered()) {
                 var searchedPlaces = self._getResults(result);
-                // console.log('searchedPlaces: ' + JSON.stringify(searchedPlaces));
                 if (self.googlePlaces().length > 0) {
                     // Removes existing googlePlaces that are not in the current searchFilter
                     self._cleanPlaces(searchedPlaces);
                 }
 
                 searchedPlaces.forEach(function(place) {
-                    // console.log('searchedPlace: ' + place.name.toLowerCase());
-                    // if (place.name.toLowerCase().indexOf(searchFilter) === -1) {
-                    //     self._removePlace(place);
-                    // }
-                    // else {
-                        if (self._alreadyExists(place)) {
-                            // console.log(place.name + ' already exists, thus will not be added');
-
-                        }
-                        else {
-                            // console.log(JSON.stringify(place, null, 4) + ' will be added');
+                        if (!self._alreadyExists(place)) {
                             self.googlePlaces.push(new Place(place, 'temp'));
-                            // console.log(self.googlePlaces());
                         }
                     // }
                 });
             }
             else {
-                console.log('No data is in the searchbox');
                 ko.utils.arrayForEach(self.googlePlaces(), function(place) {
                     place.isVisible(false);
                 });

@@ -154,7 +154,17 @@ main {
 
 .infobox-container {
     position: absolute;
+    z-index: 5;
 }
+
+.place-image {
+    padding: 2px;
+    max-width: 100px;
+    max-height: 100px;
+    width: 100px;
+    height: 100px;
+}
+
 /* @credit: http://nicolasgallagher.com/pure-css-speech-bubbles/demo/ */
 .styled-infobox {
     position:relative;

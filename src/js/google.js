@@ -89,6 +89,10 @@ var maps = {
         _map.setCenter(_coopersTown);
     },
 
+    displayInfoWindow: function(place) {
+        console.log(place);
+    },
+
     DistanceService: {
         _distanceService: '',
 
@@ -151,16 +155,20 @@ var maps = {
                         keyword: search,
                         rankBy: google.maps.places.RankBy.DISTANCE
                     }, function (results, status, pagination) {
-                        if (status === google.maps.places.PlacesServiceStatus.OK && pagination.hasNextPage) {
-                            rtnData = rtnData.concat(maps.PlacesService.placeResult(results, status));
+                        if (status === google.maps.places.PlacesServiceStatus.OK &&
+                            pagination.hasNextPage) {
+                            rtnData = rtnData.concat(maps.PlacesService.placeResult(
+                                results, status));
                             pagination.nextPage();
                         }
-                        else if (status === google.maps.places.PlacesServiceStatus.OK && !pagination.hasNextPage) {
-                            rtnData = rtnData.concat(maps.PlacesService.placeResult(results, status));
+                        else if (status === google.maps.places.PlacesServiceStatus.OK &&
+                            !pagination.hasNextPage) {
+                            rtnData = rtnData.concat(maps.PlacesService.placeResult(results,
+                                status));
                             resolve(rtnData);
                         }
                         else {
-                            resolve([]);
+                            reject([]);
                         }
 
 
@@ -264,7 +272,22 @@ var maps = {
         },
 
         detailResult: function(result, status) {
+            var html = '<h3>' + result.name + '</h3><address>' + result.formatted_address +'</address>';
             console.log(result);
+
+            if (Object.prototype.toString.call(result.photos) === '[object Array]') {
+                var i = result.photos.length;
+                html = html + '<div class="places-images">';
+                for (var x = 0; x < i; x++) {
+                    var image = result.photos[x];
+                    html = html + '<img class="place-image" src="' + image.getUrl({'maxWidth': 100, 'maxHeight': 100 }) + '" />';
+                    // console.log(image.getUrl({'maxWidth': 50, 'maxHeight': 50 }));
+                }
+                html = html + '</div>';
+                // console.log(result.photos);
+            }
+
+            return html;
         },
 
         detailInfo: function(placeId) {
@@ -277,7 +300,12 @@ var maps = {
                         placeId: placeId
                     }, function (result, status) {
                         // console.log(results);
-                        if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        if (status === google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
+                            window.setTimeout(
+                                function() { maps.PlacesService.detailInfo(placeId); }, 3000
+                            );
+                        }
+                        else if (status === google.maps.places.PlacesServiceStatus.OK) {
                             var rtnData;
                             rtnData = maps.PlacesService.detailResult(result, status);
                             resolve(rtnData);
@@ -305,13 +333,10 @@ var maps = {
             'general': 'https://maps.google.com/mapfiles/kml/paddle/purple-circle.png'
         },
 
-        addMarker: function(name, location, locationtype, curated) {
+        // addMarker: function(name, location, locationtype, curated) {
+        addMarker: function(place) {
 
-            if (curated === undefined) {
-                curated = false;
-            }
-
-            var catIcon = maps.MarkerService.iconMapping[locationtype];
+            var catIcon = maps.MarkerService.iconMapping[place.category()];
 
             var image = {
                 url: catIcon,
@@ -322,8 +347,8 @@ var maps = {
             var marker = new google.maps.Marker({
                 map: _map,
                 opacity: 1.0,
-                position: new google.maps.LatLng(location.lat(), location.lng()),
-                title: name,
+                position: new google.maps.LatLng(place.location.lat(), place.location.lng()),
+                title: place.name(),
                 icon: image,
                 animation: google.maps.Animation.DROP
             });
@@ -333,9 +358,16 @@ var maps = {
                 maps.setDefaultZoomAndCenter();
             }
             google.maps.event.addListener(marker, 'click', function() {
-                _infoWindow.setContent('<p>' + name + '</p>');
-                _infoWindow.open(_map, marker);
-            }.bind(marker));
+                var latLng = marker.getPosition();
+
+                _map.setCenter(latLng);
+                maps.PlacesService.detailInfo(place.id())
+                    .then(function (result) {
+                        _infoWindow.setContent(result);
+                        _infoWindow.open(_map, marker);
+
+                    })}.bind(marker));
+
 
             return marker;
         },

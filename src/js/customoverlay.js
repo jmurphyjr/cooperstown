@@ -137,8 +137,8 @@ CustomOverlay.prototype.close = function() {
 };
 
 CustomOverlay.prototype.setContent = function(html) {
-    // this.div.innerHTML = html;
+    this.div.innerHTML = html;
 
-    // console.log(html);
+    console.log(html);
     // this.element = html;
 };

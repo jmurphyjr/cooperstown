@@ -48,7 +48,9 @@ CooperstownViewModel.prototype._isVisible = function () {
 
 CooperstownViewModel.prototype.addPlace = function(place) {
     if (Object.prototype.toString(place) === '[object Object]' && place !== '') {
-        this.places().push(new Place(place, 'new'));
+        // this.places().push(new Place(place, 'new'));
+        this.places().push(place);
+        place.saveLocation()
     }
     else {
         console.log('++' + place + '++');

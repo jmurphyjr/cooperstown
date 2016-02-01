@@ -6,6 +6,7 @@
 'use strict';
 
 var ko = require('knockout');
+ko.mapping = require('knockout-mapping')
 var GoogleMaps = require('./google');
 var cooperstownFirebase = require('./firebaseInterface');
 
@@ -62,10 +63,11 @@ function Place(data, type) {
         return response;
     });
 
-    var marker = GoogleMaps.MarkerService.addMarker(this.name(),
-        this.location,
-        this.category(),
-        store);
+    //var marker = GoogleMaps.MarkerService.addMarker(this.name(),
+    //    this.location,
+    //    this.category(),
+    //    store);
+    var marker = GoogleMaps.MarkerService.addMarker(self);
 
     this.isSelected.subscribe(function(selected) {
         console.log(selected);
@@ -75,6 +77,9 @@ function Place(data, type) {
             if (!map.getBounds().contains(marker.getPosition())) {
                 GoogleMaps.setDefaultZoomAndCenter();
             }
+            var latLng = marker.getPosition();
+
+            map.setCenter(latLng);
 
             marker.setAnimation(google.maps.Animation.BOUNCE);
 
@@ -132,6 +137,14 @@ Place.prototype.getDistance = function() {
                 });
         }
     });
+};
+
+Place.prototype.saveLocation = function() {
+    console.log(this);
+    var mapping = {
+        'ignore': ["getDistance"]
+    };
+    cooperstownFirebase.tryCreateNewPlace(this.name(), ko.mapping.toJS(this, mapping));
 };
 
 module.exports = Place;

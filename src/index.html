@@ -42,13 +42,12 @@
         <div id="places-list" class="places-container no-results">
             <h5 class="cooperstown-list-label" data-bind="visible: googlePlaces().length">Google Suggestions</h5>
             <ul class="ctown_ul" data-bind="foreach: googlePlaces">
-                <li class="ctown_ul_li">
+                <li class="ctown_ul_li" data-bind="click: $parent.focusLocation.bind($parent), css: { selected: isSelected }">
                     <div class="ctown_ul_li_name" data-bind="text: name"></div>
                     <div class="ctown_ul_li_add" data-bind="click: $parent.addLocation.bind($parent)">Save Location</div>
                     <div class="ctown_ul_li_distance" data-bind="text: distanceToDreamsPark"></div>
                 </li>
             </ul>
-            <button id="btn-places" data-bind="visible: googlePlaces().length">More Results</button>
         </div>
     </div>
     <div class="wrapper-map">
