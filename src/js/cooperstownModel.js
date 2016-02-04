@@ -16,6 +16,7 @@ var Place = require('./place');
 var GoogleMaps = require('./google');
 
 var CooperstownViewModel = function() {
+    var self = this;
     if ( !(this instanceof CooperstownViewModel) ) {
         return new CooperstownViewModel();
     }
@@ -31,9 +32,23 @@ var CooperstownViewModel = function() {
 
     this.filteredPlaces.subscribe(this._filterSubscribe, this);
 
-    this.selectedPlace = ko.observable().subscribeTo('addPlace');
+    this.addLocation = ko.observable().subscribeTo('addPlace');
 
-    this.selectedPlace.subscribe(this.addPlace,this);
+    this.addLocation.subscribe(this.addPlace,this);
+
+    this.selectedPlace = ko.postbox.subscribe('selectedPlace', function(e) {
+        if (e.isSelected()) {
+            self.places().forEach(function (p) {
+                if (e === p) {
+                    console.log('the same');
+                }
+                else {
+                    p.isSelected(false);
+                }
+            });
+            e.isSelected(true);
+        }
+    });
 };
 
 CooperstownViewModel.prototype.loadBindings = function(bindto) {
@@ -47,10 +62,10 @@ CooperstownViewModel.prototype._isVisible = function () {
 };
 
 CooperstownViewModel.prototype.addPlace = function(place) {
-    if (Object.prototype.toString(place) === '[object Object]' && place !== '') {
+    if (Object.prototype.toString.call(place) === '[object Object]' && place !== '') {
         // this.places().push(new Place(place, 'new'));
         this.places().push(place);
-        place.saveLocation()
+        place.saveLocation();
     }
     else {
         console.log('++' + place + '++');
@@ -59,10 +74,10 @@ CooperstownViewModel.prototype.addPlace = function(place) {
     // On initial load, the places list will not show. Force an update
     // by notifying subscribers to the filter
     this.filter.notifySubscribers();
-};
+ };
 
 CooperstownViewModel.prototype.loadSavedPlaces = function(place) {
-    if (Object.prototype.toString(place) === '[object Object]') {
+    if (Object.prototype.toString.call(place) === '[object Object]') {
         var tPlace = new Place(place, 'saved');
         this.places().push(tPlace);
         this.currentPlace(tPlace);
@@ -96,7 +111,6 @@ CooperstownViewModel.prototype._filtered = function() {
 };
 
 CooperstownViewModel.prototype.focusLocation = function(data) {
-
     // First set isSelected to false for all places
     this.places().forEach(function (p) {
         p.isSelected(false);
@@ -104,7 +118,6 @@ CooperstownViewModel.prototype.focusLocation = function(data) {
     this.currentPlace(data);
     // Set this elements isSelected to true;
     data.isSelected(true);
-    GoogleMaps.PlacesService.detailInfo(data.id());
 
     return true;
 };

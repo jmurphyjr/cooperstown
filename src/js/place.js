@@ -3,16 +3,16 @@
  */
 /* jshint node: true */
 /* global google */
+/* global Promise */
 'use strict';
 
 var ko = require('knockout');
-ko.mapping = require('knockout-mapping')
+ko.mapping = require('knockout-mapping');
 var GoogleMaps = require('./google');
 var cooperstownFirebase = require('./firebaseInterface');
 
 function Location(data) {
     try {
-        // console.log(typeof data.lat);
 
         if (typeof data.lat === 'function') {
             this.lat = ko.observable(data.lat());
@@ -36,12 +36,13 @@ function Location(data) {
 
 function Place(data, type) {
 
-    var store = (type === 'new') ? true : (type === 'saved');
     var self = this;
     this.id = ko.observable(data.id);
     this.name = ko.observable(data.name);
     this.isVisible = ko.observable(true);
     this.location = new Location(data.location);
+
+    this.detailInfo = ko.observable('');
     if (data.distanceToDreamsPark !== undefined) {
         this.distanceToDreamsPark = ko.observable(data.distanceToDreamsPark);
     }
@@ -63,24 +64,35 @@ function Place(data, type) {
         return response;
     });
 
-    //var marker = GoogleMaps.MarkerService.addMarker(this.name(),
-    //    this.location,
-    //    this.category(),
-    //    store);
     var marker = GoogleMaps.MarkerService.addMarker(self);
 
+    google.maps.event.addListener(marker, 'click', function () {
+        var map = GoogleMaps.getMap();
+        var infoWindow = GoogleMaps.getInfoWindow();
+
+
+        infoWindow.setContent(self.detailInfo());
+        infoWindow.open(map, marker);
+        this.isSelected(true);
+
+    }.bind(self));
+
     this.isSelected.subscribe(function(selected) {
-        console.log(selected);
         if (selected) {
-            self.isVisible(true);
             var map = GoogleMaps.getMap();
-            if (!map.getBounds().contains(marker.getPosition())) {
-                GoogleMaps.setDefaultZoomAndCenter();
-            }
+
+            var infoWindow = GoogleMaps.getInfoWindow();
             var latLng = marker.getPosition();
 
             map.setCenter(latLng);
 
+            self.isVisible(true);
+            if (!map.getBounds().contains(marker.getPosition())) {
+                // GoogleMaps.setDefaultZoomAndCenter();
+            }
+            infoWindow.close();
+            infoWindow.setContent(self.detailInfo());
+            infoWindow.open(map, marker);
             marker.setAnimation(google.maps.Animation.BOUNCE);
 
             (function() {
@@ -93,7 +105,13 @@ function Place(data, type) {
         else {
             marker.setAnimation(null);
         }
+
+        ko.postbox.publish('selectedPlace', self);
+
     });
+
+    this.setDetailInfo();
+
 
     /**
      * @description Set Marker visibility
@@ -139,10 +157,28 @@ Place.prototype.getDistance = function() {
     });
 };
 
+Place.prototype.setDetailInfo = function() {
+    var self = this;
+
+    GoogleMaps.PlacesService.detailInfo(self.id())
+        .then(function (result) {
+            if (result !== undefined) {
+                self.detailInfo(result);
+            }
+            else {
+                self.detailInfo('No Data');
+            }
+        }, function(error) {
+            console.log(error.toString());
+        });
+
+
+
+};
+
 Place.prototype.saveLocation = function() {
-    console.log(this);
     var mapping = {
-        'ignore': ["getDistance"]
+        'ignore': ['getDistance']
     };
     cooperstownFirebase.tryCreateNewPlace(this.name(), ko.mapping.toJS(this, mapping));
 };

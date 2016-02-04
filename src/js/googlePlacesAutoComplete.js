@@ -78,7 +78,7 @@ PlacesAutoComplete.prototype.focusLocation = function(data) {
     this.currentPlace(data);
     // Set this elements isSelected to true;
     data.isSelected(true);
-    GoogleMaps.PlacesService.detailInfo(data.id());
+    // GoogleMaps.PlacesService.detailInfo(data.id());
 
     return true;
 };

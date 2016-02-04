@@ -9,7 +9,6 @@
 'use strict';
 // var CustomOverlay = require('./customoverlay');
 
-console.log('entered google.js');
 var _map;
 
 var _infoWindow;  // The single inforWindow.
@@ -63,18 +62,11 @@ var maps = {
         // _infoWindow = new google.maps.InfoWindow();
         var CustomOverlay = require('./customoverlay');
         _infoWindow = new CustomOverlay();
-        _infoWindow.applyBinding();
 
         maps.DistanceService.init();
         _coopersTown = new google.maps.LatLng(42.63999, -74.96033);
         maps.PlacesService.init();
-        maps.contextMenu = google.maps.event.addListener(
-            _map,
-            'rightclick',
-            function(event) {
-                console.log(event);
-            }
-        );
+
         _initialMapBounds = new google.maps.LatLngBounds(
             new google.maps.LatLng(42.50969783834314, -75.29208158984375),
             new google.maps.LatLng(42.81769848711016, -74.61642241015625));
@@ -84,13 +76,13 @@ var maps = {
         return _map;
     },
 
+    getInfoWindow: function() {
+        return _infoWindow;
+    },
+
     setDefaultZoomAndCenter: function() {
         _map.setZoom(11);
         _map.setCenter(_coopersTown);
-    },
-
-    displayInfoWindow: function(place) {
-        console.log(place);
     },
 
     DistanceService: {
@@ -273,7 +265,6 @@ var maps = {
 
         detailResult: function(result, status) {
             var html = '<h3>' + result.name + '</h3><address>' + result.formatted_address +'</address>';
-            console.log(result);
 
             if (Object.prototype.toString.call(result.photos) === '[object Array]') {
                 var i = result.photos.length;
@@ -281,10 +272,8 @@ var maps = {
                 for (var x = 0; x < i; x++) {
                     var image = result.photos[x];
                     html = html + '<img class="place-image" src="' + image.getUrl({'maxWidth': 100, 'maxHeight': 100 }) + '" />';
-                    // console.log(image.getUrl({'maxWidth': 50, 'maxHeight': 50 }));
                 }
                 html = html + '</div>';
-                // console.log(result.photos);
             }
 
             return html;
@@ -292,29 +281,44 @@ var maps = {
 
         detailInfo: function(placeId) {
             return new Promise(function(resolve, reject) {
-                if (placeId === '') {
-                    resolve([]);
-                }
-                else {
-                    maps.PlacesService._placesService.getDetails({
-                        placeId: placeId
-                    }, function (result, status) {
-                        // console.log(results);
-                        if (status === google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
-                            window.setTimeout(
-                                function() { maps.PlacesService.detailInfo(placeId); }, 3000
-                            );
-                        }
-                        else if (status === google.maps.places.PlacesServiceStatus.OK) {
-                            var rtnData;
-                            rtnData = maps.PlacesService.detailResult(result, status);
-                            resolve(rtnData);
-                        }
-                        else {
-                            reject(Error('No Places Returned: ' + status.toString()));
-                        }
-                    });
-                }
+                /**
+                 * Get detail information from Google Maps Places API.
+                 * @param {Integer} tries Number of attempts before failing.
+                 */
+                var getDetail = function(tries) {
+                    if (tries === 0) {
+                        reject(Error('Unable to Complete Google Places API Query'));
+                    }
+
+                    if (placeId === '') {
+                        resolve([]);
+                    }
+                    else {
+                        maps.PlacesService._placesService.getDetails({
+                            placeId: placeId
+                        }, function (result, status) {
+
+                            if (status === google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
+                                setTimeout(function() {
+                                    getDetail(tries - 1);
+                                }, 5000);
+
+                            }
+                            else if (status === google.maps.places.PlacesServiceStatus.OK) {
+                                var rtnData;
+                                rtnData = maps.PlacesService.detailResult(result, status);
+                                resolve(rtnData);
+                            }
+                            else {
+                                reject(Error('No Places Returned: ' + status.toString()));
+                            }
+                        });
+                    }
+
+                };
+                // Try request up to three times in the event we run into OVER_QUERY_LIMIT
+                // error
+                getDetail(3);
             });
 
         }
@@ -357,32 +361,11 @@ var maps = {
             if (!_map.getBounds().contains(marker.getPosition())) {
                 maps.setDefaultZoomAndCenter();
             }
-            google.maps.event.addListener(marker, 'click', function() {
-                var latLng = marker.getPosition();
-
-                _map.setCenter(latLng);
-                maps.PlacesService.detailInfo(place.id())
-                    .then(function (result) {
-                        _infoWindow.setContent(result);
-                        _infoWindow.open(_map, marker);
-
-                    })}.bind(marker));
-
 
             return marker;
         },
 
-        //allVisible: function() {
-        //    for (var key in maps.MarkerService.markers) {
-        //        if (maps.MarkerService.markerExist(key)) {
-        //            var value = maps.MarkerService.markers[key];
-        //            value.marker.setVisible(true);
-        //        }
-        //    }
-        //},
-
         setVisible: function(name, visible) {
-            // console.log(name + ': ' + visible);
             if (maps.MarkerService.markerExist(name)) {
                 maps.MarkerService.markers[name].marker.setVisible(visible);
             }
@@ -402,37 +385,12 @@ var maps = {
          */
         removeMarker: function(name) {
 
-            if (Object.prototype.toString.call(name) === '[object Array]') {
-                console.log('name is array');
-            }
-            else if (Object.prototype.toString.call(name) === '[object String]') {
-                console.log('name is a string');
-            }
-
             // If marker exists and NOT curated, then delete
             if (maps.MarkerService.markerExist(name) && !maps.MarkerService.markers[name].stored) {
                 maps.MarkerService.markers[name].marker.setMap(null);
                 delete maps.MarkerService.markers[name];
             }
         },
-
-        //removeAllMarkers: function() {
-        //    for (var key in maps.MarkerService.markers) {
-        //        if (!maps.MarkerService.markers[key].stored) {
-        //            maps.MarkerService.markers[key].marker.setMap(null);
-        //            delete maps.MarkerService.markers[key];
-        //        }
-        //    }
-        //},
-
-        ///**
-        // * @description terminates animation for all markers
-        // */
-        //terminateAnimation: function() {
-        //    for (var key in maps.MarkerService.markers) {
-        //        maps.MarkerService.markers[key].marker.setAnimation(null);
-        //    }
-        //},
 
         /**
          * @description Animates the specified Marker

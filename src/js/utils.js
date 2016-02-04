@@ -95,7 +95,7 @@ module.exports = {
 
 // Ref: https://remysharp.com/2010/07/21/throttling-function-calls
     throttle: function(fn, threshhold, scope) {
-        threshhold = threshhold || (threshhold = 250);
+        threshhold = threshhold || (threshhold = 3000);
         var last,
             deferTimer;
         return function () {

@@ -154,6 +154,7 @@ main {
 
 .infobox-container {
     position: absolute;
+    width: 35%;
     z-index: 5;
 }
 
@@ -195,8 +196,17 @@ main {
     width:0;
 }
 
-.styled-infobox .styled-infobox-close {
-    float: right;
+.styled-infobox-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 15px 0 15px 0;
+    font-size: 16px;
+    font-weight: 700;
+    background-color: #F3961C;
+    color: white;
+    border-radius: 2px;
+
     cursor: pointer;
 }
 

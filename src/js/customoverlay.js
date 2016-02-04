@@ -40,6 +40,7 @@
  */
 
 var ko = require('knockout');
+var gMaps = require('./google');
 
 /**
  *
@@ -53,26 +54,22 @@ function CustomOverlay() {
     this.container.classList.add('infobox-container');
     this.div = document.createElement('div');
     this.div.classList.add('styled-infobox');
-    this.div.innerHTML = '<span data-bind="text: name"></span>';
+    // this.div.innerHTML = '<span data-bind="text: name"></span>';
 
     this.layer = null;
-    this.element = ko.observable('').subscribeTo('currentPlace');
+    this.element = ko.observable().subscribeTo('currentPlace');
     this.position = null;
 
     var closeX = document.createElement('div');
     closeX.classList.add('styled-infobox-close');
-    closeX.innerHTML = 'x';
-    // this.div.appendChild(closeX);
+    closeX.innerHTML = 'X';
 
     this.container.appendChild(this.div);
     this.container.appendChild(closeX);
 
     this.marker = null;
-    this.element.subscribe(function(u) {
-        console.log(u);
-    });
 
-    // this.applyBinding();
+    this.map = gMaps.getMap();
 
 }
 
@@ -83,14 +80,8 @@ CustomOverlay.prototype = new google.maps.OverlayView();
 CustomOverlay.prototype._map = null;
 CustomOverlay.prototype._content = null;
 
-CustomOverlay.prototype.applyBinding = function() {
-    var self = this;
-    ko.applyBindings(self.element, self.container);
-};
-
 CustomOverlay.prototype.onAdd = function() {
 
-    // ko.applyBindings(this.element, this.container);
 
     this.layer = this.getPanes().floatPane;
 
@@ -100,26 +91,39 @@ CustomOverlay.prototype.onAdd = function() {
         this.close();
     }.bind(this), false);
 
-    // this.layer.appendChild(this.div);
     this.layer.appendChild(this.container);
 };
 
 CustomOverlay.prototype.draw = function() {
     // var overlayProjection = this.getProjection();
-    console.log(this.element());
-    console.log(this.marker.getIcon());
+
+    var mapCenter = this.map.getCenter();
+
+    var mapheight = document.getElementById('map').clientHeight - 60;
 
     var markerIcon = this.marker.getIcon();
+
+    // Get container boundary
     var cBounds = this.container.getBoundingClientRect();
-    var cHeight = cBounds.height + markerIcon.scaledSize.height + 10 + 14;
+
+    var cHeight = cBounds.height + markerIcon.scaledSize.height;
     var cWidth = cBounds.width / 2;
 
+    // get position of marker in pixels
     this.position = this.getProjection().fromLatLngToDivPixel(this.marker.getPosition());
-    // this.position = this.getProjection().fromLatLngToContainerPixel(this.marker.getPosition());
-    console.log(this.position);
+
     this.container.style.top = this.position.y - cHeight + 'px';
     this.container.style.left = this.position.x - cWidth + 'px';
-    console.log(this.div.style.top + ', ' + this.div.style.left);
+
+    cBounds = this.container.getBoundingClientRect();
+
+    cHeight = cBounds.height;
+
+    if (this.position.y + cHeight > mapheight) {
+        this.position.y = this.position.y - (this.position.y + cHeight - mapheight);
+        var point = this.getProjection().fromDivPixelToLatLng(this.position);
+        this.map.setCenter(point);
+    }
 };
 
 CustomOverlay.prototype.onRemove = function() {
@@ -138,7 +142,4 @@ CustomOverlay.prototype.close = function() {
 
 CustomOverlay.prototype.setContent = function(html) {
     this.div.innerHTML = html;
-
-    console.log(html);
-    // this.element = html;
 };
