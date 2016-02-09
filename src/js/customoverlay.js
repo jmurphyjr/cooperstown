@@ -49,7 +49,6 @@ var gMaps = require('./google');
  * @constructor
  */
 function CustomOverlay() {
-    var self = this;
     this.container = document.createElement('div');
     this.container.classList.add('infobox-container');
     this.div = document.createElement('div');
@@ -95,9 +94,6 @@ CustomOverlay.prototype.onAdd = function() {
 };
 
 CustomOverlay.prototype.draw = function() {
-    // var overlayProjection = this.getProjection();
-
-    var mapCenter = this.map.getCenter();
 
     var mapheight = document.getElementById('map').clientHeight - 60;
 

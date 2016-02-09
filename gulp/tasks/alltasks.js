@@ -114,6 +114,7 @@ gulp.task('copy', [
     // 'copy:nodeModules'
     'copy:images',
     'copy:perfmatters',
+    'copy:weather',
     'copy:htaccess'
 ]);
 
@@ -137,6 +138,12 @@ gulp.task('copy:images', function() {
 
 gulp.task('copy:perfmatters', function() {
     return gulp.src(config.paths.scripts.src + 'perfmatters.js')
+        .pipe(p.size())
+        .pipe(gulp.dest(config.paths.scripts.dest));
+});
+
+gulp.task('copy:weather', function() {
+    return gulp.src(config.paths.scripts.src + 'weather.js')
         .pipe(p.size())
         .pipe(gulp.dest(config.paths.scripts.dest));
 });

@@ -21,10 +21,11 @@ var emitter = new EventsEmitter();
 
 var Main = function() {
 
-    var test;
+    var googlePlacesSearch;
     var cooperstownId = document.getElementById('cooperstown-list');
     var searchBarId = document.getElementById('searchBar');
     var placesListId = document.getElementById('places-list');
+    var footer = document.getElementById('footer');
 
     /**
      * Function to load initial data set, as well as update on additions or changes.
@@ -61,8 +62,8 @@ var Main = function() {
         cooperstownFirebase.init(initialPlaceLoad, updatePlace);
         cooperstownList.loadBindings(cooperstownId);
         searchBox.loadBindings(searchBarId);
-        test = new gPlacesSearch();
-        test.loadBindings(placesListId);
+        googlePlacesSearch = new gPlacesSearch();
+        googlePlacesSearch.loadBindings(placesListId);
 
     });
 

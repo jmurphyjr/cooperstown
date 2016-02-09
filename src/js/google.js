@@ -233,9 +233,8 @@ var maps = {
          *
          * @param results
          * @param status
-         * @param pagination
          */
-        placeResult: function(results, status, pagination) {
+        placeResult: function(results, status) {
 
             var length = results.length;
             var rtnPlaces = [];
@@ -263,15 +262,17 @@ var maps = {
             return rtnPlaces;
         },
 
-        detailResult: function(result, status) {
-            var html = '<h3>' + result.name + '</h3><address>' + result.formatted_address +'</address>';
+        detailResult: function(result) {
+            var html = '<h3>' + result.name + '</h3>';
+            html = html + '<address>' + result.formatted_address +'</address>';
 
             if (Object.prototype.toString.call(result.photos) === '[object Array]') {
                 var i = result.photos.length;
                 html = html + '<div class="places-images">';
                 for (var x = 0; x < i; x++) {
                     var image = result.photos[x];
-                    html = html + '<img class="place-image" src="' + image.getUrl({'maxWidth': 100, 'maxHeight': 100 }) + '" />';
+                    html = html + '<img class="place-image" src="' +
+                        image.getUrl({'maxWidth': 100, 'maxHeight': 100 }) + '" />';
                 }
                 html = html + '</div>';
             }
@@ -298,7 +299,8 @@ var maps = {
                             placeId: placeId
                         }, function (result, status) {
 
-                            if (status === google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
+                            if (status === google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT)
+                            {
                                 setTimeout(function() {
                                     getDetail(tries - 1);
                                 }, 5000);

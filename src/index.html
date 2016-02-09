@@ -57,10 +57,19 @@
 </main>
 <footer>
     <p>&copy; Web Performance 2014 <span id="crp-stats"></span></p>
+    <div id="weather-container">
+        <div id="weather" data-bind="foreach: dayWeather">
+            <div class="weather-date" data-bind="text: dateStr"></div>
+            <div class="weather-temp">Min: <span data-bind="text: minTemp"></span></div>
+            <div class="weather-temp">Max: <span data-bind="text: maxTemp"></span></div>
+            <div class="weather-desc" data-bind="text: weatherDescription"></div>
+        </div>
+    </div>
 </footer>
 
 <script async src="https://maps.googleapis.com/maps/api/js?&libraries=places,geometry"></script>
 <script src="js/bundle.min.js"></script>
+<script src="js/weather.js"></script>
 </body>
 </html>
 

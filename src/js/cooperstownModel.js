@@ -13,7 +13,6 @@ ko.postbox = require('knockout-postbox');
 ko.options.deferUpdates = true;
 var Place = require('./place');
 
-var GoogleMaps = require('./google');
 
 var CooperstownViewModel = function() {
     var self = this;
@@ -39,12 +38,9 @@ var CooperstownViewModel = function() {
     this.selectedPlace = ko.postbox.subscribe('selectedPlace', function(e) {
         if (e.isSelected()) {
             self.places().forEach(function (p) {
-                if (e === p) {
-                    console.log('the same');
-                }
-                else {
-                    p.isSelected(false);
-                }
+
+                p.isSelected(false);
+
             });
             e.isSelected(true);
         }
