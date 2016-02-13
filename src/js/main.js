@@ -8,6 +8,7 @@
 
 var EventsEmitter = require('events');
 var GoogleMaps = require('./google.js');
+var ko = require('knockout');
 
 
 var cooperstownFirebase = require('./firebaseInterface');
@@ -16,8 +17,10 @@ var searchBox = require('./searchBox');
 var gPlacesSearch = require('./googlePlacesAutoComplete');
 
 var utils = require('./utils');
+var weather = require('./weather');
 
 var emitter = new EventsEmitter();
+
 
 var Main = function() {
 
@@ -67,6 +70,8 @@ var Main = function() {
 
     });
 
+    var weatherElement = document.getElementById('weather-container');
+    ko.applyBindings(new weather(), weatherElement);
 };
 
 module.exports = Main;

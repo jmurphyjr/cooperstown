@@ -22,7 +22,19 @@
 
         <p>Dreamspark</p>
     </div>
-    <label class="search-icon">&#9776;</label>
+    <!-- <label class="search-icon">&#9776;</label> -->
+    <div id="weather-container">
+        <div id="weather" data-bind="foreach: weather">
+            <div class="weather-day">
+                <img data-bind="attr: {src: icon}" />
+                <div class="weather-date" data-bind="text: date"></div>
+                <div class="weather-temp">Low: <span data-bind="text: min"></span>&#x2109;</div>
+                <div class="weather-temp">High: <span data-bind="text: max"></span>&#x2109;</div>
+                <div class="weather-desc" data-bind="text: desc"></div>
+            </div>
+        </div>
+    </div>
+
 </header>
 <main class="clearfix">
     <div id="left-sidebar">
@@ -57,19 +69,10 @@
 </main>
 <footer>
     <p>&copy; Web Performance 2014 <span id="crp-stats"></span></p>
-    <div id="weather-container">
-        <div id="weather" data-bind="foreach: dayWeather">
-            <div class="weather-date" data-bind="text: dateStr"></div>
-            <div class="weather-temp">Min: <span data-bind="text: minTemp"></span></div>
-            <div class="weather-temp">Max: <span data-bind="text: maxTemp"></span></div>
-            <div class="weather-desc" data-bind="text: weatherDescription"></div>
-        </div>
-    </div>
 </footer>
 
 <script async src="https://maps.googleapis.com/maps/api/js?&libraries=places,geometry"></script>
 <script src="js/bundle.min.js"></script>
-<script src="js/weather.js"></script>
 </body>
 </html>
 

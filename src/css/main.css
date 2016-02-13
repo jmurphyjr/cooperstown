@@ -44,11 +44,12 @@ header {
     padding-bottom: 4em;
     border-bottom: 1px solid #000;
     z-index: 1;
-    height: 50px;
+    height: 75px;
 }
 
 #brand {
     float: left;
+    padding: 0 10px 0 0;
 }
 
 .search-icon {
@@ -225,6 +226,26 @@ footer {
 footer span {
     float: right;
     font-style: italic;
+}
+
+.weather-day {
+    float: left;
+    padding: 10px 0;
+    /* border: red 1px solid; */
+}
+.weather-day img {
+    float: left;
+}
+
+.weather-date {
+    margin: auto;
+}
+.weather-temp {
+    float: left;
+    padding: 0 5px;
+}
+.weather-desc {
+    margin: auto;
 }
 
 @media (min-width: 640px) {
