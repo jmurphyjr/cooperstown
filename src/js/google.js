@@ -327,7 +327,7 @@ var maps = {
                             else if (status === google.maps.places.PlacesServiceStatus.OK) {
                                 var rtnData;
                                 rtnData = maps.PlacesService.detailResult(result, status);
-                                console.log(rtnData);
+                                // console.log(rtnData);
                                 resolve(rtnData);
                             }
                             else {
