@@ -17,6 +17,10 @@ body {
     overflow: auto;
 }
 
+.clear {
+    clear: both;
+    line-height: 0;
+}
 h2 {
     margin: auto;
 }
@@ -50,18 +54,25 @@ header {
 #brand {
     float: left;
     padding: 0 10px 0 0;
+    font-size: 2vw;
 }
 
-.search-icon {
-    padding: 10px 20px;
-    background: #e5dac0;
-    color: #987d3e;
+.menu-icon {
+    font-size: 2vw;
+    padding: 5px 10px;
+    /* background: #e5dac0; */
+    /* color: #987d3e; */
+    color: #ffffff;
     cursor: pointer;
     position: absolute;
-    left: 80%;
+    left: 90%;
     top: 0;
     margin: 6px 6px 0 0;
-    border-right: 5px;
+    /* border-right: 5px; */
+    border: solid 1px #f8f8ff;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
     z-index: 1;
 }
 
@@ -73,7 +84,7 @@ main {
 
 #left-sidebar {
     float: left;
-    width: 100px;
+    width: 0;
     height: 100%;
     z-index: 5;
     position: relative;
@@ -143,7 +154,7 @@ main {
 
 .wrapper-map {
     height: 100%;
-    margin-left: 15%;
+    margin-left: 0;
     position: relative;
 }
 
@@ -155,7 +166,11 @@ main {
 
 .infobox-container {
     position: absolute;
-    width: 35%;
+    max-height: 320px;
+    max-width: 320px;
+    width: 90%;
+    height: 320px;
+
     z-index: 5;
 }
 
@@ -166,7 +181,10 @@ main {
     width: 100px;
     height: 100px;
 }
-
+#detail-info {
+    overflow-y: scroll;
+    max-height: 320px;
+}
 /* @credit: http://nicolasgallagher.com/pure-css-speech-bubbles/demo/ */
 .styled-infobox {
     position:relative;
@@ -195,6 +213,7 @@ main {
     /* reduce the damage in FF3.0 */
     display:block;
     width:0;
+    z-index: 150;
 }
 
 .styled-infobox-close {
@@ -209,6 +228,7 @@ main {
     border-radius: 2px;
 
     cursor: pointer;
+    z-index: 100;
 }
 
 footer {
@@ -226,6 +246,10 @@ footer {
 footer span {
     float: right;
     font-style: italic;
+}
+
+#weather {
+    display: none;
 }
 
 .weather-day {
@@ -250,10 +274,18 @@ footer span {
 
 @media (min-width: 640px) {
     #left-sidebar {
-        width: 15%;
+        width: 150px;
     }
 
     footer {
         font-size: 14px;
     }
+
+    .infobox-container {
+        position: absolute;
+        max-width: 420px;
+        max-height: 420px;
+        width: 90%;
+    }
+
 }

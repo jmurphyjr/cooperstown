@@ -263,7 +263,25 @@ var maps = {
         },
 
         detailResult: function(result) {
-            var html = '<h3>' + result.name + '</h3>';
+
+            //var infobox = document.createElement('div');
+            //
+            //var disclaimer = document.createElement('div');
+            //disclaimer.setAttribute('id', 'disclaimer');
+            //disclaimer.textContent = 'Data provided by Google';
+            //
+            //var name = document.createElement('h3');
+            //name.textContent = result.name;
+            //
+            //var address = document.createElement('address');
+            //address.textContent = result.formatted_address;
+            //
+            //infobox.appendChild(disclaimer);
+            //infobox.appendChild(name);
+            //infobox.appendChild(address);
+
+            var html = '<div id="detail-info"><div id="disclaimer">Data provided by Google</div>';
+            html = html + '<h3>' + result.name + '</h3>';
             html = html + '<address>' + result.formatted_address +'</address>';
 
             if (Object.prototype.toString.call(result.photos) === '[object Array]') {
@@ -276,7 +294,7 @@ var maps = {
                 }
                 html = html + '</div>';
             }
-
+            html = html + '</div>';
             return html;
         },
 
@@ -309,6 +327,7 @@ var maps = {
                             else if (status === google.maps.places.PlacesServiceStatus.OK) {
                                 var rtnData;
                                 rtnData = maps.PlacesService.detailResult(result, status);
+                                console.log(rtnData);
                                 resolve(rtnData);
                             }
                             else {

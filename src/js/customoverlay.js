@@ -53,6 +53,7 @@ function CustomOverlay() {
     this.container.classList.add('infobox-container');
     this.div = document.createElement('div');
     this.div.classList.add('styled-infobox');
+    this.div.classList.add('clearfix');
     // this.div.innerHTML = '<span data-bind="text: name"></span>';
 
     this.layer = null;
@@ -96,6 +97,7 @@ CustomOverlay.prototype.onAdd = function() {
 CustomOverlay.prototype.draw = function() {
 
     var mapheight = document.getElementById('map').clientHeight - 60;
+    var windowWidth = window.outerWidth;
 
     var markerIcon = this.marker.getIcon();
 
@@ -115,8 +117,14 @@ CustomOverlay.prototype.draw = function() {
 
     cHeight = cBounds.height;
 
-    if (this.position.y + cHeight > mapheight) {
+    if (this.position.y + cHeight > mapheight && windowWidth > 500) {
         this.position.y = this.position.y - (this.position.y + cHeight - mapheight);
+        var point = this.getProjection().fromDivPixelToLatLng(this.position);
+        this.map.setCenter(point);
+    }
+    else {
+        // Move center down.
+        this.position.y = this.position.y - 200;
         var point = this.getProjection().fromDivPixelToLatLng(this.position);
         this.map.setCenter(point);
     }
@@ -137,5 +145,8 @@ CustomOverlay.prototype.close = function() {
 };
 
 CustomOverlay.prototype.setContent = function(html) {
-    this.div.innerHTML = html;
+
+     this.div.innerHTML = html;
+    //this.div.innerHTML = '';
+    //this.div.appendChild(html);
 };

@@ -160,18 +160,19 @@ Place.prototype.getDistance = function() {
 Place.prototype.setDetailInfo = function() {
     var self = this;
 
-    GoogleMaps.PlacesService.detailInfo(self.id())
-        .then(function (result) {
-            if (result !== undefined) {
-                self.detailInfo(result);
-            }
-            else {
-                self.detailInfo('No Data');
-            }
-        }, function(error) {
-            console.log(error.toString());
-        });
-
+    if (self.detailInfo() === '') {
+        GoogleMaps.PlacesService.detailInfo(self.id())
+            .then(function (result) {
+                if (result !== undefined) {
+                    self.detailInfo(result);
+                }
+                else {
+                    self.detailInfo('No Data');
+                }
+            }, function (error) {
+                console.log(error.toString());
+            });
+    }
 
 
 };
