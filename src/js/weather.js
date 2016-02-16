@@ -43,7 +43,7 @@ var WeatherModel = function(data) {
 
 var weatherViewModel = function() {
     var self = this;
-    self.weather = ko.observableArray([]);
+    self.latest = ko.observableArray([]);
 
     var formatWeather = function(j) {
         console.log(j);
@@ -52,7 +52,7 @@ var weatherViewModel = function() {
         for (var i = 0; i < len; i++) {
             var date = new Date(j.list[i].dt * 1000);
             // Output Date as Mon, Feb 5
-            self.weather.push(new WeatherModel({
+            self.latest.push(new WeatherModel({
                 // date: (date.getMonth()+1) + '/' + date.getDate() + '/' + date.getFullYear(),
                 date: (DOW[date.getDay()] + ', ' + MONTH[date.getMonth()] + ' ' + date.getDate()),
                 min: j.list[i].temp.min,
@@ -90,4 +90,4 @@ var weatherViewModel = function() {
     LatestWeather();
 };
 
-module.exports = weatherViewModel;
+module.exports = new weatherViewModel();

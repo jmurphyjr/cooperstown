@@ -13,8 +13,7 @@ var ko = require('knockout');
 
 var cooperstownFirebase = require('./firebaseInterface');
 var cooperstownList = require('./cooperstownModel');
-var searchBox = require('./searchBox');
-var gPlacesSearch = require('./googlePlacesAutoComplete');
+// var searchBox = require('./searchBox');
 
 var utils = require('./utils');
 var weather = require('./weather');
@@ -25,9 +24,9 @@ var emitter = new EventsEmitter();
 var Main = function() {
 
     var googlePlacesSearch;
-    var cooperstownId = document.getElementById('cooperstown-list');
-    var searchBarId = document.getElementById('searchBar');
-    var placesListId = document.getElementById('places-list');
+    // var cooperstownId = document.getElementById('body');
+    // var searchBarId = document.getElementById('searchBar');
+    // var placesListId = document.getElementById('places-list');
     var footer = document.getElementById('footer');
 
     /**
@@ -63,15 +62,11 @@ var Main = function() {
 
     emitter.on('googlemapsloaded', function() {
         cooperstownFirebase.init(initialPlaceLoad, updatePlace);
-        cooperstownList.loadBindings(cooperstownId);
-        searchBox.loadBindings(searchBarId);
-        googlePlacesSearch = new gPlacesSearch();
-        googlePlacesSearch.loadBindings(placesListId);
+        cooperstownList.loadBindings();
+        // searchBox.loadBindings(searchBarId);
 
     });
 
-    var weatherElement = document.getElementById('weather-container');
-    ko.applyBindings(new weather(), weatherElement);
 };
 
 module.exports = Main;

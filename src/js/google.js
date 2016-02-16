@@ -151,16 +151,18 @@ var maps = {
                             pagination.hasNextPage) {
                             rtnData = rtnData.concat(maps.PlacesService.placeResult(
                                 results, status));
-                            pagination.nextPage();
-                        }
-                        else if (status === google.maps.places.PlacesServiceStatus.OK &&
-                            !pagination.hasNextPage) {
-                            rtnData = rtnData.concat(maps.PlacesService.placeResult(results,
-                                status));
+                        //    pagination.nextPage();
+                        //}
+                        //else if (status === google.maps.places.PlacesServiceStatus.OK &&
+                        //    !pagination.hasNextPage) {
+                        //    rtnData = rtnData.concat(maps.PlacesService.placeResult(results,
+                        //        status));
+                        //    console.log(rtnData);
                             resolve(rtnData);
                         }
                         else {
-                            reject([]);
+                            console.log('Google Places Service Returned an error ' + status);
+                            resolve([]);
                         }
 
 
