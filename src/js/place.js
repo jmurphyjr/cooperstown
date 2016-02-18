@@ -43,6 +43,7 @@ function Place(data, type) {
     this.location = new Location(data.location);
 
     this.detailInfo = ko.observable('');
+
     if (data.distanceToDreamsPark !== undefined) {
         this.distanceToDreamsPark = ko.observable(data.distanceToDreamsPark);
     }
@@ -69,6 +70,7 @@ function Place(data, type) {
     google.maps.event.addListener(marker, 'click', function () {
         var map = GoogleMaps.getMap();
         var infoWindow = GoogleMaps.getInfoWindow();
+        infoWindow.close();
 
 
         infoWindow.setContent(self.detailInfo());
@@ -78,11 +80,13 @@ function Place(data, type) {
     }.bind(self));
 
     this.isSelected.subscribe(function(selected) {
-        if (selected) {
-            var map = GoogleMaps.getMap();
+        var map = GoogleMaps.getMap();
 
-            var infoWindow = GoogleMaps.getInfoWindow();
-            var latLng = marker.getPosition();
+        var infoWindow = GoogleMaps.getInfoWindow();
+        infoWindow.close();
+        var latLng = marker.getPosition();
+
+        if (selected) {
 
             map.setCenter(latLng);
 
@@ -90,7 +94,6 @@ function Place(data, type) {
             if (!map.getBounds().contains(marker.getPosition())) {
                 // GoogleMaps.setDefaultZoomAndCenter();
             }
-            infoWindow.close();
             infoWindow.setContent(self.detailInfo());
             infoWindow.open(map, marker);
             marker.setAnimation(google.maps.Animation.BOUNCE);

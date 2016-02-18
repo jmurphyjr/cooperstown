@@ -12,7 +12,7 @@ var ko = require('knockout');
 
 
 var cooperstownFirebase = require('./firebaseInterface');
-var cooperstownList = require('./cooperstownModel');
+var cooperstownViewModel = require('./cooperstownModel');
 // var searchBox = require('./searchBox');
 
 var utils = require('./utils');
@@ -23,6 +23,7 @@ var emitter = new EventsEmitter();
 
 var Main = function() {
 
+    var cooperstownVM;
     var googlePlacesSearch;
     // var cooperstownId = document.getElementById('body');
     // var searchBarId = document.getElementById('searchBar');
@@ -37,7 +38,7 @@ var Main = function() {
 
         if (data.val() !== null) {
             data.forEach(function(e) {
-                cooperstownList.loadSavedPlaces(e.val());
+                cooperstownVM.loadSavedPlaces(e.val());
             });
         }
     }
@@ -61,8 +62,9 @@ var Main = function() {
     });
 
     emitter.on('googlemapsloaded', function() {
+        cooperstownVM = new cooperstownViewModel();
         cooperstownFirebase.init(initialPlaceLoad, updatePlace);
-        cooperstownList.loadBindings();
+        cooperstownVM.loadBindings();
         // searchBox.loadBindings(searchBarId);
 
     });

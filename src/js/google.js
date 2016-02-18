@@ -17,6 +17,8 @@ var _coopersTown;  // openweathermap.org id 5113664
 
 var _initialMapBounds;
 
+var _placesRequestPending = false;
+
 var maps = {
 
     /**

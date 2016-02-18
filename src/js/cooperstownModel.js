@@ -32,7 +32,7 @@ function getPlacesComputed(evaluator, owner) {
 
         var evaluatorResult = evaluator.call(owner);
         // Cope with both asynchronous and synchronous values
-        if (evaluatorResult && (typeof evaluatorResult.done === "function")) { // Async
+        if (evaluatorResult && (typeof evaluatorResult.done === 'function')) { // Async
             result.inProgress(true);
             currentDeferred = $.Deferred().done(function(data) {
                 result.inProgress(false);
@@ -65,11 +65,11 @@ var CooperstownViewModel = function() {
     this.curatedPlaces = ko.observableArray([]);
 
     /**
-     * Filtered list of Available Places.
+     * Current Visible Places
      */
     this.visiblePlaces = ko.computed(this._isVisible, this);
 
-    this.filter = ko.observable('').publishOn('filterPlaces').extend({ rateLimit: 100 });
+    this.filter = ko.observable('').publishOn('filterPlaces').extend({ rateLimit: 1000 });
 
     //this.filter.subscribe(function(test) {
     //    console.log(test);
@@ -77,7 +77,7 @@ var CooperstownViewModel = function() {
 
     // this.filter = ko.observable('').subscribeTo('filterPlaces');
 
-    this.filteredPlaces = ko.computed(this._filtered, this).publishOn('filteredList');
+    this.filteredPlaces = ko.computed(this._filtered, this);
 
     this.filteredPlaces.subscribe(this._filterSubscribe, this);
 
@@ -105,6 +105,10 @@ var CooperstownViewModel = function() {
     this.isFiltered = ko.observable(false);
     this.filter.subscribe(function(update) {
         console.log(update);
+        self.curatedPlaces().forEach(function (p) {
+            p.isSelected(false);
+        });
+
         if (update.length > 0) {
             self.isFiltered(true);
         }
@@ -117,14 +121,13 @@ var CooperstownViewModel = function() {
     this.googlePlaces = ko.observableArray([]);
     this.filter.subscribe(getPlacesComputed(function() {
         var self = this;
-        var searchFilter = this.filter().trim().toLowerCase();
+        var searchFilter = self.filter().trim().toLowerCase();
 
     //// Query Google Nearby Search for searchFilter
         return GoogleMaps.PlacesService.autoCompleteService(searchFilter)
-            .then(function(result) {
+            .then(function (result) {
                 console.log('Search Filter = ' + searchFilter);
                 console.log(result);
-                var results = [];
                 if (self.isFiltered()) {
                     var searchedPlaces = self._getResults(result);
                     if (self.googlePlaces().length > 0) {
@@ -139,12 +142,12 @@ var CooperstownViewModel = function() {
                     });
                 }
                 else {
-                    ko.utils.arrayForEach(self.googlePlaces(), function(place) {
+                    ko.utils.arrayForEach(self.googlePlaces(), function (place) {
                         place.isVisible(false);
+                        place.isSelected(false);
                     });
-                    results = [];
+                    self.googlePlaces([]);
                 }
-                self.googlePlaces(results);
             });
 
     }, this));
@@ -174,8 +177,6 @@ CooperstownViewModel.prototype.addPlace = function(place) {
 
     // On initial load, the places list will not show. Force an update
     // by notifying subscribers to the filter
-    this.filter.notifySubscribers();
-    this.filteredPlaces.notifySubscribers();
  };
 
 CooperstownViewModel.prototype.loadSavedPlaces = function(place) {
@@ -184,15 +185,16 @@ CooperstownViewModel.prototype.loadSavedPlaces = function(place) {
         this.curatedPlaces().push(tPlace);
         this.currentPlace(tPlace);
         // On initial load, the places list will not show. Force an update
-        // by notifying subscribers to the filter
-        this.filter.notifySubscribers();
-        this.filteredPlaces.notifySubscribers();
+        // by notifying subscribers
+        this.curatedPlaces.notifySubscribers();
     }
 };
 
 CooperstownViewModel.prototype._filtered = function() {
     var searchFilter = this.filter().trim().toLowerCase();
     var placesFound;
+    var infoWindow = GoogleMaps.getInfoWindow();
+    infoWindow.close();
 
     if (!searchFilter) {
         placesFound = this.curatedPlaces();
@@ -205,18 +207,20 @@ CooperstownViewModel.prototype._filtered = function() {
                     place.isVisible(false);
                 }
                 return (place.name().trim().toLowerCase().indexOf(searchFilter) !== -1 ||
-                place.category().trim().toLowerCase().indexOf(searchFilter) !== -1);
+                    place.category().trim().toLowerCase().indexOf(searchFilter) !== -1);
 
             });
     }
     ko.utils.arrayForEach(placesFound, this._makeVisible);
-    console.log(placesFound);
     return placesFound;
 };
 
 CooperstownViewModel.prototype.focusLocation = function(data) {
     // First set isSelected to false for all places
     this.curatedPlaces().forEach(function (p) {
+        p.isSelected(false);
+    });
+    this.googlePlaces().forEach(function(p) {
         p.isSelected(false);
     });
     this.currentPlace(data);
@@ -340,4 +344,5 @@ CooperstownViewModel.prototype._getResults = function(data) {
 };
 
 
-module.exports = new CooperstownViewModel();
+// module.exports = new CooperstownViewModel();
+module.exports = CooperstownViewModel;
