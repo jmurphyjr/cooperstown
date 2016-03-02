@@ -9,7 +9,6 @@ body {
     margin:0;
     height: 100%;
     width: 100%;
-    position: relative;
     /* font-family: "Roboto", sans-serif; */
     font-family: "Raleway";
 }
@@ -41,14 +40,22 @@ p {
     padding-left: 5px;
 }
 
+#container {
+    display: flex;
+    flex-flow: nowrap;
+    width: 100%;
+    height: 100%;
+}
+
 header {
-    background-color: #286090;
+    background-color: #b31e00;
     color: white;
-    padding: 0;
-    padding-bottom: 4em;
+    font-weight: 900;
     border-bottom: 1px solid #000;
-    z-index: 1;
-    height: 75px;
+    z-index: 100;
+    display: flex;
+    width: 100%;
+    height: 5em;
 }
 
 #brand {
@@ -57,19 +64,23 @@ header {
     font-size: 2vw;
 }
 
+#searchBar {
+    width: 25%;
+    top: 50%;
+    z-index: 5;
+    padding: 0 0 0 1em;
+    margin: auto;
+    color: #000;
+}
+
 .menu-icon {
-    font-size: 2vw;
-    padding: 5px 10px;
-    /* background: #e5dac0; */
-    /* color: #987d3e; */
+    font-size: 5vw;
     color: #ffffff;
     cursor: pointer;
-    position: absolute;
-    left: 90%;
-    top: 0;
-    margin: 6px 6px 0 0;
-    /* border-right: 5px; */
-    border: solid 1px #f8f8ff;
+    /* position: relative; */
+    top: 50%;
+    margin: auto;
+    /* border: solid 1px #f8f8ff; */
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
@@ -80,34 +91,21 @@ main {
     height: calc( 95% - 50px);
     width: 100%;
     position: absolute;
+    top: 5em;
+    left: 0;
 }
 
 #left-sidebar {
     float: left;
-    width: 0;
+    width: 350px;
     height: 100%;
     z-index: 5;
     position: relative;
     background-color: #b31e00;
     overflow-y: auto;
+    display: none;
 }
 
-#searchBar {
-    width: 100%;
-    height: auto;
-    /* position: absolute;
-    left: 1px; */
-    transition: all .3s ease-in-out;
-    -webkit-transition: all .3s ease-in-out;
-    -moz-transition: all .3s ease-in-out;
-    -ms-transition: all .3s ease-in-out;
-    -o-transition: all .3s ease-in-out;
-    z-index: 5;
-    background-color: #449baf;
-    padding: 0;
-    margin: 0;
-
-}
 #cooperstown-list {
     width: 100%;
 }
@@ -153,15 +151,18 @@ main {
 }
 
 .wrapper-map {
+    position: absolute;
     height: 100%;
-    margin-left: 0;
-    position: relative;
+    width: 100%;
+    top: 0;
+    left: 0;
 }
 
 #map {
     height: 100%;
     width: 100%;
     position: absolute;
+    z-index: 10;
 }
 
 .infobox-container {
@@ -171,7 +172,7 @@ main {
     width: 90%;
     height: 320px;
 
-    z-index: 5;
+    z-index: 10;
 }
 
 .place-image {
@@ -249,32 +250,59 @@ footer span {
 }
 
 #weather {
-    display: none;
+    z-index: 100;
+    position: absolute;
+    margin: auto;
+    width: 125px;
+    max-width: 350px;
 }
 
 .weather-day {
-    float: left;
-    padding: 10px 0;
-    /* border: red 1px solid; */
+    /* float: left; */
+    padding: 0 10px 5px 10px;
+    /*float: left; */
+    background: #b31e00;
+    color: whitesmoke;
+    border: 1px solid whitesmoke;
+    margin: auto;
 }
 .weather-day img {
-    float: left;
+    /* float: left; */
 }
 
 .weather-date {
-    margin: auto;
+    font-weight: 900;
+
 }
 .weather-temp {
-    float: left;
-    padding: 0 5px;
+    /* float: left; */
+
 }
 .weather-desc {
-    margin: auto;
+
 }
 
 @media (min-width: 640px) {
+    header {
+
+    }
+
+    .menu-icon {
+        font-size: 3vw;
+        width: 40px;
+        /* position: relative; */
+        margin: auto 5px;
+        /* padding: 5px; */
+    }
     #left-sidebar {
-        width: 150px;
+        float: left;
+        width: 300px;
+        height: 100%;
+        z-index: 10;
+        position: relative;
+        background-color: #b31e00;
+        overflow-y: auto;
+        display: inherit;
     }
 
     footer {
@@ -286,6 +314,7 @@ footer span {
         max-width: 420px;
         max-height: 420px;
         width: 90%;
+        z-index: 50;
     }
 
 }
