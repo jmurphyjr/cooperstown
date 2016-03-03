@@ -87,6 +87,21 @@ header {
     z-index: 1;
 }
 
+.weather-icon {
+    font-size: 5vw;
+    color: #ffffff;
+    cursor: pointer;
+    /* position: relative; */
+    top: 50%;
+    margin: auto;
+    /* border: solid 1px #f8f8ff; */
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+
 main {
     height: calc( 95% - 50px);
     width: 100%;
@@ -296,7 +311,7 @@ footer span {
     }
     #left-sidebar {
         float: left;
-        width: 300px;
+        width: 0;
         height: 100%;
         z-index: 10;
         position: relative;

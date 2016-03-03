@@ -61,6 +61,7 @@ var weatherViewModel = function() {
                 icon: 'http://openweathermap.org/img/w/' + j.list[i].weather[0].icon + '.png'
             }));
         }
+        console.log(self.latest())
     };
 
     /**

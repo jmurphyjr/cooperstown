@@ -27,8 +27,15 @@
         <input id="filter-markers" type="search" placeholder="Search Cooperstown" data-bind="value: filter, valueUpdate: 'input'">
 
     </div>
+    <!-- ko if: (cooperstownWeather.length > 0) -->
+    <div class="weather-one-day" data-bind="click: toggleWeather()">
+        <img data-bind="attr: {src: cooperstownWeather[0].icon}" />
+        <div class="weather-date" data-bind="text: cooperstownWeather[0].date"></div>
+    </div>
+    <!-- /ko -->
 
-    <label class="menu-icon">&#9776;</label>
+
+    <label class="menu-icon" data-bind="click: placesListToggle()">&#9776;</label>
 </header>
 
 <div class="wrapper-map">
@@ -37,7 +44,8 @@
 </div>
 
 <main class="clearfix">
-    <div id="left-sidebar">
+
+    <div id="left-sidebar" data-bind="slideVisible: placesList, slideDuration:400">
 
         <div id="cooperstown-list" class="cooperstown-container">
             <h5 class="cooperstown-list-label" data-bind="visible: filteredPlaces().length">Suggested Places</h5>
@@ -60,17 +68,15 @@
             </ul>
         </div>
     </div>
-    <div id="weather-container">
-        <div id="weather" data-bind="foreach: cooperstownWeather">
+        <div id="weather" data-bind="foreach: cooperstownWeather, slideVisible: weatherVisible, slideDuration:400">
             <div class="weather-day">
                 <img data-bind="attr: {src: icon}" />
-                <div class="weather-date" data-bind="text: date"></div>
-                <div class="weather-temp">Low: <span data-bind="text: min"></span>&#x2109;</div>
-                <div class="weather-temp">High: <span data-bind="text: max"></span>&#x2109;</div>
-                <div class="weather-desc" data-bind="text: desc"></div>
+                <span data-bind="text: date"></span>
+                <span class="weather-temp">Low: <span data-bind="text: min"></span>&#x2109;</span>
+                <span class="weather-temp">High: <span data-bind="text: max"></span>&#x2109;</span>
+                <span class="weather-desc" data-bind="text: desc"></span>
             </div>
         </div>
-    </div>
 
 </main>
 <footer>

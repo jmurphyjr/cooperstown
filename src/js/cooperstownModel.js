@@ -15,6 +15,54 @@ ko.options.deferUpdates = true;
 var Place = require('./place');
 var GoogleMaps = require('./google');
 var weather = require('./weather');
+
+ko.bindingHandlers.slideVisible = {
+    update: function(element, valueAccessor, allBindings) {
+        // First get the latest data that we're bound to
+        var value = valueAccessor();
+
+        // Next, whether or not the supplied model property is observable, get its current value
+        var valueUnwrapped = ko.unwrap(value);
+
+        // Grab some more data from another binding property
+        var duration = allBindings.get('slideDuration') || 400; // 400ms is default duration unless otherwise specified
+
+
+        var width;
+        // Now manipulate the DOM element
+        console.log($(element).attr('id'));
+        var attribute = $(element).attr('id');
+
+        if (valueUnwrapped === true) {
+            // $(element).slideDown(duration); // Make the element visible
+            if (attribute === 'weather') {
+                width = 'toggle';
+            }
+            else {
+                width = '350px';
+            }
+            $(element).animate({
+                width: width
+            });
+
+        }
+        else {
+            // $(element).slideUp(duration);   // Make the element invisible
+            if (attribute === 'weather') {
+                width = 'toggle';
+            }
+            else {
+                width = '0';
+            }
+
+            $(element).animate({
+                width: width
+            });
+
+        }
+    }
+};
+
 /**
  * Reference: https://github.com/knockout/knockout/wiki/asynchronous-dependent-observables
  *
@@ -69,6 +117,8 @@ var CooperstownViewModel = function() {
      */
     this.visiblePlaces = ko.computed(this._isVisible, this);
 
+    this.placesList = ko.observable(true);
+
     this.filter = ko.observable('').publishOn('filterPlaces').extend({ rateLimit: 1000 });
 
     //this.filter.subscribe(function(test) {
@@ -109,10 +159,15 @@ var CooperstownViewModel = function() {
             p.isSelected(false);
         });
 
-        if (update.length > 0) {
+        if (update.length > 0 && self.placesList()) {
+            self.isFiltered(true);
+        }
+        else if (update.length > 0) {
+            self.placesListToggle();
             self.isFiltered(true);
         }
         else {
+            self.placesListToggle();
             self.isFiltered(false);
         }
     });
@@ -153,6 +208,18 @@ var CooperstownViewModel = function() {
     }, this));
 
     this.cooperstownWeather = weather.latest();
+    this.weatherVisible = ko.observable(false);
+
+    this.weatherVisible.subscribe(function() {
+        if (self.placesList()) {
+            self.placesList(!self.placesList());
+        }
+    });
+    this.placesList.subscribe(function() {
+        if (self.weatherVisible()) {
+            self.weatherVisible(!self.weatherVisible());
+        }
+    });
 };
 
 CooperstownViewModel.prototype.loadBindings = function(bindto) {
@@ -163,6 +230,16 @@ CooperstownViewModel.prototype._isVisible = function () {
     return ko.utils.arrayFilter(this.curatedPlaces(), function (p) {
         return p.isVisible();
     });
+};
+
+CooperstownViewModel.prototype.placesListToggle = function() {
+    var self = this;
+    self.placesList(!self.placesList());
+};
+
+CooperstownViewModel.prototype.toggleWeather = function() {
+    var self = this;
+    self.weatherVisible(!self.weatherVisible());
 };
 
 CooperstownViewModel.prototype.addPlace = function(place) {

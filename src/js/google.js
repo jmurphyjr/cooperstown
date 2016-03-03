@@ -61,9 +61,9 @@ var maps = {
         maps.setElement(element);
         maps.setOptions();
         _map = new google.maps.Map(maps.element, maps.options);
-        // _infoWindow = new google.maps.InfoWindow();
-        var CustomOverlay = require('./customoverlay');
-        _infoWindow = new CustomOverlay();
+        _infoWindow = new google.maps.InfoWindow();
+        // var CustomOverlay = require('./customoverlay');
+        // _infoWindow = new CustomOverlay();
 
         maps.DistanceService.init();
         _coopersTown = new google.maps.LatLng(42.63999, -74.96033);
