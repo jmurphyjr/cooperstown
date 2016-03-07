@@ -67,32 +67,23 @@ function Place(data, type) {
 
     var marker = GoogleMaps.MarkerService.addMarker(self);
 
-    google.maps.event.addListener(marker, 'click', function () {
-        var map = GoogleMaps.getMap();
-        var infoWindow = GoogleMaps.getInfoWindow();
-        infoWindow.close();
+    marker.addListener('click', function () {
+        self.isSelected(true);
 
-
-        infoWindow.setContent(self.detailInfo());
-        infoWindow.open(map, marker);
-        this.isSelected(true);
-
-    }.bind(self));
+    });
 
     this.isSelected.subscribe(function(selected) {
         var map = GoogleMaps.getMap();
 
         var infoWindow = GoogleMaps.getInfoWindow();
-        infoWindow.close();
         var latLng = marker.getPosition();
 
         if (selected) {
-
-            map.setCenter(latLng);
+            infoWindow.close();
 
             self.isVisible(true);
             if (!map.getBounds().contains(marker.getPosition())) {
-                // GoogleMaps.setDefaultZoomAndCenter();
+                GoogleMaps.setDefaultZoomAndCenter();
             }
             infoWindow.setContent(self.detailInfo());
             infoWindow.open(map, marker);

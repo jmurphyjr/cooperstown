@@ -43,11 +43,18 @@ var WeatherModel = function(data) {
 
 var weatherViewModel = function() {
     var self = this;
-    self.latest = ko.observableArray([]);
+    self.latest = ko.observableArray([new WeatherModel({
+        'date': '',
+        'min': '',
+        'max': '',
+        'desc': '',
+        'icon': ''
+    })]);
 
     var formatWeather = function(j) {
         console.log(j);
         var len = j.list.length;
+        self.latest([]);
 
         for (var i = 0; i < len; i++) {
             var date = new Date(j.list[i].dt * 1000);
@@ -61,7 +68,7 @@ var weatherViewModel = function() {
                 icon: 'http://openweathermap.org/img/w/' + j.list[i].weather[0].icon + '.png'
             }));
         }
-        console.log(self.latest())
+        console.log(self.latest());
     };
 
     /**

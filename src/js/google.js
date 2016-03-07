@@ -62,8 +62,6 @@ var maps = {
         maps.setOptions();
         _map = new google.maps.Map(maps.element, maps.options);
         _infoWindow = new google.maps.InfoWindow();
-        // var CustomOverlay = require('./customoverlay');
-        // _infoWindow = new CustomOverlay();
 
         maps.DistanceService.init();
         _coopersTown = new google.maps.LatLng(42.63999, -74.96033);
@@ -149,8 +147,7 @@ var maps = {
                         keyword: search,
                         rankBy: google.maps.places.RankBy.DISTANCE
                     }, function (results, status, pagination) {
-                        if (status === google.maps.places.PlacesServiceStatus.OK &&
-                            pagination.hasNextPage) {
+                        if (status === google.maps.places.PlacesServiceStatus.OK) {
                             rtnData = rtnData.concat(maps.PlacesService.placeResult(
                                 results, status));
                         //    pagination.nextPage();

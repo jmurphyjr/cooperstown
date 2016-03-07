@@ -17,25 +17,25 @@
 </head>
 <body>
 <div id="container">
-<header>
-    <div id="brand">
-        <h2>Cooperstown</h2>
-
-        <p>Dreamspark</p>
+<header class="stacked">
+    <div class="header-brand">
+        <div id="brand">
+            <h2>Cooperstown</h2>
+        </div>
+        <div class="weather-one-day" data-bind="click: sidebarToggle(1)">
+            <img data-bind="attr: {src: cooperstownWeather[0].icon}" />
+            <div class="weather-date" data-bind="text: cooperstownWeather[0].date"></div>
+        </div>
+        <label class="menu-icon" data-bind="click: sidebarToggle(2)">&#9776;</label>
     </div>
     <div id="searchBar">
         <input id="filter-markers" type="search" placeholder="Search Cooperstown" data-bind="value: filter, valueUpdate: 'input'">
 
     </div>
-    <!-- ko if: (cooperstownWeather.length > 0) -->
-    <div class="weather-one-day" data-bind="click: toggleWeather()">
-        <img data-bind="attr: {src: cooperstownWeather[0].icon}" />
-        <div class="weather-date" data-bind="text: cooperstownWeather[0].date"></div>
-    </div>
-    <!-- /ko -->
 
 
-    <label class="menu-icon" data-bind="click: placesListToggle()">&#9776;</label>
+
+
 </header>
 
 <div class="wrapper-map">
@@ -45,7 +45,7 @@
 
 <main class="clearfix">
 
-    <div id="left-sidebar" data-bind="slideVisible: placesList, slideDuration:400">
+    <div id="left-sidebar" data-bind="css: listVisibleStatus">
 
         <div id="cooperstown-list" class="cooperstown-container">
             <h5 class="cooperstown-list-label" data-bind="visible: filteredPlaces().length">Suggested Places</h5>
@@ -68,7 +68,7 @@
             </ul>
         </div>
     </div>
-        <div id="weather" data-bind="foreach: cooperstownWeather, slideVisible: weatherVisible, slideDuration:400">
+        <div id="weather" data-bind="foreach: cooperstownWeather, css: weatherVisibleStatus">
             <div class="weather-day">
                 <img data-bind="attr: {src: icon}" />
                 <span data-bind="text: date"></span>
