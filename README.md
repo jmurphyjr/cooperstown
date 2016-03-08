@@ -4,6 +4,16 @@
  It is home to the National Baseball Hall of Fame and Museum, as well as [Cooperstown Dreams Park](http://www.cooperstowndreamspark.com/), the self proclaimed _Crown Jewel Of Youth Baseball_.
  
  
+## Installation
+
+To utilize this application, perform the following:
+
+  1. Clone this repository: `git clone git@github.com:jmurphyjr/cooperstown.git'
+  2. Execute: cd cooperstown or whichever directory the repo was cloned to
+  3. Execute: npm install
+  4. Execute: gulp serve-dev
+  5. Visit in a browser: http://localhost:3000
+ 
 ## Project Description
  
 This is _Project 5-1: Neighborhood Map Project_ of the Udacity Front-End Nanodegree.

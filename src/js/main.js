@@ -8,11 +8,9 @@
 
 var EventsEmitter = require('events');
 var GoogleMaps = require('./google.js');
-var ko = require('knockout');
-var $ = require('jquery');
 
 var cooperstownFirebase = require('./firebaseInterface');
-var cooperstownViewModel = require('./cooperstownModel');
+var CooperstownViewModel = require('./cooperstownModel');
 // var searchBox = require('./searchBox');
 
 var utils = require('./utils');
@@ -23,11 +21,6 @@ var emitter = new EventsEmitter();
 var Main = function() {
 
     var cooperstownVM;
-    var googlePlacesSearch;
-    // var cooperstownId = document.getElementById('body');
-    // var searchBarId = document.getElementById('searchBar');
-    // var placesListId = document.getElementById('places-list');
-    var footer = document.getElementById('footer');
 
     /**
      * Function to load initial data set, as well as update on additions or changes.
@@ -61,10 +54,9 @@ var Main = function() {
     });
 
     emitter.on('googlemapsloaded', function() {
-        cooperstownVM = new cooperstownViewModel();
+        cooperstownVM = new CooperstownViewModel();
         cooperstownFirebase.init(initialPlaceLoad, updatePlace);
         cooperstownVM.loadBindings();
-        // searchBox.loadBindings(searchBarId);
 
     });
 

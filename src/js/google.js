@@ -17,8 +17,6 @@ var _coopersTown;  // openweathermap.org id 5113664
 
 var _initialMapBounds;
 
-var _placesRequestPending = false;
-
 var maps = {
 
     /**
@@ -137,7 +135,7 @@ var maps = {
          */
         autoCompleteService: function(search) {
             var rtnData = [];
-            return new Promise(function(resolve, reject) {
+            return new Promise(function(resolve) {
                 if (search === '') {
                     resolve([]);
                 }
@@ -146,17 +144,10 @@ var maps = {
                         location: _coopersTown,
                         keyword: search,
                         rankBy: google.maps.places.RankBy.DISTANCE
-                    }, function (results, status, pagination) {
+                    }, function (results, status) {
                         if (status === google.maps.places.PlacesServiceStatus.OK) {
                             rtnData = rtnData.concat(maps.PlacesService.placeResult(
                                 results, status));
-                        //    pagination.nextPage();
-                        //}
-                        //else if (status === google.maps.places.PlacesServiceStatus.OK &&
-                        //    !pagination.hasNextPage) {
-                        //    rtnData = rtnData.concat(maps.PlacesService.placeResult(results,
-                        //        status));
-                        //    console.log(rtnData);
                             resolve(rtnData);
                         }
                         else {

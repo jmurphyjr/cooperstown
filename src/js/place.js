@@ -69,7 +69,7 @@ function Place(data, type) {
     var marker = GoogleMaps.MarkerService.addMarker(self);
 
     $( document ).ready(function() {
-        var isMobileTest = window.matchMedia("only screen and (max-width: 760px)");
+        var isMobileTest = window.matchMedia('only screen and (max-width: 760px)');
 
         if (isMobileTest.matches) {
             marker.addListener('mousedown', function () {

@@ -217,7 +217,7 @@ var CooperstownViewModel = function() {
     /**
      * Load Open Weather for Cooperstown.
      */
-    var LatestWeather = function() {
+    var latestWeather = function() {
         var locId = '5113664';
         var key = 'eb4517278632126592d242295796967f';
         var apiUrl = 'http://api.openweathermap.org/data/2.5/forecast/daily?id=' + locId + '&appid=' + key + '&units=imperial';
@@ -271,13 +271,13 @@ var CooperstownViewModel = function() {
             self.placesList(false);
         }
     };
-    LatestWeather();
+    latestWeather();
 
 
 
 };
 
-CooperstownViewModel.prototype.loadBindings = function(bindto) {
+CooperstownViewModel.prototype.loadBindings = function() {
     ko.applyBindings(this);
 };
 
