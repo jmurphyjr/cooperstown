@@ -9,14 +9,13 @@
 var EventsEmitter = require('events');
 var GoogleMaps = require('./google.js');
 var ko = require('knockout');
-
+var $ = require('jquery');
 
 var cooperstownFirebase = require('./firebaseInterface');
 var cooperstownViewModel = require('./cooperstownModel');
 // var searchBox = require('./searchBox');
 
 var utils = require('./utils');
-var weather = require('./weather');
 
 var emitter = new EventsEmitter();
 

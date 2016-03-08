@@ -41,8 +41,8 @@ p {
 }
 
 #container {
-    display: flex;
-    flex-flow: nowrap;
+/*    display: flex;
+    flex-flow: nowrap; */
     width: 100%;
     height: 100%;
 }
@@ -69,22 +69,23 @@ header {
 #brand {
     float: left;
     width: 50%;
-    padding: 0 10px 0 0;
-    font-size: 2vw;
+    padding: 10px;
+    font-size: 3vw;
 }
 
 .menu-icon {
     font-size: 5vw;
-    width: 25%;
     color: #ffffff;
     cursor: pointer;
-    margin: auto;
+    margin: 0 1em;
     /* border: solid 1px #f8f8ff; */
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
     z-index: 1;
-    float: left;
+    float: right;
+    display: block;
+    top: 0;
 }
 .weather-one-day {
     width: 25%;
@@ -105,17 +106,24 @@ header {
     z-index: 1;
 }
 
+.weather-one-day img {
+    width: 2em;
+    float: left;
+}
 
+.weather-details {
+    font-size: 2vw;
+    color: black;
+}
 
 #searchBar {
     width: 100%;
-    position: relative;
+    position: absolute;
     z-index: 5;
-    padding: 0 0 0 1em;
-    margin: auto;
     color: #000;
     display: block;
     clear: both;
+    bottom: 0;
 }
 
 
@@ -252,6 +260,8 @@ footer span {
 }
 .weather-day img {
     /* float: left; */
+    clear: both;
+    display: block;
 }
 
 .weather-date {
@@ -268,7 +278,8 @@ footer span {
 
 
 
-/* @media screen and (max-width: 400px) {
+@media screen and (max-width: 400px) {
+
 
     .left-sidebar-visible {
         -webkit-transition: width 400ms ease-in-out;
@@ -284,10 +295,6 @@ footer span {
         -o-transition: width 400ms ease-in-out;
         transition: width 400ms ease-in-out;
         width: 0;
-    }
-
-    #left-sidebar {
-        display: none;
     }
 
     .weather-visible {
@@ -309,10 +316,13 @@ footer span {
     }
 
 }
-*/
+
 @media screen and (min-width: 400px) {
     header {
 
+    }
+    #brand {
+        font-size: 2vw;
     }
 
     .menu-icon {
@@ -321,6 +331,16 @@ footer span {
         /* position: relative; */
         margin: auto 5px;
         /* padding: 5px; */
+    }
+
+    .weather-one-day img{
+        font-size: 2vw;
+    }
+    .weather-date {
+        font-size: 2vw;
+    }
+    .weather-details {
+        font-size: 1vw;
     }
 
     .left-sidebar-visible {

@@ -21,13 +21,14 @@
         <div id="brand">
             <h2>Cooperstown</h2>
         </div>
-        <div class="weather-one-day" data-bind="click: sidebarToggle(1)">
+        <div class="weather-one-day" data-bind="click: function() { sidebarToggle(1) }">
             <!-- ko if: cooperstownWeather().length > 0 -->
             <img data-bind="attr: {src: cooperstownWeather()[0].icon}" />
             <div class="weather-date" data-bind="text: cooperstownWeather()[0].date"></div>
             <!-- /ko -->
+            <p class="weather-details">click for forecast</p>
         </div>
-        <label class="menu-icon" data-bind="click: sidebarToggle(2)">&#9776;</label>
+        <label class="menu-icon" data-bind="click: function() { sidebarToggle(2) }">&#9776;</label>
     </div>
     <div id="searchBar">
         <input id="filter-markers" type="search" placeholder="Search Cooperstown" data-bind="value: filter, valueUpdate: 'input'">

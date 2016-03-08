@@ -106,7 +106,7 @@ var CooperstownViewModel = function() {
      */
     this.visiblePlaces = ko.computed(this._isVisible, this);
 
-    this.placesList = ko.observable(false);
+    this.placesList = ko.observable(true);
 
     this.filter = ko.observable('').publishOn('filterPlaces').extend({ rateLimit: 1000 });
 
@@ -119,6 +119,7 @@ var CooperstownViewModel = function() {
     this.addLocation.subscribe(this.addPlace,this);
 
     this.selectedPlace = ko.postbox.subscribe('selectedPlace', function(e) {
+        console.log(e);
         if (e.isSelected()) {
             self.curatedPlaces().forEach(function (p) {
 
@@ -236,17 +237,18 @@ var CooperstownViewModel = function() {
             return err;
         });
     };
-    
+
 
     this.weatherVisible = ko.observable(false);
 
     this.weatherVisibleStatus = ko.pureComputed(function() {
+        console.log('weatherVisibleStatus Function');
         return this.weatherVisible() ? 'weather-visible' : 'weather-removed';
     }, this);
 
 
     this.listVisibleStatus = ko.pureComputed(function() {
-        console.log(this.placesList());
+        console.log('listVisibleStatus');
         return this.placesList() ? 'left-sidebar-visible' : 'left-sidebar-removed';
     }, this);
 
@@ -254,13 +256,13 @@ var CooperstownViewModel = function() {
     this.sidebarToggle = function(up) {
         console.log(up);
         console.log('clicked sidebarToggle');
-        console.log(self.placesList());
+        console.log(window.innerWidth);
 
-        if (up === 1) {
+        if (up === 1 && self.weatherVisible() === false) {
             self.placesList(false);
             self.weatherVisible(true);
         }
-        else if (up === 2) {
+        else if (up === 2 && self.placesList() === false) {
             self.weatherVisible(false);
             self.placesList(true);
         }
