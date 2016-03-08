@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Udacity Front-End Nanodegree • Project 5 Cooperstown</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/project.css">
+    <script async src="js/perfmatters.js"></script>
+</head>
+<body>
+<div id="container">
+<header class="stacked">
+    <div class="header-brand">
+        <div id="brand">
+            <h2>Cooperstown</h2>
+        </div>
+        <div class="weather-one-day" data-bind="click: function() { sidebarToggle(1) }">
+            <!-- ko if: cooperstownWeather().length > 0 -->
+            <img data-bind="attr: {src: cooperstownWeather()[0].icon}" />
+            <div class="weather-date" data-bind="text: cooperstownWeather()[0].date"></div>
+            <!-- /ko -->
+            <p class="weather-details">click for forecast</p>
+        </div>
+        <label class="menu-icon" data-bind="click: function() { sidebarToggle(2) }">&#9776;</label>
+    </div>
+    <div id="searchBar">
+        <input id="filter-markers" type="search" placeholder="Search Cooperstown" data-bind="value: filter, valueUpdate: 'input'">
+
+    </div>
+
+
+
+
+</header>
+
+<div class="wrapper-map">
+    <div id="map">
+    </div>
+</div>
+
+<main class="clearfix">
+
+    <div id="left-sidebar" data-bind="css: listVisibleStatus">
+
+        <div id="cooperstown-list" class="cooperstown-container">
+            <h5 class="cooperstown-list-label" data-bind="visible: filteredPlaces().length">Suggested Places</h5>
+            <ul data-bind="foreach: filteredPlaces">
+                <li class="ctown_ul_li" data-bind="click: $parent.focusLocation.bind($parent), css: { selected: isSelected }">
+                    <div class="ctown_ul_li_name"><a target="_blank" data-bind="text: name"></a></div>
+                    <div class="ctown_ul_li_distance" data-bind="text: distanceToDreamsPark"></div>
+                </li>
+            </ul>
+        </div>
+
+        <div id="places-list" class="places-container no-results">
+            <h5 class="cooperstown-list-label" data-bind="visible: googlePlaces().length">Google Suggestions</h5>
+            <ul class="ctown_ul" data-bind="foreach: googlePlaces">
+                <li class="ctown_ul_li" data-bind="click: $parent.focusLocation.bind($parent), css: { selected: isSelected }">
+                    <div class="ctown_ul_li_name" data-bind="text: name"></div>
+                    <div class="ctown_ul_li_add" data-bind="click: $parent.addLocation.bind($parent)">Save Location</div>
+                    <div class="ctown_ul_li_distance" data-bind="text: distanceToDreamsPark"></div>
+                </li>
+            </ul>
+        </div>
+    </div>
+        <div id="weather" data-bind="foreach: cooperstownWeather, css: weatherVisibleStatus">
+            <div class="weather-day">
+                <img data-bind="attr: {src: icon}" />
+                <span data-bind="text: date"></span>
+                <span class="weather-temp">Low: <span data-bind="text: min"></span>&#x2109;</span>
+                <span class="weather-temp">High: <span data-bind="text: max"></span>&#x2109;</span>
+                <span class="weather-desc" data-bind="text: desc"></span>
+            </div>
+        </div>
+
+</main>
+<footer>
+    <p>&copy; Web Performance 2014 <span id="crp-stats"></span></p>
+</footer>
+</div>
+<script async src="https://maps.googleapis.com/maps/api/js?&libraries=places,geometry"></script>
+<script src="js/bundle.min.js"></script>
+</body>
+</html>
