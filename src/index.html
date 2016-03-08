@@ -10,7 +10,6 @@
 
     <!-- build:css css/project.css -->
     <link rel="stylesheet" href="../node_modules/normalize.css/normalize.css">
-    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="css/main.css">
     <!-- endbuild -->
     <script async src="js/perfmatters.js"></script>
@@ -23,8 +22,10 @@
             <h2>Cooperstown</h2>
         </div>
         <div class="weather-one-day" data-bind="click: sidebarToggle(1)">
-            <img data-bind="attr: {src: cooperstownWeather[0].icon}" />
-            <div class="weather-date" data-bind="text: cooperstownWeather[0].date"></div>
+            <!-- ko if: cooperstownWeather().length > 0 -->
+            <img data-bind="attr: {src: cooperstownWeather()[0].icon}" />
+            <div class="weather-date" data-bind="text: cooperstownWeather()[0].date"></div>
+            <!-- /ko -->
         </div>
         <label class="menu-icon" data-bind="click: sidebarToggle(2)">&#9776;</label>
     </div>

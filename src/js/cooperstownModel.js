@@ -14,34 +14,7 @@ ko.postbox = require('knockout-postbox');
 ko.options.deferUpdates = true;
 var Place = require('./place');
 var GoogleMaps = require('./google');
-var weather = require('./weather');
-
-//ko.bindingHandlers.slideVisible = {
-//    update: function(element, valueAccessor, allBindings) {
-//        // First get the latest data that we're bound to
-//        var value = valueAccessor();
-//
-//        // Next, whether or not the supplied model property is observable, get its current value
-//        var valueUnwrapped = ko.unwrap(value);
-//
-//        // Grab some more data from another binding property
-//        var duration = allBindings.get('slideDuration') || 400; // 400ms is default duration unless otherwise specified
-//
-//        if (valueUnwrapped === true) {
-//            console.log('display');
-//            $(element).animate({
-//                display: 'none'
-//            });
-//        }
-//        else {
-//            console.log('remove');
-//            $(element).animate({
-//                display: 'block'
-//            });
-//        }
-//
-//    }
-//};
+// var weather = require('./weather');
 
 /**
  * Reference: https://github.com/knockout/knockout/wiki/asynchronous-dependent-observables
@@ -75,6 +48,42 @@ function getPlacesComputed(evaluator, owner) {
 
     return result;
 }
+
+var WeatherModel = function(data) {
+
+    this.date = data.date;
+    this.min = data.min;
+    this.max = data.max;
+    this.desc = data.desc;
+    this.icon = data.icon;
+};
+
+var DOW = {
+    0: 'Sun',
+    1: 'Mon',
+    2: 'Tue',
+    3: 'Wed',
+    4: 'Thu',
+    5: 'Fri',
+    6: 'Sat'
+};
+
+var MONTH = {
+    0: 'Jan',
+    1: 'Feb',
+    2: 'Mar',
+    3: 'Apr',
+    4: 'May',
+    5: 'Jun',
+    6: 'Jul',
+    7: 'Aug',
+    8: 'Sep',
+    9: 'Oct',
+    10: 'Nov',
+    11: 'Dec'
+};
+
+
 
 var CooperstownViewModel = function() {
     var self = this;
@@ -176,7 +185,59 @@ var CooperstownViewModel = function() {
 
     }, this));
 
-    this.cooperstownWeather = weather.latest();
+    self.cooperstownWeather = ko.observableArray([new WeatherModel({
+        'date': '',
+        'min': '',
+        'max': '',
+        'desc': '',
+        'icon': ''
+    })]);
+
+    var formatWeather = function(j) {
+        var len = j.list.length;
+        var latest = [];
+
+        for (var i = 0; i < len; i++) {
+            var date = new Date(j.list[i].dt * 1000);
+            // Output Date as Mon, Feb 5
+            latest.push(new WeatherModel({
+                // date: (date.getMonth()+1) + '/' + date.getDate() + '/' + date.getFullYear(),
+                date: (DOW[date.getDay()] + ', ' + MONTH[date.getMonth()] + ' ' + date.getDate()),
+                min: j.list[i].temp.min,
+                max: j.list[i].temp.max,
+                desc: j.list[i].weather[0].description,
+                icon: 'http://openweathermap.org/img/w/' + j.list[i].weather[0].icon + '.png'
+            }));
+        }
+        console.log(latest);
+        self.cooperstownWeather(latest);
+    };
+
+    /**
+     * Load Open Weather for Cooperstown.
+     */
+    var LatestWeather = function() {
+        var locId = '5113664';
+        var key = 'eb4517278632126592d242295796967f';
+        var apiUrl = 'http://api.openweathermap.org/data/2.5/forecast/daily?id=' + locId + '&appid=' + key + '&units=imperial';
+        // http://api.openweathermap.org/data/2.5/forecast?id=5113664&appid=eb4517278632126592d242295796967fimperial&units=
+
+        // http://api.openweathermap.org/data/2.5/weather?id=5113664&appid=eb4517278632126592d242295796967f&units=imperial
+
+        window.fetch(apiUrl, {
+            method: 'get'
+        }).then(function(response) {
+            // console.log(response.json());
+            return response.json();
+        }).then(function(j) {
+            formatWeather(j);
+        }).catch(function(err) {
+            console.log(err);
+            return err;
+        });
+    };
+    
+
     this.weatherVisible = ko.observable(false);
 
     this.weatherVisibleStatus = ko.pureComputed(function() {
@@ -208,26 +269,7 @@ var CooperstownViewModel = function() {
             self.placesList(false);
         }
     };
-
-
-    //this.placesListToggle = function() {
-    //    console.log('clicked placeListToggle');
-    //    console.log(self.placesList());
-    //    if (self.weatherVisible() === true) {
-    //        self.weatherVisible(false);
-    //    }
-    //    self.placesList(!self.placesList());
-    //
-    //};
-    //
-    //this.toggleWeather = function() {
-    //    console.log('clicked toggleWeather');
-    //    if (self.placesList() === true) {
-    //        self.placesList(false);
-    //    }
-    //    self.weatherVisible(!self.weatherVisible());
-    //
-    //};
+    LatestWeather();
 
 
 
@@ -242,20 +284,6 @@ CooperstownViewModel.prototype._isVisible = function () {
         return p.isVisible();
     });
 };
-
-//CooperstownViewModel.prototype.placesListToggle = function() {
-//    var self = this;
-//    self.placesList(!self.placesList());
-//};
-
-//CooperstownViewModel.prototype.toggleWeather = function() {
-//    var self = this;
-//    console.log('clicked toggleWeather');
-//    if (self.placesList() === true) {
-//        self.placesList(false);
-//    }
-//    self.weatherVisible(!self.weatherVisible());
-//};
 
 CooperstownViewModel.prototype.addPlace = function(place) {
     if (Object.prototype.toString.call(place) === '[object Object]' && place !== '') {

@@ -57,48 +57,65 @@ header {
     width: 100%;
     height: 5em;
 }
+.stacked {
+    position: relative;
+    width: 100%;
+}
 
+.header-brand {
+    width: 100%;
+    position: absolute;
+}
 #brand {
     float: left;
+    width: 50%;
     padding: 0 10px 0 0;
     font-size: 2vw;
 }
 
-#searchBar {
+.menu-icon {
+    font-size: 5vw;
     width: 25%;
-    top: 50%;
+    color: #ffffff;
+    cursor: pointer;
+    margin: auto;
+    /* border: solid 1px #f8f8ff; */
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    z-index: 1;
+    float: left;
+}
+.weather-one-day {
+    width: 25%;
+    float: left;
+}
+.weather-icon {
+    font-size: 5vw;
+    width: 25%;
+    color: #ffffff;
+    cursor: pointer;
+    float: left;
+    /* position: relative; */
+    margin: auto;
+    /* border: solid 1px #f8f8ff; */
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+
+
+#searchBar {
+    width: 100%;
+    position: relative;
     z-index: 5;
     padding: 0 0 0 1em;
     margin: auto;
     color: #000;
-}
-
-.menu-icon {
-    font-size: 5vw;
-    color: #ffffff;
-    cursor: pointer;
-    /* position: relative; */
-    top: 50%;
-    margin: auto;
-    /* border: solid 1px #f8f8ff; */
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    z-index: 1;
-}
-
-.weather-icon {
-    font-size: 5vw;
-    color: #ffffff;
-    cursor: pointer;
-    /* position: relative; */
-    top: 50%;
-    margin: auto;
-    /* border: solid 1px #f8f8ff; */
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    z-index: 1;
+    display: block;
+    clear: both;
 }
 
 
@@ -251,7 +268,7 @@ footer span {
 
 
 
-@media screen and (max-width: 400px) {
+/* @media screen and (max-width: 400px) {
 
     .left-sidebar-visible {
         -webkit-transition: width 400ms ease-in-out;
@@ -291,16 +308,8 @@ footer span {
         width: 0;
     }
 
-    .weather-one-day {
-        display: none;
-    }
-
-    .menu-icon {
-        display: none;
-    }
-
 }
-
+*/
 @media screen and (min-width: 400px) {
     header {
 
