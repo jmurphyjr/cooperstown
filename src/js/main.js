@@ -59,7 +59,7 @@ var Main = function() {
     emitter.on('googlemapsloaded', function() {
         cooperstownVM = new CooperstownViewModel();
         cooperstownFirebase.init(initialPlaceLoad, updatePlace);
-        cooperstownVM.loadBindings();
+        cooperstownVM.loadBindings(1);
 
     });
 

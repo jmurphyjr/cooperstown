@@ -263,8 +263,10 @@ var CooperstownViewModel = function() {
 
 };
 
-CooperstownViewModel.prototype.loadBindings = function() {
-    ko.applyBindings(this);
+CooperstownViewModel.prototype.loadBindings = function(arg) {
+    if (arg !== undefined) {
+        ko.applyBindings(this);
+    }
 };
 
 CooperstownViewModel.prototype._isVisible = function () {
