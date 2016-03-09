@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="../node_modules/normalize.css/normalize.css">
     <link rel="stylesheet" href="css/main.css">
     <!-- endbuild -->
-    <script async src="js/perfmatters.js"></script>
 </head>
 <body>
 <div id="container">
@@ -81,11 +80,12 @@
         </div>
 
 </main>
-<footer>
-    <p>&copy; Web Performance 2014 <span id="crp-stats"></span></p>
-</footer>
 </div>
-<script async src="https://maps.googleapis.com/maps/api/js?&libraries=places,geometry"></script>
-<script src="js/bundle.min.js"></script>
+<script>
+    var map = document.getElementById('map');
+    map.innerHTML = '<div class="map-load-error"><h1>Loading...</h1></div>';
+</script>
+<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPOgwyxo3y_6PaY200JDqzCMH8vgxwUUk&libraries=places,geometry"></script>
+<script async src="js/bundle.min.js"></script>
 </body>
 </html>

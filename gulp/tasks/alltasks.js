@@ -38,20 +38,20 @@ gulp.task('clean', function(done) {
 gulp.task('browserify', ['lint:js'], function(callback) {
     browserSync.notify('Browserifying JavaScript');
     var b = browserify({
-        debug: true,
+        debug: false,
         entries: ['./src/js/index.js']
     });
 
     // bundle requires debug as well. Doesn't seem to pass through
     // via the browserify config.
-    return b.bundle({ debug: true })
+    return b.bundle()
         .on('error', p.util.log)
         .pipe(source('bundle.js'))
         .pipe(buffer())
-        .pipe(p.sourcemaps.init({ loadMaps: true }))
+        // .pipe(p.sourcemaps.init({ loadMaps: false }))
         .pipe(p.uglify())
         .pipe(p.rename('bundle.min.js'))
-        .pipe(p.sourcemaps.write('./'))
+        // .pipe(p.sourcemaps.write('./'))
         .pipe(gulp.dest(config.paths.scripts.dest));
 });
 
@@ -113,7 +113,6 @@ gulp.task('copy', [
     // 'copy:html',
     // 'copy:nodeModules'
     'copy:images',
-    'copy:perfmatters',
     'copy:weather',
     'copy:htaccess'
 ]);
@@ -184,13 +183,18 @@ gulp.task('serve-test', function() {
 // | Main Tasks                                                                                   |
 // ------------------------------------------------------------------------------------------------
 
-gulp.task('build', function(done) {
+gulp.task('default', function(done) {
+    browserSync.notify('Starting serve-dev');
+
     runSequence('clean',
         'copy',
         'html',
         'browserify',
-        'gzip',
+        'uglify',
+        // 'gzip',
         done);
+    browserSync(config.browsersync.development);
+
 });
 
 gulp.task('reload', ['browserify'], function() {

@@ -192,8 +192,6 @@ main {
     position: absolute;
     height: 100%;
     width: 100%;
-    top: 0;
-    left: 0;
 }
 
 #map {
@@ -201,6 +199,11 @@ main {
     width: 100%;
     position: absolute;
     z-index: 10;
+}
+.map-load-error {
+    position: absolute;
+    top: 5em;
+    left: 20em;
 }
 
 .infobox-container {

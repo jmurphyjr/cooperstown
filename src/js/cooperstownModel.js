@@ -37,7 +37,6 @@ function getPlacesComputed(evaluator, owner) {
             result.inProgress(true);
             currentDeferred = $.Deferred().done(function(data) {
                 result.inProgress(false);
-                console.log(data);
                 result(data);
             });
             evaluatorResult.done(currentDeferred.resolve);
@@ -112,14 +111,11 @@ var CooperstownViewModel = function() {
 
     this.filteredPlaces = ko.computed(this._filtered, this);
 
-    this.filteredPlaces.subscribe(this._filterSubscribe, this);
-
     this.addLocation = ko.observable().subscribeTo('addPlace');
 
     this.addLocation.subscribe(this.addPlace,this);
 
     this.selectedPlace = ko.postbox.subscribe('selectedPlace', function(e) {
-        console.log(e);
         if (e.isSelected()) {
             self.curatedPlaces().forEach(function (p) {
 
@@ -138,7 +134,6 @@ var CooperstownViewModel = function() {
 
     this.isFiltered = ko.observable(false);
     this.filter.subscribe(function(update) {
-        console.log(update);
         self.curatedPlaces().forEach(function (p) {
             p.isSelected(false);
         });
@@ -160,8 +155,6 @@ var CooperstownViewModel = function() {
     //// Query Google Nearby Search for searchFilter
         return GoogleMaps.PlacesService.autoCompleteService(searchFilter)
             .then(function (result) {
-                console.log('Search Filter = ' + searchFilter);
-                console.log(result);
                 if (self.isFiltered()) {
                     var searchedPlaces = self._getResults(result);
                     if (self.googlePlaces().length > 0) {
@@ -210,7 +203,6 @@ var CooperstownViewModel = function() {
                 icon: 'http://openweathermap.org/img/w/' + j.list[i].weather[0].icon + '.png'
             }));
         }
-        console.log(latest);
         self.cooperstownWeather(latest);
     };
 
@@ -228,7 +220,6 @@ var CooperstownViewModel = function() {
         window.fetch(apiUrl, {
             method: 'get'
         }).then(function(response) {
-            // console.log(response.json());
             return response.json();
         }).then(function(j) {
             formatWeather(j);
@@ -242,21 +233,16 @@ var CooperstownViewModel = function() {
     this.weatherVisible = ko.observable(false);
 
     this.weatherVisibleStatus = ko.pureComputed(function() {
-        console.log('weatherVisibleStatus Function');
         return this.weatherVisible() ? 'weather-visible' : 'weather-removed';
     }, this);
 
 
     this.listVisibleStatus = ko.pureComputed(function() {
-        console.log('listVisibleStatus');
         return this.placesList() ? 'left-sidebar-visible' : 'left-sidebar-removed';
     }, this);
 
 
     this.sidebarToggle = function(up) {
-        console.log(up);
-        console.log('clicked sidebarToggle');
-        console.log(window.innerWidth);
 
         if (up === 1 && self.weatherVisible() === false) {
             self.placesList(false);
@@ -293,12 +279,6 @@ CooperstownViewModel.prototype.addPlace = function(place) {
         this.curatedPlaces().push(place);
         place.saveLocation();
     }
-    else {
-        console.log('++' + place + '++');
-    }
-
-    // On initial load, the places list will not show. Force an update
-    // by notifying subscribers to the filter
  };
 
 CooperstownViewModel.prototype.loadSavedPlaces = function(place) {
@@ -352,13 +332,6 @@ CooperstownViewModel.prototype.focusLocation = function(data) {
     return true;
 };
 
-CooperstownViewModel.prototype._filterSubscribe = function(newValue) {
-    this.curatedPlaces().forEach(function(p) {
-        if (p in newValue) {
-            console.log(p);
-        }
-    });
-};
 
 CooperstownViewModel.prototype._makeVisible = function(p) {
     p.isVisible(true);

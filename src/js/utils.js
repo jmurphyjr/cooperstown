@@ -44,7 +44,7 @@ module.exports = {
             }, 0);
         }
 
-        expire = Date.now() + 20000;
+        expire = Date.now() + 10000;
 
         setTimeout(lookForSymbol, 0);
 
@@ -93,27 +93,4 @@ module.exports = {
     },
 
 
-// Ref: https://remysharp.com/2010/07/21/throttling-function-calls
-    throttle: function(fn, threshhold, scope) {
-        threshhold = threshhold || (threshhold = 3000);
-        var last,
-            deferTimer;
-        return function () {
-            var context = scope || this;
-
-            var now = +new Date(),
-            args = arguments;
-            if (last && now < last + threshhold) {
-                // hold on to it
-                clearTimeout(deferTimer);
-                deferTimer = setTimeout(function () {
-                    last = now;
-                    fn.apply(context, args);
-                }, threshhold);
-            } else {
-                last = now;
-                fn.apply(context, args);
-            }
-        };
-    }
 };

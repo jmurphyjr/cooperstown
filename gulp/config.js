@@ -38,7 +38,7 @@ module.exports = {
             proxy: { target: 'http://knockout-browserify.dist/' },
             browser: ['google chrome canary'],
             logPrefix: 'SERVE-DEV',
-            debug: true,
+            debug: false,
             open: false,
             notify: true
         }
@@ -46,7 +46,7 @@ module.exports = {
     },
     browserify: {
         // Enable source maps
-        debug: true,
+        debug: false,
         entries: ['./src/js/index.js']
     }
 };

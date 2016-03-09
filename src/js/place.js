@@ -89,7 +89,7 @@ function Place(data, type) {
 
     this.isSelected.subscribe(function(selected) {
         var map = GoogleMaps.getMap();
-        console.log(selected);
+
         var infoWindow = GoogleMaps.getInfoWindow();
 
         if (selected) {
