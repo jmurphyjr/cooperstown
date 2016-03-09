@@ -4,11 +4,3 @@ AddType text/css .cssgz
 AddType text/html .htmlgz
 AddType text/plain .datagz
 
-RewriteEngine on
-# If client accepts compressed files
-RewriteCond %{HTTP:Accept-Encoding} gzip
-# and if compressed file exists
-RewriteCond %{REQUEST_FILENAME}gz -f
-# send .htmlgz instead of .html
-RewriteRule ^(.+)\.(html|css|js|data)$ $1.$2gz [L]
-
