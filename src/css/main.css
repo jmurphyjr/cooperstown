@@ -6,11 +6,8 @@ html {
     margin:0;
 }
 body {
-    margin:0;
-    height: 100%;
-    width: 100%;
-    /* font-family: "Roboto", sans-serif; */
     font-family: "Raleway";
+    margin: 0;
 }
 .clearfix {
     overflow: auto;
@@ -116,23 +113,65 @@ header {
     color: black;
 }
 
-#searchBar {
-    width: 100%;
-    position: absolute;
-    z-index: 5;
+.search-box,.close-icon,.searchBar {
+    position: relative;
+}
+.searchBar {
     color: #000;
-    display: block;
-    clear: both;
-    bottom: 0;
+    margin-top: 3.5em;
+    width: 100%;
+    z-index: 5;
+}
+.search-box {
+    border: 1px solid #ccc;
+    outline: 0;
+    width: 98%;
+}
+.search-box:focus {
+    border: 2px solid #bebede;
+    box-shadow: 0 0 15px 5px #b0e0ee;
+}
+.close-icon {
+    background-color: transparent;
+    border:1px solid transparent;
+    cursor: pointer;
+    display: inline-block;
+    outline: 0;
+    vertical-align: middle;
 }
 
+.close-icon:after {
+    background-color: #FA9595;
+    border-radius: 50%;
+    bottom: 0;
+    box-shadow: 0 0 2px #E50F0F;
+    color: white;
+    content: "X";
+    cursor: pointer;
+    display: block;
+    font-size: 10px;
+    font-weight: normal;
+    height: 10px;
+    margin: auto;
+    padding: 2px;
+    position: absolute;
+    right: 25px;
+    text-align: center;
+    top: 0;
+    width: 10px;
+    z-index: 60;
+}
+
+.search-box:not(:valid) ~ .close-icon {
+    display: none;
+}
 
 main {
     height: calc( 95% - 50px);
-    width: 100%;
+    left: 0;
     position: absolute;
     top: 5em;
-    left: 0;
+    width: 100%;
 }
 
 #left-sidebar {
@@ -158,9 +197,9 @@ main {
     position: relative;
 }
 */
-#filter-markers {
-    width: 100% !important;
-}
+/*#filter-markers {*/
+    /*width: 100% !important;*/
+/*}*/
 
 .ctown_ul_li {
     padding: 5px;
@@ -226,6 +265,7 @@ main {
 #detail-info {
     overflow-y: scroll;
     max-height: 320px;
+    max-width: 320px;
 }
 
 footer {

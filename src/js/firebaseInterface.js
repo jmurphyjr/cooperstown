@@ -3,8 +3,6 @@
  */
 /* jshint node: true */
 'use strict';
-var Firebase = require('firebase');
-var utils = require('./utils');
 
 var FirebaseInterface = function() {
 
@@ -89,5 +87,3 @@ FirebaseInterface.prototype.updated = function(error) {
         console.log('Synchronization succeeded');
     }
 };
-
-module.exports = new FirebaseInterface();

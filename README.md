@@ -6,7 +6,7 @@
  
 ## Installation
 
-To utilize this application, perform the following:
+To utilize this application, perform the following visit :
 
   1. Clone this repository: `git clone git@github.com:jmurphyjr/cooperstown.git'
   2. Execute: cd cooperstown or whichever directory the repo was cloned to

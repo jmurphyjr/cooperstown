@@ -43,35 +43,5 @@ module.exports = {
             notify: true
         }
 
-    },
-    browserify: {
-        // Enable source maps
-        debug: false,
-        entries: ['./src/js/index.js']
     }
 };
-// module.exports = {
-//     paths: {
-//         scripts: {
-//             src: src + 'js/',
-//             development: development + 'js/',
-//             production: production + 'js'
-//         },
-//         styles: {
-//             src: src + 'css/',
-//             development: development + 'css/',
-//             production: production + 'css/'
-//         }
-//     },
-//     delete: {
-//         src: [development]
-//     },
-//     browserify: {
-//         // Enable source maps
-//         debug: true,
-//         bundleConfigs: [{
-//             entries:
-//         }]
-//     }
-// };
-//

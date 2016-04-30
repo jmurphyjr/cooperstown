@@ -3,18 +3,16 @@
  */
 
 /* jshint node: true */
+/* global ko */
+/* global maps */
+/* global Place */
+/* global $ */
 
 'use strict';
 /**
  * Bring in requirements to support this module.
  */
-var $ = require('jquery');
-var ko = require('knockout');
-ko.postbox = require('knockout-postbox');
 ko.options.deferUpdates = true;
-var Place = require('./place');
-var GoogleMaps = require('./google');
-// var weather = require('./weather');
 
 /**
  * Reference: https://github.com/knockout/knockout/wiki/asynchronous-dependent-observables
@@ -107,9 +105,11 @@ var CooperstownViewModel = function() {
 
     this.placesList = ko.observable(true);
 
-    this.filter = ko.observable('').publishOn('filterPlaces').extend({ rateLimit: 1000 });
+    this.filter = ko.observable('').publishOn('filterPlaces').extend({ rateLimit: 500 });
 
     this.filteredPlaces = ko.computed(this._filtered, this);
+
+    this.filtered = ko.observable(false);
 
     this.addLocation = ko.observable().subscribeTo('addPlace');
 
@@ -148,12 +148,25 @@ var CooperstownViewModel = function() {
 
 
     this.googlePlaces = ko.observableArray([]);
+    this.filtered.subscribe(function(up) {
+        if (!up) {
+            self.filter('');
+        }
+    });
+
     this.filter.subscribe(getPlacesComputed(function() {
         var self = this;
         var searchFilter = self.filter().trim().toLowerCase();
 
+        if (searchFilter.length > 0) {
+            self.filtered(true);
+        }
+        else {
+            self.filtered(false);
+        }
+
     //// Query Google Nearby Search for searchFilter
-        return GoogleMaps.PlacesService.autoCompleteService(searchFilter)
+        return maps.PlacesService.autoCompleteService(searchFilter)
             .then(function (result) {
                 if (self.isFiltered()) {
                     var searchedPlaces = self._getResults(result);
@@ -297,7 +310,7 @@ CooperstownViewModel.prototype.loadSavedPlaces = function(place) {
 CooperstownViewModel.prototype._filtered = function() {
     var searchFilter = this.filter().trim().toLowerCase();
     var placesFound;
-    var infoWindow = GoogleMaps.getInfoWindow();
+    var infoWindow = maps.getInfoWindow();
     infoWindow.close();
 
     if (!searchFilter) {
@@ -389,7 +402,7 @@ CooperstownViewModel.prototype._autoplaces = function() {
 
 
     // Query Google Nearby Search for searchFilter
-    GoogleMaps.PlacesService.autoCompleteService(searchFilter)
+    maps.PlacesService.autoCompleteService(searchFilter)
         .then(function(result) {
             console.log('Search Filter = ' + searchFilter);
             var self = this;
@@ -440,6 +453,3 @@ CooperstownViewModel.prototype._getResults = function(data) {
     return data;
 };
 
-
-// module.exports = new CooperstownViewModel();
-module.exports = CooperstownViewModel;

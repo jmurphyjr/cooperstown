@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Udacity Front-End Nanodegree • Project 5 Cooperstown</title>
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="css/normalize.css">
 
     <link rel="stylesheet" href="css/project.css">
 </head>
@@ -26,8 +26,10 @@
         </div>
         <label class="menu-icon" data-bind="click: function() { sidebarToggle(2) }">&#9776;</label>
     </div>
-    <div id="searchBar">
-        <input id="filter-markers" type="search" placeholder="Search Cooperstown" data-bind="value: filter, valueUpdate: 'input'">
+    <div class="searchBar">
+
+            <input class="search-box" id="filter-markers" type="search" placeholder="Search Cooperstown (food, hotel or place name)" data-bind="value: filter, valueUpdate: 'input'">
+            <div data-bind="click: function() { filtered(false) }, css: { 'close-icon': filtered }"></div>
 
     </div>
 
@@ -83,6 +85,8 @@
     map.innerHTML = '<div class="map-load-error"><h1>Loading...</h1></div>';
 </script>
 <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQvxj_-y-6lW2v6jWyJH2uoa2PJ38yN2A&libraries=places,geometry"></script>
-<script async src="js/bundle.min.js"></script>
+<!-- <script src="https://cdn.firebase.com/js/client/2.4.1/firebase.js"></script> -->
+
+<script src="js/project.js"></script>
 </body>
 </html>

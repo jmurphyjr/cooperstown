@@ -4,13 +4,12 @@
 /* jshint node: true */
 /* global google */
 /* global Promise */
+/* global ko */
+/* global maps */
+/* global $ */
+/* global cooperstownFirebase */
 'use strict';
 
-var ko = require('knockout');
-ko.mapping = require('knockout-mapping');
-var GoogleMaps = require('./google');
-var cooperstownFirebase = require('./firebaseInterface');
-var $ = require('jquery');
 
 function Location(data) {
     try {
@@ -66,7 +65,7 @@ function Place(data, type) {
         return response;
     });
 
-    var marker = GoogleMaps.MarkerService.addMarker(self);
+    var marker = maps.MarkerService.addMarker(self);
 
     $( document ).ready(function() {
         var isMobileTest = window.matchMedia('only screen and (max-width: 760px)');
@@ -88,16 +87,16 @@ function Place(data, type) {
 
 
     this.isSelected.subscribe(function(selected) {
-        var map = GoogleMaps.getMap();
+        var map = maps.getMap();
 
-        var infoWindow = GoogleMaps.getInfoWindow();
+        var infoWindow = maps.getInfoWindow();
 
         if (selected) {
             infoWindow.close();
 
             self.isVisible(true);
             if (!map.getBounds().contains(marker.getPosition())) {
-                GoogleMaps.setDefaultZoomAndCenter();
+                maps.setDefaultZoomAndCenter();
             }
             infoWindow.setContent(self.detailInfo());
             infoWindow.open(map, marker);
@@ -133,7 +132,7 @@ function Place(data, type) {
 
         self.getDistance().then(function(result) {
             self.distanceToDreamsPark('Distance to DreamsPark: ' + result);
-            cooperstownFirebase.tryCreateNewPlace(this.name(), ko.toJS(this));
+            cooperstownFirebase.tryCreateNewPlace(self.name(), ko.toJS(this));
         });
     }
     else if (type === 'temp') {
@@ -152,7 +151,7 @@ Place.prototype.getDistance = function() {
 
     return new Promise(function(resolve, reject) {
         if (self.name() !== 'Cooperstown Dreams Park' && self.distanceToDreamsPark() === '') {
-            GoogleMaps.DistanceService.distanceToCooperstownPark(self.location.getLocation())
+            maps.DistanceService.distanceToCooperstownPark(self.location.getLocation())
                 .then(function (result) {
                     if (result !== undefined) {
                         resolve(result);
@@ -170,7 +169,7 @@ Place.prototype.setDetailInfo = function() {
     var self = this;
 
     if (self.detailInfo() === '') {
-        GoogleMaps.PlacesService.detailInfo(self.id())
+        maps.PlacesService.detailInfo(self.id())
             .then(function (result) {
                 if (result !== undefined) {
                     self.detailInfo(result);
@@ -192,5 +191,3 @@ Place.prototype.saveLocation = function() {
     };
     cooperstownFirebase.tryCreateNewPlace(this.name(), ko.mapping.toJS(this, mapping));
 };
-
-module.exports = Place;

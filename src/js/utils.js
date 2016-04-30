@@ -10,7 +10,7 @@
  */
 'use strict';
 
-module.exports = {
+var utils = {
 
     /**
      * Checks for 'symbol' to be present on the 'window'. Times out after 20
@@ -90,7 +90,7 @@ module.exports = {
 
     extend: function(target, source) {
         return Object.assign({}, target, source);
-    },
-
+    }
 
 };
+

@@ -432,4 +432,3 @@ var maps = {
 
 };
 
-module.exports = maps;
