@@ -8,8 +8,6 @@
 
 To utilize this application, visit http://jmurphyjr.github.io/cooperstown/
 
-To review the source code, visit https://github.com/jmurphyjr/cooperstown
- 
 ## Project Description
  
 This is _Project 5-1: Neighborhood Map Project_ of the Udacity Front-End Nanodegree.
