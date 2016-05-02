@@ -120,19 +120,11 @@ gulp.task('default', ['build_reload'], function() {
 // | Main Tasks                                                                                   |
 // ------------------------------------------------------------------------------------------------
 
-gulp.task('reload', ['browserify'], function() {
-    reload();
-});
-
 gulp.task('build_reload', function(done) {
     runSequence('clean',
         'copy',
         'html',
         'uglify',
         done);
-});
-
-gulp.task('watch', function(done) {
-    gulp.watch(['src/js/*.js'], ['lint:js']);
 });
 

@@ -8,13 +8,7 @@
 
 To utilize this application, visit http://jmurphyjr.github.io/cooperstown/
 
-To review the source code and maintain the application perform the following:
-
-  1. Clone this repository: `git clone git@github.com:jmurphyjr/cooperstown.git'
-  2. Execute: cd cooperstown or whichever directory the repo was cloned to
-  3. Execute: npm install
-  4. Execute: gulp
-  5. Visit in a browser: http://localhost:3000
+To review the source code, visit https://github.com/jmurphyjr/cooperstown
  
 ## Project Description
  
@@ -38,11 +32,6 @@ This is _Project 5-1: Neighborhood Map Project_ of the Udacity Front-End Nanodeg
 
 ### Project Design
 
-In addition to utilizing the [Knockout.js](http://knockoutjs.com/) framework, the author incorporated a 
-build process utilizing [Browserify](http://browserify.org/). Browserify is a tool that allows writing
-client-side code like it is for node.js, typically reserved for the server. This allowed for concise code
-packaged into smaller files.
-
 #### Project Directory Structure Layout
 
 The directory structure is:
@@ -59,11 +48,6 @@ The directory structure is:
   -> gulp     // Gulp tasks are stored in this directory
     -> tasks
 ```
-
-
-#### Classes Required
-
-The following
 
 
 ### Attributions

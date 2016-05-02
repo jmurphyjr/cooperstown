@@ -38,8 +38,8 @@ module.exports = {
             proxy: { target: 'http://knockout-browserify.dist/' },
             browser: ['google chrome canary'],
             logPrefix: 'SERVE-DEV',
-            debug: false,
-            open: false,
+            debug: true,
+            open: true,
             notify: true
         }
 
