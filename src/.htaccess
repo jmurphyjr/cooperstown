@@ -1,6 +1,0 @@
-AddEncoding gzip .jsgz .cssgz .htmlgz .datagz
-AddType application/javascript .jsgz
-AddType text/css .cssgz
-AddType text/html .htmlgz
-AddType text/plain .datagz
-

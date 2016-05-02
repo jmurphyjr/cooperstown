@@ -72,14 +72,8 @@ gulp.task('minify:css', function() {
 gulp.task('copy', [
     // 'copy:html',
     'copy:nodeModules',
-    'copy:images',
-    'copy:htaccess'
+    'copy:images'
 ]);
-
-gulp.task('copy:htaccess', function() {
-    return gulp.src(config.basePaths.src + '.htaccess')
-        .pipe(gulp.dest(config.basePaths.dest));
-});
 
 gulp.task('copy:nodeModules', function() {
     return gulp.src(['node_modules/normalize.css/normalize.css'
