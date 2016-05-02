@@ -18,7 +18,7 @@
   "name": "cooperstown",
   "private": true,
   "scripts": {
-    "build": "gulp",
+    "build": "gulp"
   },
   "version": "0.0.1",
   "dependencies": {
